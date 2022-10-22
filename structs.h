@@ -6,7 +6,7 @@
 #include <vector>
 
 //********** PARTICION ********** 
-typedef struct particion{
+struct particion{
     char part_status;                       //0 para desactivada, 1 para activa
     char part_type = 'p';                   //Partición Primaria o Extendida (p ó e)
     char part_fit = 'w';                    //Fit: Best(b), First(f), Worst(w)
@@ -163,6 +163,9 @@ struct usuario{
     std::string disco;                  //ID de la particion en la que esta trabajando
     std::string grupo;                  //Grupo al que pertenece el usuario
 };
+
+//********** CONSTANTES **********
+const int EndMBR = sizeof(MBR) + 1;     //Posicion de bytes del mbr para comenzar a escribir
 
 #endif
 
