@@ -2,28 +2,42 @@
 #include <string>
 
 #include "analizador.h"
+#include "structs.h"
 
 using namespace std;
 
 int main(){
+    //VARIABLES
     bool continuar = true;
     string comando = "";
+    usuario sesion;
+    vector<disco> discos;  
 
-    //Lectura de comandos
-    cout << "PROYECTO 1 - ARCHIVOS - 201909035" << endl;
-    cout << "------------------------------------------------------------------------" << endl;
+    //CONSOLA DE COMANDOS
+    cout << "****************************************************************************************************" << endl;
+    cout << endl;
+    cout << "PROYECTO 1 ARCHIVOS - 201909035" << endl;
+    cout << endl;
+    cout << "****************************************************************************************************" << endl;
     while (continuar){
+        cout << "----------------------------------------------------------------------------------------------------" << endl;
+        cout << "INSTRUCCION:" <<endl; 
         getline(cin, comando);
+        cout << endl;
 
         //Salir de la aplicación
         if(comando == "EXIT" || comando == "exit"){
             continuar = false;
+            cout << endl;
+            cout << "----------------------------------------------------------------------------------------------------" << endl;          
             continue;
         }
 
         //Ejecutar Instruccion
-        ejecutar(comando);
-        comando.clear();                            
+        cout << "EJECUCIÓN:" <<endl;
+        ejecutar(comando, sesion, discos);
+        comando.clear();   
+        cout << endl;
     }
 
     return 0;

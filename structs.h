@@ -4,6 +4,7 @@
 #include <time.h>
 #include <string>
 #include <vector>
+#include <regex>
 
 //********** PARTICION ********** 
 struct particion{
@@ -39,14 +40,14 @@ struct EBR{
 //Indica un resumen de donde estan las particiones para evitar tener que leer constantemente
 //el disco. Se usa para encontrar los espacios vacíos.
 
-struct posiciones{
+struct posicion{
     int inicio;                             
     int fin;
     char tipo;
     std::string nombre;
     int tamaño; 
 
-    bool operator<(const posiciones& a) const
+    bool operator<(const posicion& a) const
     {
         return inicio < a.inicio;
     }
@@ -79,7 +80,7 @@ struct libreL{
 
 //********** MONTAR DISCOS **********
 //Maneja la posición de la partición dentro del disco
-struct Montada{
+struct montada{
     std::string id;                             //ID de a particion montada: 035Disco#
     int posEBR = -1;                            //Si es logica es diferente a -1
     int posMBR = -1;                            //Si no es logica es diferente a -1
@@ -88,15 +89,15 @@ struct Montada{
 };
 
 //Maneja los datos del disco. Necesario para leer las particiones. 
-struct Disco{
+struct disco{
     std::string ruta;                           //Ruta del disco
     std::string nombre;                         //Nombre del disco
     int contador = 1;                           //Sirve para el ID de la montada
-    std::vector<Montada> particiones;           //Particiones del disco montadas
+    std::vector<montada> particiones;           //Particiones del disco montadas
 };
 
 //********** SUPER BLOQUE **********
-struct SBloque{
+struct sbloque{
     int s_filesystem_type;              //3 para ext3 y 2 para ext2
     int s_inodes_count;                 //Total de inodos
     int s_blocks_count;                 //Total de bloques
@@ -117,7 +118,7 @@ struct SBloque{
 };
 
 //********** INODOS **********
-struct Inodo{
+struct inodo{
     int i_uid;                          //ID del dueño                          
     int i_gid;                          //ID del grupo 
     int i_s;                            //Tamaño 
@@ -135,15 +136,15 @@ struct content{
     int b_inodo;                        //Numero de inodo que contiene la carpeta o archivo
 };
 
-struct BCarpetas{
+struct bcarpetas{
     content b_content[4];                 
 };
 
-struct BArchivos{
+struct barchivos{
     char b_content[64];         
 };
 
-struct BApuntadores{
+struct bapuntadores{
     int b_pointers[16];                 //Guarda la posicion de otro bloque (apuntador, bloque o carpeta)
 };
 
@@ -166,6 +167,7 @@ struct usuario{
 
 //********** CONSTANTES **********
 const int EndMBR = sizeof(MBR) + 1;     //Posicion de bytes del mbr para comenzar a escribir
+const std::regex flecha("->");
 
 #endif
 

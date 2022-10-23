@@ -8,6 +8,7 @@
                 "-fdiagnostics-color=always",
                 "-g",
                 "${file}", "${fileDirname}/analizador.cpp", "${fileDirname}/structs.cpp",
+                "${fileDirname}/exec.cpp", "${fileDirname}/lexico.cpp",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],

@@ -6,7 +6,10 @@
 #include <vector>
 #include <iostream>
 
-void ejecutar(std::string &cadena);         
-void analizar(std::string &cadena, std::vector<std::string> &parametros);
+#include "lexico.h"
+#include "exec.h"
+#include "structs.h"
+
+void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos);         
 
 #endif

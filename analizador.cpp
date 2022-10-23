@@ -1,143 +1,84 @@
 #include "analizador.h"
 
-void ejecutar(std::string &cadena){
+void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos){
     //VARIABLES
     std::vector<std::string> parametros; 
 
     //ANALIZAR LA CADENA
     analizar(cadena, parametros);
 
-    //SEPARAR INSTRUCCIÓN 
-    if(!parametros.empty()){
-        std::string &tipo = parametros[0];
+    //IGNORAR COMENTARIOS 
+    if(parametros.empty()){
+       return; 
+    }
 
-        //Pasar a minusculas
-        std::transform(tipo.begin(), tipo.end(), tipo.begin(),[](unsigned char c){
-            return tolower(c);
-        });
+    //EJECUTAR INSTRUCCION
+    std::string &tipo = parametros[0];
 
-        if(tipo == "mkdisk"){
-            std::cout << "Esto funciona" << std::endl;
-        }else if(tipo == "rmdisk"){
-            
-        }else if(tipo == "fdisk"){
-            
-        }else if(tipo == "mount"){
-            
-        }else if(tipo == "unmount"){
-            
-        }else if(tipo == "mkfs"){
-            
-        }else if(tipo == "login"){
-            
-        }else if(tipo == "logout"){
-            
-        }else if(tipo == "mkgrp"){
-            
-        }else if(tipo == "rmgrp"){
-            
-        }else if(tipo == "mkusr"){
-            
-        }else if(tipo == "rmusr"){
-            
-        }else if(tipo == "chmod"){
-            
-        }else if(tipo == "mkfile"){
-            
-        }else if(tipo == "cat"){
-            
-        }else if(tipo == "remove"){
-            
-        }else if(tipo == "edit"){
-            
-        }else if(tipo == "rename"){
-            
-        }else if(tipo == "mkdir"){
-            
-        }else if(tipo == "copy"){
-            
-        }else if(tipo == "move"){
-            
-        }else if(tipo == "find"){
-            
-        }else if(tipo == "chown"){
-            
-        }else if(tipo == "chgrp"){
-            
-        }else if(tipo == "pause"){
-            
-        }else if(tipo == "recovery"){
-            
-        }else if(tipo == "loss"){
-            
-        }else if(tipo == "exec"){
-            
-        }else if(tipo == "rep"){
-            
-        }else{
-            std::cout << "Error: El comando ingresado no existe." << std::endl;
-        }
+    std::transform(tipo.begin(), tipo.end(), tipo.begin(),[](unsigned char c){
+        return tolower(c);
+    });
+
+    if(tipo == "mkdisk"){
+        //mkdisk();
+    }else if(tipo == "rmdisk"){
+        //rmdisk();
+    }else if(tipo == "fdisk"){
+        //fdisk();
+    }else if(tipo == "mount"){
+        //mount();
+    }else if(tipo == "unmount"){
+        //unmount();
+    }else if(tipo == "mkfs"){
+        //mkfs();
+    }else if(tipo == "login"){
+        //login();
+    }else if(tipo == "logout"){
+        //logout();
+    }else if(tipo == "mkgrp"){
+        //mkgrp();
+    }else if(tipo == "rmgrp"){
+        //rmgrp();
+    }else if(tipo == "mkusr"){
+        //mkusr();
+    }else if(tipo == "rmusr"){
+        //rmusr();
+    }else if(tipo == "chmod"){
+        //chmod();
+    }else if(tipo == "mkfile"){
+        //mkfile();
+    }else if(tipo == "cat"){
+        //cat();
+    }else if(tipo == "remove"){
+        //remove();
+    }else if(tipo == "edit"){
+        //edit();
+    }else if(tipo == "rename"){
+        //rename();
+    }else if(tipo == "mkdir"){
+        //mkdir();
+    }else if(tipo == "copy"){
+        //copy();
+    }else if(tipo == "move"){
+        //move();
+    }else if(tipo == "find"){
+        //find();
+    }else if(tipo == "chown"){
+        //chown();
+    }else if(tipo == "chgrp"){
+        //chgrp();
+    }else if(tipo == "pause"){
+        //pause();
+    }else if(tipo == "recovery"){
+        //recovery();
+    }else if(tipo == "loss"){
+        //loss();
+    }else if(tipo == "rep"){
+        //rep();
+    }else if(tipo == "exec"){
+        exec(parametros, sesion, discos);
+    }else{
+        std::cout << "Error: El comando ingresado no existe." << std::endl;
     }
 }
 
-void analizar(std::string &cadena, std::vector<std::string> &parametros){
-    //VARIABLES
-    cadena += " ";                      //Fin de cadena
-    int estado = 0;                             
-    std::string temp = "";              //Variable que almacena el contenido de un string 
-
-    //RECORRER LA CADENA
-    for (int i = 0; i < cadena.length(); i++) {
-        switch(estado){
-            case 0:
-                if(isalpha(cadena[i])){
-                    estado = 1;
-                    temp += cadena[i]; 
-                }else if(cadena[i] == '-'){
-                    estado = 2;
-                }else if(cadena[i] == '#'){
-                    estado = 3;
-                }
-                break;
-
-            //Palabras reservadas
-            case 1: 
-                if(cadena[i] == ' '){
-                    parametros.push_back(temp);
-                    temp = "";
-                    estado = 0;
-                }else{
-                    temp += cadena[i];
-                }
-                break;
-
-            //Parametros
-            case 2:
-                if(cadena[i] == '"'){
-                    estado = 21;
-                }else if(cadena[i] == ' '){
-                    parametros.push_back(temp);
-                    temp = "";
-                    estado = 0;
-                }else{
-                    temp += cadena[i];
-                }
-                break;
-
-            //Reconocer cadenas dentro de parametros
-            case 21:
-                if(cadena[i] == '"'){
-                    parametros.push_back(temp);
-                    temp = "";
-                    estado = 0;
-                }else{
-                    temp += cadena[i];
-                }
-                break;
-
-            //Comentarios
-            case 3:
-                break;
-        }
-    }
-}
