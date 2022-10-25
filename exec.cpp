@@ -78,7 +78,7 @@ void exec(std::vector<std::string> &parametros, usuario &sesion, std::vector<dis
         });
 
         if(tipo == "mkdisk"){
-            //mkdisk();
+            mkdisk(parametros);
         }else if(tipo == "rmdisk"){
             //rmdisk();
         }else if(tipo == "fdisk"){

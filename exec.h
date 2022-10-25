@@ -8,6 +8,7 @@
 
 #include "lexico.h"
 #include "structs.h"
+#include "mkdisk.h"
 
 
 /*
