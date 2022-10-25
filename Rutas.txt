@@ -1,0 +1,17 @@
+Carpeta del Proyecto
+/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-Proyecto1_201909035/Disco1.dsk
+
+Crear Archivo
+mkdisk -s->10 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-Proyecto1_201909035/ Mis Discos/Disco1.dsk"
+
+Borrar Archivo
+rmdisk -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-Proyecto1_201909035/ Mis Discos/Disco1.dsk"
+
+Exect
+exec -path->/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/Script2.mia
+
+Borrar Particion 
+fdisk -delete->full -name->"Particion1" -path->/home/Disco1.dsk
+
+#desmontar
+unmount -id->351Disco1

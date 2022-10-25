@@ -20,9 +20,9 @@ void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos){
     });
 
     if(tipo == "mkdisk"){
-        //mkdisk();
+        mkdisk(parametros);
     }else if(tipo == "rmdisk"){
-        //rmdisk();
+        rmdisk(parametros);
     }else if(tipo == "fdisk"){
         //fdisk();
     }else if(tipo == "mount"){

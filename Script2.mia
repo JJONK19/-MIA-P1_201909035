@@ -1,0 +1,11 @@
+# Archivo de Ejemplo
+
+#mkdisk
+mkdisk -s->10 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco1.dsk"
+mkdisk -s->10 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco1.dsk"
+mkdisk -s->10 -f->BF -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco2.dsk"
+mkdisk -s->5000 -U->K -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco3.dsk"
+
+#rmdisk
+rmdisk -PATH->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco2.dsk"
+rmdisk -PATH->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/MisDiscos/Disco2.dsk"

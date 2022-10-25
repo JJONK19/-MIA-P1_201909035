@@ -80,7 +80,7 @@ void exec(std::vector<std::string> &parametros, usuario &sesion, std::vector<dis
         if(tipo == "mkdisk"){
             mkdisk(parametros);
         }else if(tipo == "rmdisk"){
-            //rmdisk();
+            rmdisk(parametros);
         }else if(tipo == "fdisk"){
             //fdisk();
         }else if(tipo == "mount"){
@@ -136,6 +136,8 @@ void exec(std::vector<std::string> &parametros, usuario &sesion, std::vector<dis
         }else{
             std::cout << "Error: El comando ingresado no existe." << std::endl;
         }        
+
+        std::cout << std::endl;
     }
 
 }

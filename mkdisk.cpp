@@ -6,7 +6,7 @@ void mkdisk(std::vector<std::string> &parametros){
     bool required = true;                      //Indica si vienen los parametros obligatorios
     bool valid = true;                         //Verifica que los valores de los parametros sean correctos
     FILE *archivo;                             //Sirve para verificar que el archivo exista
-    char vacio = '\0';                      //Usado para escribir el archivo binario
+    char vacio = '\0';                         //Usado para escribir el archivo binario
     int tamaño = 0;                            //Atrubuto -s
     std::string fit = "";                      //Atributo -f
     char fit_char = '0';                       //El fit se maneja como caracter 
@@ -52,7 +52,7 @@ void mkdisk(std::vector<std::string> &parametros){
     }
 
     if(!required){
-        std::cout << "ERROR: La instrucción exec carece de todos los parametros obligatorios." << std::endl;
+        std::cout << "ERROR: La instrucción mkdisk carece de todos los parametros obligatorios." << std::endl;
     }
 
     //VALIDACION DE PARAMETROS
