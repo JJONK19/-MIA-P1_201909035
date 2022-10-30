@@ -10,6 +10,7 @@
 #include "structs.h"
 #include "mkdisk.h"
 #include "rmdisk.h"
+#include "fdisk.h"
 
 
 /*

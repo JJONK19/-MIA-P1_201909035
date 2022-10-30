@@ -1,0 +1,26 @@
+# Archivo de Ejemplo
+
+# Creacion de disco
+mkdisk -s->10 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-Proyecto1_201909035/ Mis Discos/Disco1.dsk"
+
+# Creacion particiones
+fdisk -s->9 -u->m -t->e -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-Proyecto1_201909035/ Mis Discos/Disco1.dsk" -name->Part1
+fdisk -s->5 -u->m -t->l -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-Proyecto1_201909035/ Mis Discos/Disco1.dsk" -name->Part2
+fdisk -s->1 -u->m -t->l -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-Proyecto1_201909035/ Mis Discos/Disco1.dsk" -name->Part3
+
+#Modificar Particiones
+fdisk -add->-4 -s->1 -u->m -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-Proyecto1_201909035/ Mis Discos/Disco1.dsk" -name->Part2
+
+#Probar Fit
+fdisk -s->1 -t->l -f->BestFit -u->m -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-Proyecto1_201909035/ Mis Discos/Disco1.dsk" -name->Part
+fdisk -s->1  -t->l -f->WorstFit -u->m -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-Proyecto1_201909035/ Mis Discos/Disco1.dsk" -name->Part6
+
+#Borrar Particiones
+fdisk -delete->full -s->1 -u->m -t->l -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-Proyecto1_201909035/ Mis Discos/Disco1.dsk" -name->Part
+
+#Montar
+mount -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-Proyecto1_201909035/ Mis Discos/Disco1.dsk" -name->Part6
+
+#reporte
+rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-Proyecto1_201909035/ Mis Discos/mbr.png" -name->mbr
+rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-Proyecto1_201909035/ Mis Discos/disk.png" -name->disk

@@ -40,14 +40,14 @@ struct EBR{
 //Indica un resumen de donde estan las particiones para evitar tener que leer constantemente
 //el disco. Se usa para encontrar los espacios vacíos.
 
-struct posicion{
+struct position{
     int inicio;                             
     int fin;
     char tipo;
     std::string nombre;
     int tamaño; 
 
-    bool operator<(const posicion& a) const
+    bool operator<(const position& a) const
     {
         return inicio < a.inicio;
     }

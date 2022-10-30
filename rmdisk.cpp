@@ -43,7 +43,7 @@ void rmdisk(std::vector<std::string> &parametros){
         std::cout << "ERROR: La instrucción rmdisk carece de todos los parametros obligatorios." << std::endl;
     }
 
-    //VERIFICAR QUE EL NO ARCHIVO EXISTA
+    //VERIFICAR QUE EL ARCHIVO EXISTA
     archivo = fopen(ruta.c_str(), "r");
 
     if(archivo == NULL){
