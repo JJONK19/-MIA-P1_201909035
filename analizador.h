@@ -12,6 +12,8 @@
 #include "mkdisk.h"
 #include "rmdisk.h"
 #include "fdisk.h"
+#include "mount.h"
+#include "unmount.h"
 
 void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos);         
 

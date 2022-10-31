@@ -12,6 +12,7 @@
 #include "rmdisk.h"
 #include "fdisk.h"
 #include "mount.h"
+#include "unmount.h"
 
 
 /*

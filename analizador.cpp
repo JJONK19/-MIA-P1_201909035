@@ -28,7 +28,7 @@ void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos){
     }else if(tipo == "mount"){
         mount(parametros, discos);
     }else if(tipo == "unmount"){
-        //unmount();
+        unmount(parametros, discos);
     }else if(tipo == "mkfs"){
         //mkfs();
     }else if(tipo == "login"){

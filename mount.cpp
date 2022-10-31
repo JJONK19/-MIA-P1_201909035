@@ -52,7 +52,7 @@ void mount(std::vector<std::string> &parametros, std::vector<disco> &discos){
     }
 
     if(!required){
-        std::cout << "ERROR: La instrucción mkdisk carece de todos los parametros obligatorios." << std::endl;
+        std::cout << "ERROR: La instrucción mount carece de todos los parametros obligatorios." << std::endl;
     }
 
     //VERIFICAR QUE EL NO ARCHIVO EXISTA
@@ -143,12 +143,12 @@ void mount(std::vector<std::string> &parametros, std::vector<disco> &discos){
 
     if(discos.size() == 0){
         //Añadir el disco y la particion (Caso 1)
-        Disco temp;
+        disco temp;
         temp.nombre = discName;
         temp.ruta = ruta;
 
-        Montada nueva;
-        nueva.id = "35" + to_string(temp.contador) + discName;
+        montada nueva;
+        nueva.id = "35" + std::to_string(temp.contador) + discName;
         temp.contador++;
         nueva.posEBR = posLogica;
         nueva.posMBR = posMBR;
@@ -174,7 +174,7 @@ void mount(std::vector<std::string> &parametros, std::vector<disco> &discos){
             temp.ruta = ruta;
 
             montada nueva;
-            nueva.id = "35" + to_string(temp.contador) + discName;
+            nueva.id = "35" + std::to_string(temp.contador) + discName;
             temp.contador++;
             nueva.posEBR = posLogica;
             nueva.posMBR = posMBR;
@@ -197,7 +197,7 @@ void mount(std::vector<std::string> &parametros, std::vector<disco> &discos){
             }
 
             montada nueva;
-            nueva.id = "35" + to_string(temp.contador) + discName;
+            nueva.id = "35" + std::to_string(temp.contador) + discName;
             temp.contador++;
             nueva.posEBR = posLogica;
             nueva.posMBR = posMBR;
