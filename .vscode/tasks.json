@@ -10,7 +10,7 @@
                 "${file}", "${fileDirname}/analizador.cpp", "${fileDirname}/structs.cpp",
                 "${fileDirname}/exec.cpp", "${fileDirname}/lexico.cpp",
                 "${fileDirname}/mkdisk.cpp", "${fileDirname}/rmdisk.cpp",
-                "${fileDirname}/fdisk.cpp",
+                "${fileDirname}/fdisk.cpp", "${fileDirname}/mount.cpp",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],

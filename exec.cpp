@@ -84,7 +84,7 @@ void exec(std::vector<std::string> &parametros, usuario &sesion, std::vector<dis
         }else if(tipo == "fdisk"){
             fdisk(parametros);
         }else if(tipo == "mount"){
-            //mount();
+            mount(parametros, discos);
         }else if(tipo == "unmount"){
             //unmount();
         }else if(tipo == "mkfs"){
