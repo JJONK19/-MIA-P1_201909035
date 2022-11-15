@@ -129,10 +129,12 @@ void fdisk(std::vector<std::string> &parametros){
     if(borrar == "full" || borrar == ""){
     }else{
         std::cout << "ERROR: Utilice FULL junto al comando delete." << std::endl;
+        valid = false;
     }
 
     if(comando == ""){
         std::cout << "ERROR: La instrucción carece de una tarea (añadir, borrar o modificar)." << std::endl;
+        valid = false;
     }
 
     if(!valid){
@@ -200,7 +202,7 @@ void crear_particion(int &tamaño, char &tipo, std::string &ruta, std::string &n
     fread(&mbr, sizeof(MBR), 1, archivo);
 
     //=============== PARTICIONES LÓGICAS =============== 
-    if(tipo = 'l'){
+    if(tipo == 'l'){
         //VARIABLES 
         int posExtendida;                                //Posicion de la cabecera de la extendida
         int finExtendida;                                //Posicion donde acaba la extendida
@@ -435,6 +437,10 @@ void crear_particion(int &tamaño, char &tipo, std::string &ruta, std::string &n
             if(mbr.mbr_partition[i].part_type == 'e'){
                 extendedExist = true;
             }
+
+            if(posicion != -1){
+                break;
+            }
         }
 
         if(extendedExist == true && tipo == 'e'){
@@ -555,7 +561,7 @@ void crear_particion(int &tamaño, char &tipo, std::string &ruta, std::string &n
             }
 
             if(posEspacio == -1){
-                std::cout << "ERROR: No hay espacio disponible en la partición extendida." << std::endl;
+                std::cout << "ERROR: No hay espacio disponible en el disco." << std::endl;
                 fclose(archivo);
                 return;
             }
@@ -573,7 +579,7 @@ void crear_particion(int &tamaño, char &tipo, std::string &ruta, std::string &n
             }
 
             if(posEspacio == -1){
-                std::cout << "ERROR: No hay espacio disponible en la partición extendida." << std::endl;
+                std::cout << "ERROR: No hay espacio disponible en el disco." << std::endl;
                 fclose(archivo);
                 return;
             }
@@ -587,7 +593,7 @@ void crear_particion(int &tamaño, char &tipo, std::string &ruta, std::string &n
             }
 
             if(posEspacio == -1){
-                std::cout << "ERROR: No hay espacio disponible en la partición extendida." << std::endl;
+                std::cout << "ERROR: No hay espacio disponible en el disco." << std::endl;
                 fclose(archivo);
                 return;
             }
@@ -627,6 +633,7 @@ void borrar_particion(std::string &ruta, std::string &nombre){
     FILE *archivo = fopen(ruta.c_str(), "r+b");          //Disco con el que se va a trabajar
     MBR mbr;                                             //MBR para leer el disco
     int posicion = -1;                                   //Posicion de la particion en el mbr
+    bool logica = true;                                  //Indica si se va a manejar el borrado en logica 
 
     //COLOCAR EL PUNTERO DE LECTURA EN LA CABECERA Y LEER MBR
     fseek(archivo, 0, SEEK_SET);
@@ -637,12 +644,13 @@ void borrar_particion(std::string &ruta, std::string &nombre){
         particion temp = mbr.mbr_partition[i];
         if(temp.part_name == nombre){
             posicion = i;
+            logica = false;
             break;
         }
     }
 
     //=============== PARTICIONES LÓGICAS =============== 
-    if(posicion == -1){
+    if(logica){
         //VARIABLES
         int posExtendida;                      //Posicion donde inicia la extendida
         int posAnterior = -1;                  //Posicion del EBR anterior al eliminiado
@@ -779,7 +787,7 @@ void borrar_particion(std::string &ruta, std::string &nombre){
     }
 
     //=============== PARTICIONES PRIMARIA / EXPANDIDA ===============
-    if(posicion != -1){
+    if(!logica){
         //VARIABLES
         std::string confirmar;               //Usada para la confirmación del borrado
         int posParticion;                    //Posicion donde inicia la particion
@@ -833,7 +841,7 @@ void modificar_particion(char &tipo, std::string &ruta, int &tamaño, std::strin
     MBR mbr;                    
     char signo;                                          //Diferencia si se esta aumentando o reduciendo espacio
     int espacio;                                        //Almacena el espacio que hay disponible para modificar
-
+    bool logica = true;                                  //Indica si se va a manejar el borrado en logica 
 
     //COLOCAR EL PUNTERO DE LECTURA EN LA CABECERA
     fseek(archivo, 0, SEEK_SET);
@@ -844,12 +852,13 @@ void modificar_particion(char &tipo, std::string &ruta, int &tamaño, std::strin
         particion temp = mbr.mbr_partition[i];
         if(temp.part_name == nombre){
             posicion = i;
+            logica = false;
             break;
         }
     }
 
     //=============== PARTICIONES LÓGICAS =============== 
-    if(posicion == -1){
+    if(logica){
         //VARIABLES
         int posExtendida;                      //Posicion donde inicia la extendida
         int finExtendida;                      //Posicion donde termina la extendida
@@ -949,7 +958,7 @@ void modificar_particion(char &tipo, std::string &ruta, int &tamaño, std::strin
     }
 
     //=============== PARTICIONES PRIMARIA / EXPANDIDA ===============
-    if(posicion != -1){
+    if(!logica){
         //VARIABLES
         std::vector<position> posiciones;   
         int indice_posicion;                           //Posicion de la particion en la lista 

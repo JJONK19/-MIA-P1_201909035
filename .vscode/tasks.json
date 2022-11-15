@@ -11,7 +11,7 @@
                 "${fileDirname}/exec.cpp", "${fileDirname}/lexico.cpp",
                 "${fileDirname}/mkdisk.cpp", "${fileDirname}/rmdisk.cpp",
                 "${fileDirname}/fdisk.cpp", "${fileDirname}/mount.cpp",
-                "${fileDirname}/unmount.cpp",
+                "${fileDirname}/unmount.cpp", "${fileDirname}/rep.cpp",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],

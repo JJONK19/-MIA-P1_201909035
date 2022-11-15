@@ -13,6 +13,7 @@
 #include "fdisk.h"
 #include "mount.h"
 #include "unmount.h"
+#include "rep.h"
 
 
 /*

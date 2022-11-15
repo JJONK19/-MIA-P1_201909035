@@ -74,7 +74,7 @@ void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos){
     }else if(tipo == "loss"){
         //loss();
     }else if(tipo == "rep"){
-        //rep();
+        rep(parametros, discos);
     }else if(tipo == "exec"){
         exec(parametros, sesion, discos);
     }else{

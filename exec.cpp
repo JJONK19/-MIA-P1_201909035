@@ -132,7 +132,7 @@ void exec(std::vector<std::string> &parametros, usuario &sesion, std::vector<dis
         }else if(tipo == "loss"){
             //loss();
         }else if(tipo == "rep"){
-            //rep();
+            rep(parametros, discos);
         }else{
             std::cout << "Error: El comando ingresado no existe." << std::endl;
         }        

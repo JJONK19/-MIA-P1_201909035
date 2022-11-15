@@ -4,14 +4,11 @@ void unmount(std::vector<std::string> &parametros, std::vector<disco> &discos){
     //VARIABLES
     bool paramFlag = true;                     //Indica si se cumplen con los parametros del comando
     bool required = true;                      //Indica si vienen los parametros obligatorios
-    FILE *archivo;                             //Sirve para verificar que el archivo exista        
+    FILE *archivo;                             //Sirve para verificar que el archivo exista       
     std::string id = "";                       //Atributo id
     std::string diskName;                      //Nombre del disco
     int posDisco = -1;                         //Posicion del disco en el vector
     int posParticion = -1;                     //Posicion de la particion en la lista del disco
-    montada borrar;                            //Temporal para leer el disco
-    FILE *archivo;                             //Para abrir el disco
-    disco tempD;                               //Temporal para leer el disco
 
     //COMPROBACIÓN DE PARAMETROS
     for(int i = 1; i < parametros.size(); i++){
@@ -42,11 +39,12 @@ void unmount(std::vector<std::string> &parametros, std::vector<disco> &discos){
 
     //COMPROBAR PARAMETROS OBLIGATORIOS
     if(id == ""){
-            required = false;
+        required = false;
     }
 
     if(!required){
         std::cout << "ERROR: La instrucción unmount carece de todos los parametros obligatorios." << std::endl;
+        return;
     }
 
     //REMOVER LOS NUMEROS DEL ID PARA OBTENER EL NOMBRE DEL DISCO
@@ -75,7 +73,7 @@ void unmount(std::vector<std::string> &parametros, std::vector<disco> &discos){
     }
 
     //BUSCAR LA POSICION DE LA PARTICION
-    tempD = discos[posDisco];
+    disco &tempD = discos[posDisco];
     for(int i = 0; i < tempD.particiones.size(); i++){
         montada temp = tempD.particiones[i];
         if(temp.id == id){
@@ -90,14 +88,14 @@ void unmount(std::vector<std::string> &parametros, std::vector<disco> &discos){
     }
 
     //DETERMINAR SI EXISTE EL DISCO
-    borrar = tempD.particiones[posParticion];
+    montada &borrar = tempD.particiones[posParticion];
     archivo = fopen(tempD.ruta.c_str(), "r+b");
 
-    if(archivo != NULL){
-        std::cout << "ERROR: El disco no existe." << std::endl;
+    if(archivo == NULL){
+        std::cout << "ERROR: El disco fisico no existe." << std::endl;
         return;
     }
-
+    
     //REESCRIBIR EL MBR/EBR
     if(borrar.posEBR == -1){
         MBR mbr;
@@ -140,7 +138,6 @@ void unmount(std::vector<std::string> &parametros, std::vector<disco> &discos){
         }
         
     }
-
     //ELIMINAR LA PARTICION DE LA LISTA DEL DISCO
     tempD.particiones.erase(tempD.particiones.begin() + posParticion);
     std::cout << "MENSAJE: Particion desmontada correctamente." << std::endl;

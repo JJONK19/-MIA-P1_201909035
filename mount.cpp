@@ -15,7 +15,7 @@ void mount(std::vector<std::string> &parametros, std::vector<disco> &discos){
     EBR ebr;                                   //Auxiliar para leer EBRs
     int tamaño;                                //Tamaño de la particion
     std::string discName;                      //Nombre del disco que contiene la particion 
-    bool posDisco = -1;                        //Determina la posicion del disco en el vector
+    int posDisco = -1;                        //Determina la posicion del disco en el vector
 
     //COMPROBACIÓN DE PARAMETROS
     for(int i = 1; i < parametros.size(); i++){
@@ -53,6 +53,7 @@ void mount(std::vector<std::string> &parametros, std::vector<disco> &discos){
 
     if(!required){
         std::cout << "ERROR: La instrucción mount carece de todos los parametros obligatorios." << std::endl;
+        return;
     }
 
     //VERIFICAR QUE EL NO ARCHIVO EXISTA
@@ -140,30 +141,13 @@ void mount(std::vector<std::string> &parametros, std::vector<disco> &discos){
     //2. SI EL DISCO NO EXISTE, SE AÑADE JUNTO A LA PARTICION SIN REVISAR
     //3. SI EL DISCO EXISTE, SE VERIFICA QUE NO ESTE MONTADA LA PARTICION PARA AÑADIRLA
 
-
-    if(discos.size() == 0){
-        //Añadir el disco y la particion (Caso 1)
-        disco temp;
-        temp.nombre = discName;
-        temp.ruta = ruta;
-
-        montada nueva;
-        nueva.id = "35" + std::to_string(temp.contador) + discName;
-        temp.contador++;
-        nueva.posEBR = posLogica;
-        nueva.posMBR = posMBR;
-        nueva.nombre = nombre;
-        nueva.tamaño = tamaño;
-        temp.particiones.push_back(nueva);
-        discos.push_back(temp);
-    }
-
     if(discos.size() != 0){
         //Buscar el disco
         for(int i = 0; i < discos.size(); i++){
             disco temp = discos[i];
             if(temp.nombre == discName){
                 posDisco = i;
+                break;
             }
         }
 
@@ -186,7 +170,7 @@ void mount(std::vector<std::string> &parametros, std::vector<disco> &discos){
 
         //Buscar si la particion no existe y montar el disco (Caso 3)
         if(posDisco != -1){
-            disco temp = discos[posDisco];
+            disco &temp = discos[posDisco];
             for(int i = 0; i < temp.particiones.size(); i++){
                 montada t = temp.particiones[i];
                 if(t.nombre == nombre){
@@ -204,8 +188,24 @@ void mount(std::vector<std::string> &parametros, std::vector<disco> &discos){
             nueva.nombre = nombre;
             nueva.tamaño = tamaño;
             temp.particiones.push_back(nueva);
-            discos.push_back(temp);
         }
+    }
+
+    if(discos.size() == 0){
+        //Añadir el disco y la particion (Caso 1)
+        disco temp;
+        temp.nombre = discName;
+        temp.ruta = ruta;
+
+        montada nueva;
+        nueva.id = "35" + std::to_string(temp.contador) + discName;
+        temp.contador++;
+        nueva.posEBR = posLogica;
+        nueva.posMBR = posMBR;
+        nueva.nombre = nombre;
+        nueva.tamaño = tamaño;
+        temp.particiones.push_back(nueva);
+        discos.push_back(temp);
     }
 
 

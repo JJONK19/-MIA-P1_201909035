@@ -1,11 +1,65 @@
 # Archivo de Ejemplo
 
 #mkdisk
-mkdisk -s->10 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco1.dsk"
+mkdisk -s->25 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco1.dsk"
 mkdisk -s->10 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco1.dsk"
 mkdisk -s->10 -f->BF -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco2.dsk"
 mkdisk -s->5000 -U->K -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco3.dsk"
+mkdisk -s->10 -f->BF -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco4.dsk"
 
 #rmdisk
-rmdisk -PATH->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco2.dsk"
-rmdisk -PATH->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/MisDiscos/Disco2.dsk"
+rmdisk -PATH->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco3.dsk"
+rmdisk -PATH->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/MisDiscos/Disco3.dsk"
+
+#fdisk
+
+#----Crear
+fdisk -s->5 -u->m  -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco1.dsk" -name->Part1
+fdisk -s->5 -u->m  -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco1.dsk" -name->Part2
+fdisk -s->9 -u->m -t->e  -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco1.dsk" -name->Extendida
+fdisk -s->2 -u->m -t->l -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco1.dsk" -name->Part3
+fdisk -s->2 -u->m  -t->l -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco1.dsk" -name->Part4
+fdisk -s->2 -u->m  -t->l -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco1.dsk" -name->"Part 5"
+
+fdisk -s->2 -u->m  -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco2.dsk" -name->Part1
+fdisk -s->2 -u->m  -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco2.dsk" -name->Part2
+fdisk -s->2 -u->m  -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco2.dsk" -name->Part3
+
+fdisk -s->9 -u->m -t->e  -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco4.dsk" -name->Extendida
+fdisk -s->2 -u->m -t->l -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco4.dsk" -name->Part1
+fdisk -s->2 -u->m  -t->l -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco4.dsk" -name->Part2
+fdisk -s->2 -u->m  -t->l -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco4.dsk" -name->"Part3"
+
+#----Borrar
+fdisk -delete->FULL -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco1.dsk" -name->Part4
+fdisk -delete->FULL -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco1.dsk" -name->Part2
+
+fdisk -delete->FULL -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco2.dsk" -name->Part2
+
+fdisk -delete->FULL -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco4.dsk" -name->Part2
+
+#---Modificar
+fdisk -add->1 -u->m -delete->FULL -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco1.dsk" -name->"Part 5"
+
+fdisk -add->1 -u->m -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco2.dsk" -name->Part3
+
+#---Probar fits
+fdisk -s->1 -u->m -t->e -f->worstfit -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco2.dsk" -name->Part2
+
+fdisk -s->1 -u->m -t->l -f->bestfit -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco4.dsk" -name->Part2
+
+
+#mount
+mount -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco1.dsk" -name->Extendida  
+mount -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco1.dsk" -name->Part3 
+mount -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco1.dsk" -name->Part1
+mount -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco1.dsk" -name->"Part 5"
+
+#reporte
+rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/mbr.png" -name->mbr
+rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/disk.png" -name->disk
+
+#unmount
+unmount -id->351Disco1
+unmount -id->351Disco1
+unmount -id->352Disco1

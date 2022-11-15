@@ -5,13 +5,13 @@
 #include "structs.h"
 
 using namespace std;
+vector<disco> discos;
+usuario sesion;
 
 int main(){
     //VARIABLES
     bool continuar = true;
-    string comando = "";
-    usuario sesion;
-    vector<disco> discos;  
+    string comando = "";  
 
     //CONSOLA DE COMANDOS
     cout << "****************************************************************************************************" << endl;
