@@ -55,11 +55,12 @@ mount -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_20190903
 mount -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco1.dsk" -name->Part1
 mount -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/Disco1.dsk" -name->"Part 5"
 
+#mkfs
+mkfs -type->full -id->351Disco1 -fs->2fs
+mkfs -id->352Disco1 -fs->3fs
+mkfs -id->353Disco1 
+
 #reporte
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/mbr.png" -name->mbr
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/disk.png" -name->disk
 
-#unmount
-unmount -id->351Disco1
-unmount -id->351Disco1
-unmount -id->352Disco1

@@ -125,7 +125,7 @@ struct inodo{
     time_t i_atime;                     //Ultima fecha de lectura sin modificar
     time_t i_ctime;                     //Fecha de creación
     time_t i_mtime;                     //Ultima fecha de modificación
-    int i_block[15];                    //-1: Sin usar 0-12: Directos 13-15: Indirectos
+    int i_block[15];                    //-1: Sin usar 1-12: Directos 13-15: Indirectos
     char i_type;                        //1: Archivo 0: Carpeta
     int i_perm;                         //Permisos
 };

@@ -88,7 +88,7 @@ void exec(std::vector<std::string> &parametros, usuario &sesion, std::vector<dis
         }else if(tipo == "unmount"){
             unmount(parametros, discos);
         }else if(tipo == "mkfs"){
-            //mkfs();
+            mkfs(parametros, discos);
         }else if(tipo == "login"){
             //login();
         }else if(tipo == "logout"){

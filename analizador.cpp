@@ -30,7 +30,7 @@ void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos){
     }else if(tipo == "unmount"){
         unmount(parametros, discos);
     }else if(tipo == "mkfs"){
-        //mkfs();
+        mkfs(parametros, discos);
     }else if(tipo == "login"){
         //login();
     }else if(tipo == "logout"){
