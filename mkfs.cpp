@@ -171,12 +171,12 @@ void mkfs(std::vector<std::string> &parametros, std::vector<disco> &discos){
         nuevo.s_magic = 0xEF53;
         nuevo.s_inode_s = sizeof(inodo);
         nuevo.s_block_s = 64;
-        nuevo.s_firts_ino = posInicio + sizeof(sbloque) + n + (n * 3) + (2 * sizeof(inodo));
-        nuevo.s_first_blo = posInicio + sizeof(sbloque) + n + (n * 3) + (n * sizeof(inodo)) + (64 * 2);
+        nuevo.s_firts_ino = posInicio + sizeof(sbloque) + (n * sizeof(char)) + ((n * sizeof(char)) * 3) + (2 * sizeof(inodo));
+        nuevo.s_first_blo = posInicio + sizeof(sbloque) + (n * sizeof(char)) + ((n * sizeof(char)) * 3) + (n * sizeof(inodo)) + (64 * 2);
         nuevo.s_bm_inode_start = posInicio + sizeof(sbloque);
-        nuevo.s_bm_block_start = posInicio + sizeof(sbloque) + n;
-        nuevo.s_inode_start = posInicio + sizeof(sbloque) + n + (n * 3);
-        nuevo.s_block_start = posInicio + sizeof(sbloque) + n + (n * 3) + (n *sizeof(inodo));
+        nuevo.s_bm_block_start = posInicio + sizeof(sbloque) + (n * sizeof(char));
+        nuevo.s_inode_start = posInicio + sizeof(sbloque) + (n * sizeof(char)) + ((n * sizeof(char)) * 3);
+        nuevo.s_block_start = posInicio + sizeof(sbloque) + (n * sizeof(char)) + ((n * sizeof(char)) * 3) + (n *sizeof(inodo));
 
         fseek(archivo, posInicio, SEEK_SET);
         fwrite(&nuevo, sizeof(sbloque), 1, archivo);
@@ -194,32 +194,32 @@ void mkfs(std::vector<std::string> &parametros, std::vector<disco> &discos){
         nuevo.s_magic = 0xEF53;
         nuevo.s_inode_s = sizeof(inodo);
         nuevo.s_block_s = 64;
-        nuevo.s_firts_ino = posInicio + sizeof(sbloque) + n + (n*3) + (2 * sizeof(inodo)) + (n * sizeof(registro));
-        nuevo.s_first_blo = posInicio + sizeof(sbloque) + n + (n * 3) + (n * sizeof (inodo)) + (64 * 2) + (n * sizeof(registro));
+        nuevo.s_firts_ino = posInicio + sizeof(sbloque) + (n * sizeof(char)) + ((n * sizeof(char))*3) + (2 * sizeof(inodo)) + (n * sizeof(registro));
+        nuevo.s_first_blo = posInicio + sizeof(sbloque) + (n * sizeof(char)) + ((n * sizeof(char)) * 3) + (n * sizeof (inodo)) + (64 * 2) + (n * sizeof(registro));
         nuevo.s_bm_inode_start = posInicio + sizeof(sbloque) + (n * sizeof(registro));
-        nuevo.s_bm_block_start = posInicio + sizeof (sbloque) + n + (n * sizeof(registro));
-        nuevo.s_inode_start = posInicio + sizeof(sbloque) + n + (n * 3) + (n * sizeof(registro));
-        nuevo.s_block_start = posInicio + sizeof(sbloque) + n + (n * 3) + (n *sizeof (inodo)) + (n * sizeof(registro));
+        nuevo.s_bm_block_start = posInicio + sizeof (sbloque) + (n * sizeof(char)) + (n * sizeof(registro));
+        nuevo.s_inode_start = posInicio + sizeof(sbloque) + (n * sizeof(char)) + ((n * sizeof(char)) * 3) + (n * sizeof(registro));
+        nuevo.s_block_start = posInicio + sizeof(sbloque) + (n * sizeof(char)) + ((n * sizeof(char)) * 3) + (n *sizeof (inodo)) + (n * sizeof(registro));
 
         fseek(archivo, posInicio, SEEK_SET);
         fwrite(&nuevo, sizeof(sbloque), 1, archivo);
     }
 
-    //LLENAR CON 0s EL BITMPA DE INODOS
+    //LLENAR CON 0s EL BITMAP DE INODOS
     fseek(archivo, nuevo.s_bm_inode_start, SEEK_SET);
-    fwrite(&cero, nuevo.s_inodes_count, 1 , archivo);
+    fwrite(&cero, sizeof(cero), nuevo.s_inodes_count , archivo);
 
     //ESCRIBIR CON 0s EL BITMAP DE BLOQUES
     fseek(archivo, nuevo.s_bm_block_start, SEEK_SET);
-    fwrite(&cero, nuevo.s_blocks_count, 1, archivo);
+    fwrite(&cero, sizeof(cero), nuevo.s_blocks_count, archivo);
 
     //LLENAR LOS BLOQUES CON ESPACIOS VACIOS
     fseek(archivo ,nuevo.s_block_start, SEEK_SET);
-    fwrite(&vacio , nuevo.s_blocks_count * 64, 1 , archivo);
+    fwrite(&vacio , sizeof(vacio), nuevo.s_blocks_count * 64 , archivo);
 
     //LLENAR LOS INODOS CON ESPACIOS VACIOS
     fseek(archivo ,nuevo.s_inode_start, SEEK_SET);
-    fwrite(&vacio , nuevo.s_inodes_count * sizeof(inodo), 1, archivo);
+    fwrite(&vacio , sizeof(vacio), nuevo.s_inodes_count * sizeof(inodo), archivo);
 
     //SOLO PARA EXT3 - Escribir en el journal el archivo de texto y la carpeta
     registro creacion;
@@ -277,22 +277,22 @@ void mkfs(std::vector<std::string> &parametros, std::vector<disco> &discos){
     strcpy(ncarpeta.b_content[0].b_name, ".");
     ncarpeta.b_content[0].b_inodo = 0;
 
-    strcpy(ncarpeta.b_content[0].b_name, "..");
-    ncarpeta.b_content[0].b_inodo = 0;
+    strcpy(ncarpeta.b_content[1].b_name, "..");
+    ncarpeta.b_content[1].b_inodo = 0;
 
     //REGISTRAR EL ARCHIVO DE USUARIOS
-    strcpy(ncarpeta.b_content[3].b_name, "users.txt");
-    ncarpeta.b_content[0].b_inodo = 1;
+    strcpy(ncarpeta.b_content[2].b_name, "users.txt");
+    ncarpeta.b_content[2].b_inodo = 1;
     fseek(archivo, nuevo.s_block_start, SEEK_SET);
     fwrite(&ncarpeta, sizeof(bcarpetas), 1, archivo);
     
     //MARCAR UN NUEVO INODO PARA EL ARCHIVO 
     fseek(archivo, nuevo.s_bm_inode_start + sizeof(cero), SEEK_SET);
-    fwrite(&cero, (sizeof(ninodo) * 2), 1, archivo);
+    fwrite(&cero, sizeof(cero), 1, archivo);
 
     //MARCAR UN NUEVO BLOQUE PAERA EL ARCHIVO
     char a = 'a';
-    fseek(archivo, nuevo.s_bm_block_start + sizeof(cero), SEEK_SET);
+    fseek(archivo, nuevo.s_bm_block_start + sizeof(a), SEEK_SET);
     fwrite(&a, sizeof(a), 1, archivo);
 
     //LLENAR EL INODO DEL ARCHIVO

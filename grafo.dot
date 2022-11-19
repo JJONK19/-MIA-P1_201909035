@@ -1,11 +1,11 @@
 digraph G { 
- rankdir = LR; 
-INODO0[ label = "INODO0\n\nID del Propietario: 1\nID del grupo: 1\nTamaño del archivo: 0\nUltima lectura: Sat Nov 19 00:08:10 2022
-Fecha de Creación: Sat Nov 19 00:08:10 2022
-Ultima modificación: Sat Nov 19 00:08:10 2022
-Bloque 0: 0\nBloque 1: -1\nBloque 2: -1\nBloque 3: -1\nBloque 4: -1\nBloque 5: -1\nBloque 6: -1\nBloque 7: -1\nBloque 8: -1\nBloque 9: -1\nBloque 10: -1\nBloque 11: -1\nBloque 12: -1\nBloque 13: -1\nBloque 14: -1\nTipo de Inodo: 0\nPermisos: 777"shape = box];
-INODO1[ label = "INODO1\n\nID del Propietario: 1\nID del grupo: 1\nTamaño del archivo: 27\nUltima lectura: Sat Nov 19 00:08:10 2022
-Fecha de Creación: Sat Nov 19 00:08:10 2022
-Ultima modificación: Sat Nov 19 00:08:10 2022
-Bloque 0: 1\nBloque 1: -1\nBloque 2: -1\nBloque 3: -1\nBloque 4: -1\nBloque 5: -1\nBloque 6: -1\nBloque 7: -1\nBloque 8: -1\nBloque 9: -1\nBloque 10: -1\nBloque 11: -1\nBloque 12: -1\nBloque 13: -1\nBloque 14: -1\nTipo de Inodo: 1\nPermisos: 777"shape = box];
-INODO0->INODO1}
+ rankdir = LR; node[shape = plaintext];
+BLOQUE0[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5'>
+<TR><TD colspan ='2' ><b>Bloque Carpetas 0</b></TD></TR>
+<TR><TD><b>Nombre</b></TD><TD><b>Inodo</b></TD></TR><TR><TD>.</TD><TD>0</TD></TR><TR><TD>..</TD><TD>0</TD></TR><TR><TD>users.txt</TD><TD>1</TD></TR><TR><TD>-</TD><TD>-1</TD></TR></TABLE>>];
+BLOQUE1[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5'>
+<TR><TD><b>Bloque Archivos 1</b></TD></TR>
+<TR><TD>1,G,root
+1,U,root,root,123
+</TD></TR></TABLE>>];
+BLOQUE0->BLOQUE1}

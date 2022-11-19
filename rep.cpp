@@ -944,7 +944,7 @@ void inode(std::vector<disco> &discos, int posDisco, int posParticion, std::stri
     }
 
     //ESCRIBIR EL DOT
-    codigo = "digraph G { \n rankdir = LR; \n";
+    codigo = "digraph G { \n rankdir = LR; node[shape = plaintext]; \n";
 
     //Declarar los nodos
     for(int i = 0; i < inodos_usados.size(); i++){
@@ -953,47 +953,112 @@ void inode(std::vector<disco> &discos, int posDisco, int posParticion, std::stri
         fread(&linodo, sizeof(inodo), 1, archivo);
 
         std::string nombre = "INODO";
-        nombre.append(std::to_string(i));
+        nombre.append(std::to_string(inodos_usados[i]));
         codigo.append(nombre);
-        codigo.append("[ label = \"");
+        nombre = "Inodo ";
+        nombre.append(std::to_string(inodos_usados[i]));
+        codigo.append("[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5'>\n");
+        codigo.append("<TR><TD colspan ='2' ><b>");
         codigo.append(nombre);
-        codigo.append("\\n\\n");
-        codigo.append("ID del Propietario: ");
+        codigo.append("</b></TD></TR>\n");
+
+        codigo.append("<TR>");
+        codigo.append("<TD Align='left'>");
+        codigo.append("ID del Propietario:");
+        codigo.append("</TD>");
+        codigo.append("<TD>");
         codigo.append(std::to_string(linodo.i_uid));
-        codigo.append("\\n");
-        codigo.append("ID del grupo: ");
+        codigo.append("</TD>");
+        codigo.append("</TR>");
+
+        codigo.append("<TR>");
+        codigo.append("<TD Align='left'>");
+        codigo.append("ID del Grupo:");
+        codigo.append("</TD>");
+        codigo.append("<TD>");
         codigo.append(std::to_string(linodo.i_gid));
-        codigo.append("\\n");
-        codigo.append("Tamaño del archivo: ");
+        codigo.append("</TD>");
+        codigo.append("</TR>");
+
+        codigo.append("<TR>");
+        codigo.append("<TD Align='left'>");
+        codigo.append("Tamaño del archivo:");
+        codigo.append("</TD>");
+        codigo.append("<TD>");
         codigo.append(std::to_string(linodo.i_s));
-        codigo.append("\\n");
-        codigo.append("Ultima lectura: ");
+        codigo.append("</TD>");
+        codigo.append("</TR>");
+
+        codigo.append("<TR>");
+        codigo.append("<TD Align='left'>");
+        codigo.append("Ultima lectura:");
+        codigo.append("</TD>");
+        codigo.append("<TD>");
         codigo.append(asctime(gmtime(&linodo.i_atime)));
-        codigo.append("Fecha de Creación: ");
+        codigo.append("</TD>");
+        codigo.append("</TR>");
+
+
+        codigo.append("<TR>");
+        codigo.append("<TD Align='left'>");
+        codigo.append("Fecha de Creación:");
+        codigo.append("</TD>");
+        codigo.append("<TD>");
         codigo.append(asctime(gmtime(&linodo.i_ctime)));
-        codigo.append("Ultima modificación: ");
+        codigo.append("</TD>");
+        codigo.append("</TR>");
+
+
+        codigo.append("<TR>");
+        codigo.append("<TD Align='left'>");
+        codigo.append("Ultima modificación:");
+        codigo.append("</TD>");
+        codigo.append("<TD>");
         codigo.append(asctime(gmtime(&linodo.i_mtime)));
+        codigo.append("</TD>");
+        codigo.append("</TR>");
+
+
         for(int j = 0; j < 15; j++){
+            codigo.append("<TR>");
+            codigo.append("<TD Align='left'>");
             nombre = "Bloque ";
             nombre.append(std::to_string(j));
-            nombre.append(": ");
-            nombre.append(std::to_string(linodo.i_block[j]));
+            nombre.append(":");
             codigo.append(nombre);
-            codigo.append("\\n");
+            codigo.append("</TD>");
+            codigo.append("<TD>");
+            codigo.append(std::to_string(linodo.i_block[j]));
+            codigo.append("</TD>");
+            codigo.append("</TR>");
         }
-        codigo.append("Tipo de Inodo: ");
+
+        codigo.append("<TR>");
+        codigo.append("<TD Align='left'>");
+        codigo.append("Tipo de Inodo:");
+        codigo.append("</TD>");
+        codigo.append("<TD>");
         codigo.push_back(linodo.i_type);
-        codigo.append("\\n");
-        codigo.append("Permisos: ");
+        codigo.append("</TD>");
+        codigo.append("</TR>");
+
+
+        codigo.append("<TR>");
+        codigo.append("<TD Align='left'>");
+        codigo.append("Permisos:");
+        codigo.append("</TD>");
+        codigo.append("<TD>");
         codigo.append(std::to_string(linodo.i_perm));
-        codigo.append("\"");
-        codigo.append("shape = box];\n");
+        codigo.append("</TD>");
+        codigo.append("</TR>");
+
+        codigo.append("</TABLE>>];\n");
     }
 
     //Unir los nodos
     for(int i = 0; i < inodos_usados.size(); i++){
         std::string nombre = "INODO";
-        nombre.append(std::to_string(i)); 
+        nombre.append(std::to_string(inodos_usados[i])); 
         codigo.append(nombre);
 
         if(i != (inodos_usados.size() - 1)){
@@ -1038,8 +1103,11 @@ void block(std::vector<disco> &discos, int posDisco, int posParticion, std::stri
     std::string comando;                                    //Instruccion a mandar a la consola para generar el comando
     int posInicio;                                          //Posicion donde inicia la particion
     sbloque sblock;                                         //Para leer el superbloque
-    inodo linodo;                                           //Para leer los inodos
-    std::vector<int> inodos_usados;                         //Posiciones del bitmap inodos usados  
+    bcarpetas lcarpeta;                                     //Para leer bloques de carpetas
+    barchivos larchivo;                                     //Para leer bloques de archivos
+    bapuntadores lapuntador;                                //Para leer bloques de apuntadores
+    std::vector<int> bloques_usados;                         //Posiciones del bitmap inodos usados
+    std::vector<char> tipos;                                //Caracteres usados en el bitmap de bloques  
     char lectura;                                           //Para leer los caracteres del bitmap  
     int posLectura;                                         //Usado para las posiciones de lectura                         
 
@@ -1067,71 +1135,109 @@ void block(std::vector<disco> &discos, int posDisco, int posParticion, std::stri
     fseek(archivo, posInicio, SEEK_SET);
     fread(&sblock, sizeof(sbloque), 1, archivo);
     
-    //LEER EL BITMAP Y HACER UNA LISTA DE LOS INODOS USADOS
-    for(int i = 0; i < sblock.s_inodes_count; i++){
-        posLectura = sblock.s_bm_inode_start + (sizeof(char) * i);
+    //LEER EL BITMAP Y HACER UNA LISTA DE LOS BLOQUES USADOS Y SUS CARACTERES
+    for(int i = 0; i < sblock.s_blocks_count; i++){
+        posLectura = sblock.s_bm_block_start + (sizeof(char) * i);
         fseek(archivo, posLectura, SEEK_SET);
         fread(&lectura, sizeof(lectura), 1, archivo);
 
-        if(lectura == '1'){
-            inodos_usados.push_back(i);
+        if(lectura == 'c' || lectura == 'p' || lectura == 'a'){
+            bloques_usados.push_back(i);
+            tipos.push_back(lectura);
         }
     }
 
     //ESCRIBIR EL DOT
-    codigo = "digraph G { \n rankdir = LR; \n";
+    codigo = "digraph G { \n rankdir = LR; node[shape = plaintext];\n";
 
     //Declarar los nodos
-    for(int i = 0; i < inodos_usados.size(); i++){
-        posLectura = sblock.s_inode_start + (sizeof(inodo) * inodos_usados[i]);
+    for(int i = 0; i < bloques_usados.size(); i++){
+        posLectura = sblock.s_block_start + (64 * bloques_usados[i]);
         fseek(archivo, posLectura, SEEK_SET);
-        fread(&linodo, sizeof(inodo), 1, archivo);
 
-        std::string nombre = "INODO";
-        nombre.append(std::to_string(i));
-        codigo.append(nombre);
-        codigo.append("[ label = \"");
-        codigo.append(nombre);
-        codigo.append("\\n\\n");
-        codigo.append("ID del Propietario: ");
-        codigo.append(std::to_string(linodo.i_uid));
-        codigo.append("\\n");
-        codigo.append("ID del grupo: ");
-        codigo.append(std::to_string(linodo.i_gid));
-        codigo.append("\\n");
-        codigo.append("Tamaño del archivo: ");
-        codigo.append(std::to_string(linodo.i_s));
-        codigo.append("\\n");
-        codigo.append("Ultima lectura: ");
-        codigo.append(asctime(gmtime(&linodo.i_atime)));
-        codigo.append("Fecha de Creación: ");
-        codigo.append(asctime(gmtime(&linodo.i_ctime)));
-        codigo.append("Ultima modificación: ");
-        codigo.append(asctime(gmtime(&linodo.i_mtime)));
-        for(int j = 0; j < 15; j++){
-            nombre = "Bloque ";
-            nombre.append(std::to_string(j));
-            nombre.append(": ");
-            nombre.append(std::to_string(linodo.i_block[j]));
+        //Bloques de Carpetas
+        if(tipos[i] == 'c'){
+            fread(&lcarpeta, sizeof(bcarpetas), 1, archivo);
+            std::string nombre = "BLOQUE";
+            nombre.append(std::to_string(bloques_usados[i]));
             codigo.append(nombre);
-            codigo.append("\\n");
+
+            nombre = "Bloque Carpetas ";
+            nombre.append(std::to_string(bloques_usados[i]));
+            codigo.append("[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5'>\n");
+            codigo.append("<TR><TD colspan ='2' ><b>");
+            codigo.append(nombre);
+            codigo.append("</b></TD></TR>\n");
+            codigo.append("<TR><TD><b>Nombre</b></TD><TD><b>Inodo</b></TD></TR>"); 
+
+            for(int j = 0; j < 4; j++){
+                content &temp = lcarpeta.b_content[j];
+                codigo.append("<TR>");
+                codigo.append("<TD>");
+                codigo.append(temp.b_name);
+                codigo.append("</TD>");
+                codigo.append("<TD>");
+                codigo.append(std::to_string(temp.b_inodo));
+                codigo.append("</TD>");
+                codigo.append("</TR>");
+            }
+            codigo.append("</TABLE>>];\n");
         }
-        codigo.append("Tipo de Inodo: ");
-        codigo.push_back(linodo.i_type);
-        codigo.append("\\n");
-        codigo.append("Permisos: ");
-        codigo.append(std::to_string(linodo.i_perm));
-        codigo.append("\"");
-        codigo.append("shape = box];\n");
+
+        //Bloques de Apuntadores
+        if(tipos[i] == 'p'){
+            fread(&lapuntador, sizeof(bapuntadores), 1, archivo);
+            std::string nombre = "BLOQUE";
+            nombre.append(std::to_string(bloques_usados[i]));
+            codigo.append(nombre);
+
+            nombre = "Bloque Apuntadores ";
+            nombre.append(std::to_string(bloques_usados[i]));
+            codigo.append("[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5'>\n");
+            codigo.append("<TR><TD><b>");
+            codigo.append(nombre);
+            codigo.append("</b></TD></TR>\n"); 
+
+            for(int j = 0; j < 16; j++){
+                codigo.append("<TR>");
+                codigo.append("<TD>");
+                codigo.append(std::to_string(lapuntador.b_pointers[j]));
+                codigo.append("</TD>");
+                codigo.append("</TR>");
+            }
+            codigo.append("</TABLE>>];\n");
+        }
+
+        //Bloques de Archivos
+        if(tipos[i] == 'a'){
+            fread(&larchivo, sizeof(barchivos), 1, archivo);
+            std::string nombre = "BLOQUE";
+            nombre.append(std::to_string(bloques_usados[i]));
+            codigo.append(nombre);
+
+            nombre = "Bloque Archivos ";
+            nombre.append(std::to_string(bloques_usados[i]));
+            codigo.append("[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5'>\n");
+            codigo.append("<TR><TD><b>");
+            codigo.append(nombre);
+            codigo.append("</b></TD></TR>\n"); 
+
+            codigo.append("<TR>");
+            codigo.append("<TD>");
+            codigo.append(larchivo.b_content);
+            codigo.append("</TD>");
+            codigo.append("</TR>");
+            codigo.append("</TABLE>>];\n");
+        }
     }
 
     //Unir los nodos
-    for(int i = 0; i < inodos_usados.size(); i++){
-        std::string nombre = "INODO";
-        nombre.append(std::to_string(i)); 
+    for(int i = 0; i < bloques_usados.size(); i++){
+        std::string nombre = "BLOQUE";
+        nombre.append(std::to_string(bloques_usados[i])); 
         codigo.append(nombre);
 
-        if(i != (inodos_usados.size() - 1)){
+        if(i != (bloques_usados.size() - 1)){
             codigo.append("->");
         }
     }
@@ -1158,5 +1264,5 @@ void block(std::vector<disco> &discos, int posDisco, int posParticion, std::stri
 
     //GENERAR EL GRAFO
     system(comando.c_str());
-    std::cout << "MENSAJE: Reporte Inode creado correctamente." << std::endl;
+    std::cout << "MENSAJE: Reporte Block creado correctamente." << std::endl;
 }
