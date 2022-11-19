@@ -10,6 +10,7 @@ void rep(std::vector<std::string> &parametros, std::vector<disco> &discos){
     std::string rutaS = "";                    //Atributo ruta 
     std::string diskName;                      //Nombre del disco sin los numeros del ID
     int posDisco = -1;                         //Posicion del disco en la lista
+    int posParticion = -1;                     //Posicion de la particion dentro del vector del disco
 
     //COMPROBACIÓN DE PARAMETROS
     for(int i = 1; i < parametros.size(); i++){
@@ -78,6 +79,21 @@ void rep(std::vector<std::string> &parametros, std::vector<disco> &discos){
         return;
     }
 
+    //BUSCAR LA PARTICION DENTRO DEL DISCO MONTADO
+    disco &tempD = discos[posDisco];
+    for(int i = 0; i < tempD.particiones.size(); i++){
+        montada temp = tempD.particiones[i];
+        if(temp.id == id){
+            posParticion = i;
+            break;
+        }
+    }
+
+    if(posParticion == -1){
+        std::cout << "ERROR: No existe una partción montada con ese ID." << std::endl;
+        return;
+    }
+
     //Verificar que existe la carpeta del reporte. Crearla si no.
     //Creacion: https://stackoverflow.com/questions/43940515/create-a-directory-for-every-element-of-a-path-if-it-does-not-exist
     //Borrado: https://stackoverflow.com/questions/734717/how-to-delete-a-folder-in-c
@@ -98,11 +114,11 @@ void rep(std::vector<std::string> &parametros, std::vector<disco> &discos){
     }else if(nombre == "disk"){
         disk(discos, posDisco, ruta);
     }else if(nombre == "inode"){
-        
+        inode(discos, posDisco, posParticion, ruta);
     }else if(nombre == "journaling"){
         
     }else if(nombre == "block"){
-        
+        block(discos, posDisco, posParticion, ruta);
     }else if(nombre == "bm_inode"){
         
     }else if(nombre == "bm_block"){
@@ -110,7 +126,7 @@ void rep(std::vector<std::string> &parametros, std::vector<disco> &discos){
     }else if(nombre == "tree"){
         
     }else if(nombre == "sb"){
-        
+        sb(discos, posDisco, posParticion, ruta);
     }else if(nombre == "file"){
         
     }else if(nombre == "ls"){
@@ -123,7 +139,7 @@ void rep(std::vector<std::string> &parametros, std::vector<disco> &discos){
 void mbr(std::vector<disco> &discos, int posDisco, std::string &ruta){
     //VARIABLES
     std::string codigo;             //Contenedor del codigo del dot
-    disco uso = discos[posDisco];   //Disco en uso
+    disco &uso = discos[posDisco];  //Disco en uso
     FILE *archivo;                  //Para leer el archivo
     MBR mbr;                        //Para leer el mbr
     int posExtendida;               //Posicion para leer la extendida
@@ -131,7 +147,6 @@ void mbr(std::vector<disco> &discos, int posDisco, std::string &ruta){
     std::string comando;            //Instruccion a mandar a la consola para generar el comando
 
     //VERIFICAR QUE EXISTA EL ARCHIVO
-    uso = discos[posDisco];
     archivo = fopen(uso.ruta.c_str(), "r+b");
     if(archivo == NULL){
         std::cout << "ERROR: No se encontro el disco." << std::endl;
@@ -370,7 +385,7 @@ void mbr(std::vector<disco> &discos, int posDisco, std::string &ruta){
 void disk(std::vector<disco> &discos, int posDisco, std::string &ruta){
     //VARIABLES
     std::string codigo;             //Contenedor del codigo del dot
-    disco uso = discos[posDisco];   //Disco en uso
+    disco &uso = discos[posDisco];   //Disco en uso
     FILE *archivo;                  //Para leer el archivo
     MBR mbr;                        //Para leer el mbr
     int posExtendida;               //Posicion para leer la extendida
@@ -383,7 +398,6 @@ void disk(std::vector<disco> &discos, int posDisco, std::string &ruta){
     int porcentaje;                  //Maneja los porcentajes a escribir en el reporte
 
     //VERIFICAR QUE EXISTA EL ARCHIVO
-    uso = discos[posDisco];
     archivo = fopen(uso.ruta.c_str(), "r+b");
     if(archivo == NULL){
         std::cout << "ERROR: No se encontro el disco." << std::endl;
@@ -680,4 +694,469 @@ void disk(std::vector<disco> &discos, int posDisco, std::string &ruta){
     system(comando.c_str());
     std::cout << "MENSAJE: Reporte DISKS creado correctamente." << std::endl;
 
+}
+
+void sb(std::vector<disco> &discos, int posDisco, int posParticion, std::string &ruta){
+    //VARIABLES
+    std::string codigo;                                      //Contenedor del codigo del dot
+    disco &disc_uso = discos[posDisco];                      //Disco en uso
+    montada &part_uso = disc_uso.particiones[posParticion]; //Particion Montada 
+    FILE *archivo;                                          //Para leer el archivo
+    MBR mbr;                                                //Para leer el mbr
+    int posExtendida;                                       //Posicion para leer la extendida
+    EBR ebr;                                                //Para leer los ebr de las particiones logicas          
+    std::string comando;                                    //Instruccion a mandar a la consola para generar el comando
+    int posInicio;                                          //Posicion donde inicia la particion
+    sbloque sblock;                                         //Para leer el superbloque
+
+    //VERIFICAR QUE EXISTA EL ARCHIVO
+    archivo = fopen(disc_uso.ruta.c_str(), "r+b");
+    if(archivo == NULL){
+        std::cout << "ERROR: No se encontro el disco." << std::endl;
+        return;
+    }
+
+    //DETERMINAR LA POSICION DE INICIO PARA LEER LA PARTICION
+    if(part_uso.posMBR != -1){
+        MBR mbr;
+        fseek(archivo, 0,SEEK_SET);
+        fread(&mbr, sizeof(MBR), 1, archivo);
+        posInicio = mbr.mbr_partition[part_uso.posMBR].part_start;
+    }else{
+        EBR ebr;
+        fseek(archivo, part_uso.posEBR, SEEK_SET);
+        fread(&ebr, sizeof(EBR), 1, archivo);
+        posInicio = ebr.part_start;
+    }
+
+    //LEER EL SUPERBLOQUE
+    fseek(archivo, posInicio, SEEK_SET);
+    fread(&sblock, sizeof(sbloque), 1, archivo);
+    
+    //ESCRIBIR EL DOT
+    codigo = "digraph mbr {node [shape=plaintext] struct1 [label= <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='0'>";
+    
+    codigo.append("<TR>");
+    codigo.append("<TD BGCOLOR='#cd6155' WIDTH='300'>REPORTE DE SUPERBLOQUE</TD>");
+    codigo.append("<TD WIDTH='300' BGCOLOR='#cd6155'></TD>");
+    codigo.append("</TR>");
+
+    codigo.append("<TR>");
+    codigo.append("<TD>Tipo de Sistema</TD>");
+    codigo.append("<TD>");
+    if(sblock.s_filesystem_type == 2){
+        codigo.append("EXT2");
+    }else{
+        codigo.append("EXT3");
+    }
+    codigo.append("</TD>");
+    codigo.append("</TR>");
+
+    codigo.append("<TR>");
+    codigo.append("<TD>Posición del Bitmap de Inodos</TD>");
+    codigo.append("<TD>");
+    codigo.append(std::to_string(sblock.s_bm_inode_start));
+    codigo.append("</TD>");
+    codigo.append("</TR>");
+
+    codigo.append("<TR>");
+    codigo.append("<TD>Tamaño del Inodo</TD>");
+    codigo.append("<TD>");
+    codigo.append(std::to_string(sblock.s_inode_s));
+    codigo.append("</TD>");
+    codigo.append("</TR>");
+
+    codigo.append("<TR>");
+    codigo.append("<TD>Inicio de los Inodos</TD>");
+    codigo.append("<TD>");
+    codigo.append(std::to_string(sblock.s_inode_start));
+    codigo.append("</TD>");
+    codigo.append("</TR>");
+
+    codigo.append("<TR>");
+    codigo.append("<TD>Posición del Primer Inodo Libre</TD>");
+    codigo.append("<TD>");
+    codigo.append(std::to_string(sblock.s_firts_ino));
+    codigo.append("</TD>");
+    codigo.append("</TR>");
+
+    codigo.append("<TR>");
+    codigo.append("<TD>Total de Inodos</TD>");
+    codigo.append("<TD>");
+    codigo.append(std::to_string(sblock.s_inodes_count));
+    codigo.append("</TD>");
+    codigo.append("</TR>");
+
+    codigo.append("<TR>");
+    codigo.append("<TD>Inodos Libres</TD>");
+    codigo.append("<TD>");
+    codigo.append(std::to_string(sblock.s_free_inodes_count));
+    codigo.append("</TD>");
+    codigo.append("</TR>");
+
+    codigo.append("<TR>");
+    codigo.append("<TD>Posición del Bitmap de Bloques</TD>");
+    codigo.append("<TD>");
+    codigo.append(std::to_string(sblock.s_bm_block_start));
+    codigo.append("</TD>");
+    codigo.append("</TR>");
+
+    codigo.append("<TR>");
+    codigo.append("<TD>Tamaño del Bloque</TD>");
+    codigo.append("<TD>");
+    codigo.append(std::to_string(sblock.s_block_s));
+    codigo.append("</TD>");
+    codigo.append("</TR>");
+
+    codigo.append("<TR>");
+    codigo.append("<TD>Inicio de los Bloques</TD>");
+    codigo.append("<TD>");
+    codigo.append(std::to_string(sblock.s_block_start));
+    codigo.append("</TD>");
+    codigo.append("</TR>");
+
+    codigo.append("<TR>");
+    codigo.append("<TD>Posición del Primer Bloque Libre</TD>");
+    codigo.append("<TD>");
+    codigo.append(std::to_string(sblock.s_first_blo));
+    codigo.append("</TD>");
+    codigo.append("</TR>");
+
+    codigo.append("<TR>");
+    codigo.append("<TD>Total de Bloques</TD>");
+    codigo.append("<TD>");
+    codigo.append(std::to_string(sblock.s_blocks_count));
+    codigo.append("</TD>");
+    codigo.append("</TR>");
+    
+    codigo.append("<TR>");
+    codigo.append("<TD>Bloques Libres</TD>");
+    codigo.append("<TD>");
+    codigo.append(std::to_string(sblock.s_free_blocks_count));
+    codigo.append("</TD>");
+    codigo.append("</TR>");
+
+    codigo.append("<TR>");
+    codigo.append("<TD>Ultima fecha - Montado</TD>");
+    codigo.append("<TD>");
+    codigo.append(asctime(gmtime(&sblock.s_mtime)));
+    codigo.append("</TD>");
+    codigo.append("</TR>");   
+
+    codigo.append("<TR>");
+    codigo.append("<TD>Ultima fecha - Desmontado</TD>");
+    codigo.append("<TD>");
+    codigo.append(asctime(gmtime(&sblock.s_umtime)));
+    codigo.append("</TD>");
+    codigo.append("</TR>");   
+
+    codigo.append("<TR>");
+    codigo.append("<TD>Veces Montado</TD>");
+    codigo.append("<TD>");
+    codigo.append(std::to_string(sblock.s_mnt_count));
+    codigo.append("</TD>");
+    codigo.append("</TR>");
+
+    codigo.append("<TR>");
+    codigo.append("<TD>Magic Number</TD>");
+    codigo.append("<TD>");
+    codigo.append(std::to_string(sblock.s_magic));
+    codigo.append("</TD>");
+    codigo.append("</TR>");
+    
+    codigo.append("</TABLE>>];}");
+    
+
+    //GENERAR EL DOT
+    std::ofstream outfile ("grafo.dot");
+    outfile << codigo << std::endl;
+    outfile.close();
+
+    //REMPLAZAR LA EXTENDION DE LA RUTA   
+    //Basado en: https://www.oreilly.com/library/view/c-cookbook/0596007612/ch10s17.html             
+    std::string::size_type pos = ruta.rfind('.', ruta.length());
+    std::string png = "png";
+    if (pos != std::string::npos) {
+        ruta.replace(pos+1, png.length(), png);
+    }
+
+    //CREAR EL COMANDO DOT
+    comando = "dot -Tpng grafo.dot -o";
+    comando.append("'");
+    comando.append(ruta);
+    comando.append("'");
+
+    //GENERAR EL GRAFO
+    system(comando.c_str());
+    std::cout << "MENSAJE: Reporte SB creado correctamente." << std::endl;
+}
+
+void inode(std::vector<disco> &discos, int posDisco, int posParticion, std::string &ruta){
+    //VARIABLES
+    std::string codigo;                                      //Contenedor del codigo del dot
+    disco &disc_uso = discos[posDisco];                      //Disco en uso
+    montada &part_uso = disc_uso.particiones[posParticion]; //Particion Montada 
+    FILE *archivo;                                          //Para leer el archivo
+    MBR mbr;                                                //Para leer el mbr
+    int posExtendida;                                       //Posicion para leer la extendida
+    EBR ebr;                                                //Para leer los ebr de las particiones logicas          
+    std::string comando;                                    //Instruccion a mandar a la consola para generar el comando
+    int posInicio;                                          //Posicion donde inicia la particion
+    sbloque sblock;                                         //Para leer el superbloque
+    inodo linodo;                                           //Para leer los inodos
+    std::vector<int> inodos_usados;                         //Posiciones del bitmap inodos usados  
+    char lectura;                                           //Para leer los caracteres del bitmap  
+    int posLectura;                                         //Usado para las posiciones de lectura                         
+
+    //VERIFICAR QUE EXISTA EL ARCHIVO
+    archivo = fopen(disc_uso.ruta.c_str(), "r+b");
+    if(archivo == NULL){
+        std::cout << "ERROR: No se encontro el disco." << std::endl;
+        return;
+    }
+
+    //DETERMINAR LA POSICION DE INICIO PARA LEER LA PARTICION
+    if(part_uso.posMBR != -1){
+        MBR mbr;
+        fseek(archivo, 0,SEEK_SET);
+        fread(&mbr, sizeof(MBR), 1, archivo);
+        posInicio = mbr.mbr_partition[part_uso.posMBR].part_start;
+    }else{
+        EBR ebr;
+        fseek(archivo, part_uso.posEBR, SEEK_SET);
+        fread(&ebr, sizeof(EBR), 1, archivo);
+        posInicio = ebr.part_start;
+    }
+
+    //LEER EL SUPERBLOQUE
+    fseek(archivo, posInicio, SEEK_SET);
+    fread(&sblock, sizeof(sbloque), 1, archivo);
+    
+    //LEER EL BITMAP Y HACER UNA LISTA DE LOS INODOS USADOS
+    for(int i = 0; i < sblock.s_inodes_count; i++){
+        posLectura = sblock.s_bm_inode_start + (sizeof(char) * i);
+        fseek(archivo, posLectura, SEEK_SET);
+        fread(&lectura, sizeof(lectura), 1, archivo);
+
+        if(lectura == '1'){
+            inodos_usados.push_back(i);
+        }
+    }
+
+    //ESCRIBIR EL DOT
+    codigo = "digraph G { \n rankdir = LR; \n";
+
+    //Declarar los nodos
+    for(int i = 0; i < inodos_usados.size(); i++){
+        posLectura = sblock.s_inode_start + (sizeof(inodo) * inodos_usados[i]);
+        fseek(archivo, posLectura, SEEK_SET);
+        fread(&linodo, sizeof(inodo), 1, archivo);
+
+        std::string nombre = "INODO";
+        nombre.append(std::to_string(i));
+        codigo.append(nombre);
+        codigo.append("[ label = \"");
+        codigo.append(nombre);
+        codigo.append("\\n\\n");
+        codigo.append("ID del Propietario: ");
+        codigo.append(std::to_string(linodo.i_uid));
+        codigo.append("\\n");
+        codigo.append("ID del grupo: ");
+        codigo.append(std::to_string(linodo.i_gid));
+        codigo.append("\\n");
+        codigo.append("Tamaño del archivo: ");
+        codigo.append(std::to_string(linodo.i_s));
+        codigo.append("\\n");
+        codigo.append("Ultima lectura: ");
+        codigo.append(asctime(gmtime(&linodo.i_atime)));
+        codigo.append("Fecha de Creación: ");
+        codigo.append(asctime(gmtime(&linodo.i_ctime)));
+        codigo.append("Ultima modificación: ");
+        codigo.append(asctime(gmtime(&linodo.i_mtime)));
+        for(int j = 0; j < 15; j++){
+            nombre = "Bloque ";
+            nombre.append(std::to_string(j));
+            nombre.append(": ");
+            nombre.append(std::to_string(linodo.i_block[j]));
+            codigo.append(nombre);
+            codigo.append("\\n");
+        }
+        codigo.append("Tipo de Inodo: ");
+        codigo.push_back(linodo.i_type);
+        codigo.append("\\n");
+        codigo.append("Permisos: ");
+        codigo.append(std::to_string(linodo.i_perm));
+        codigo.append("\"");
+        codigo.append("shape = box];\n");
+    }
+
+    //Unir los nodos
+    for(int i = 0; i < inodos_usados.size(); i++){
+        std::string nombre = "INODO";
+        nombre.append(std::to_string(i)); 
+        codigo.append(nombre);
+
+        if(i != (inodos_usados.size() - 1)){
+            codigo.append("->");
+        }
+    }
+    codigo.append("}");
+    
+    //GENERAR EL DOT
+    std::ofstream outfile ("grafo.dot");
+    outfile << codigo << std::endl;
+    outfile.close();
+
+    //REMPLAZAR LA EXTENDION DE LA RUTA   
+    //Basado en: https://www.oreilly.com/library/view/c-cookbook/0596007612/ch10s17.html             
+    std::string::size_type pos = ruta.rfind('.', ruta.length());
+    std::string png = "png";
+    if (pos != std::string::npos) {
+        ruta.replace(pos+1, png.length(), png);
+    }
+
+    //CREAR EL COMANDO DOT
+    comando = "dot -Tpng grafo.dot -o";
+    comando.append("'");
+    comando.append(ruta);
+    comando.append("'");
+
+    //GENERAR EL GRAFO
+    system(comando.c_str());
+    std::cout << "MENSAJE: Reporte Inode creado correctamente." << std::endl;
+}
+
+void block(std::vector<disco> &discos, int posDisco, int posParticion, std::string &ruta){
+    //VARIABLES
+    std::string codigo;                                      //Contenedor del codigo del dot
+    disco &disc_uso = discos[posDisco];                      //Disco en uso
+    montada &part_uso = disc_uso.particiones[posParticion]; //Particion Montada 
+    FILE *archivo;                                          //Para leer el archivo
+    MBR mbr;                                                //Para leer el mbr
+    int posExtendida;                                       //Posicion para leer la extendida
+    EBR ebr;                                                //Para leer los ebr de las particiones logicas          
+    std::string comando;                                    //Instruccion a mandar a la consola para generar el comando
+    int posInicio;                                          //Posicion donde inicia la particion
+    sbloque sblock;                                         //Para leer el superbloque
+    inodo linodo;                                           //Para leer los inodos
+    std::vector<int> inodos_usados;                         //Posiciones del bitmap inodos usados  
+    char lectura;                                           //Para leer los caracteres del bitmap  
+    int posLectura;                                         //Usado para las posiciones de lectura                         
+
+    //VERIFICAR QUE EXISTA EL ARCHIVO
+    archivo = fopen(disc_uso.ruta.c_str(), "r+b");
+    if(archivo == NULL){
+        std::cout << "ERROR: No se encontro el disco." << std::endl;
+        return;
+    }
+
+    //DETERMINAR LA POSICION DE INICIO PARA LEER LA PARTICION
+    if(part_uso.posMBR != -1){
+        MBR mbr;
+        fseek(archivo, 0,SEEK_SET);
+        fread(&mbr, sizeof(MBR), 1, archivo);
+        posInicio = mbr.mbr_partition[part_uso.posMBR].part_start;
+    }else{
+        EBR ebr;
+        fseek(archivo, part_uso.posEBR, SEEK_SET);
+        fread(&ebr, sizeof(EBR), 1, archivo);
+        posInicio = ebr.part_start;
+    }
+
+    //LEER EL SUPERBLOQUE
+    fseek(archivo, posInicio, SEEK_SET);
+    fread(&sblock, sizeof(sbloque), 1, archivo);
+    
+    //LEER EL BITMAP Y HACER UNA LISTA DE LOS INODOS USADOS
+    for(int i = 0; i < sblock.s_inodes_count; i++){
+        posLectura = sblock.s_bm_inode_start + (sizeof(char) * i);
+        fseek(archivo, posLectura, SEEK_SET);
+        fread(&lectura, sizeof(lectura), 1, archivo);
+
+        if(lectura == '1'){
+            inodos_usados.push_back(i);
+        }
+    }
+
+    //ESCRIBIR EL DOT
+    codigo = "digraph G { \n rankdir = LR; \n";
+
+    //Declarar los nodos
+    for(int i = 0; i < inodos_usados.size(); i++){
+        posLectura = sblock.s_inode_start + (sizeof(inodo) * inodos_usados[i]);
+        fseek(archivo, posLectura, SEEK_SET);
+        fread(&linodo, sizeof(inodo), 1, archivo);
+
+        std::string nombre = "INODO";
+        nombre.append(std::to_string(i));
+        codigo.append(nombre);
+        codigo.append("[ label = \"");
+        codigo.append(nombre);
+        codigo.append("\\n\\n");
+        codigo.append("ID del Propietario: ");
+        codigo.append(std::to_string(linodo.i_uid));
+        codigo.append("\\n");
+        codigo.append("ID del grupo: ");
+        codigo.append(std::to_string(linodo.i_gid));
+        codigo.append("\\n");
+        codigo.append("Tamaño del archivo: ");
+        codigo.append(std::to_string(linodo.i_s));
+        codigo.append("\\n");
+        codigo.append("Ultima lectura: ");
+        codigo.append(asctime(gmtime(&linodo.i_atime)));
+        codigo.append("Fecha de Creación: ");
+        codigo.append(asctime(gmtime(&linodo.i_ctime)));
+        codigo.append("Ultima modificación: ");
+        codigo.append(asctime(gmtime(&linodo.i_mtime)));
+        for(int j = 0; j < 15; j++){
+            nombre = "Bloque ";
+            nombre.append(std::to_string(j));
+            nombre.append(": ");
+            nombre.append(std::to_string(linodo.i_block[j]));
+            codigo.append(nombre);
+            codigo.append("\\n");
+        }
+        codigo.append("Tipo de Inodo: ");
+        codigo.push_back(linodo.i_type);
+        codigo.append("\\n");
+        codigo.append("Permisos: ");
+        codigo.append(std::to_string(linodo.i_perm));
+        codigo.append("\"");
+        codigo.append("shape = box];\n");
+    }
+
+    //Unir los nodos
+    for(int i = 0; i < inodos_usados.size(); i++){
+        std::string nombre = "INODO";
+        nombre.append(std::to_string(i)); 
+        codigo.append(nombre);
+
+        if(i != (inodos_usados.size() - 1)){
+            codigo.append("->");
+        }
+    }
+    codigo.append("}");
+    
+    //GENERAR EL DOT
+    std::ofstream outfile ("grafo.dot");
+    outfile << codigo << std::endl;
+    outfile.close();
+
+    //REMPLAZAR LA EXTENDION DE LA RUTA   
+    //Basado en: https://www.oreilly.com/library/view/c-cookbook/0596007612/ch10s17.html             
+    std::string::size_type pos = ruta.rfind('.', ruta.length());
+    std::string png = "png";
+    if (pos != std::string::npos) {
+        ruta.replace(pos+1, png.length(), png);
+    }
+
+    //CREAR EL COMANDO DOT
+    comando = "dot -Tpng grafo.dot -o";
+    comando.append("'");
+    comando.append(ruta);
+    comando.append("'");
+
+    //GENERAR EL GRAFO
+    system(comando.c_str());
+    std::cout << "MENSAJE: Reporte Inode creado correctamente." << std::endl;
 }

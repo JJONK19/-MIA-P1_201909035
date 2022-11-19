@@ -172,7 +172,7 @@ void mkfs(std::vector<std::string> &parametros, std::vector<disco> &discos){
         nuevo.s_inode_s = sizeof(inodo);
         nuevo.s_block_s = 64;
         nuevo.s_firts_ino = posInicio + sizeof(sbloque) + n + (n * 3) + (2 * sizeof(inodo));
-        nuevo.s_first_blo = tamaño + sizeof(sbloque) + n + (n * 3) + (n * sizeof(inodo)) + (64 * 2);
+        nuevo.s_first_blo = posInicio + sizeof(sbloque) + n + (n * 3) + (n * sizeof(inodo)) + (64 * 2);
         nuevo.s_bm_inode_start = posInicio + sizeof(sbloque);
         nuevo.s_bm_block_start = posInicio + sizeof(sbloque) + n;
         nuevo.s_inode_start = posInicio + sizeof(sbloque) + n + (n * 3);
@@ -195,7 +195,7 @@ void mkfs(std::vector<std::string> &parametros, std::vector<disco> &discos){
         nuevo.s_inode_s = sizeof(inodo);
         nuevo.s_block_s = 64;
         nuevo.s_firts_ino = posInicio + sizeof(sbloque) + n + (n*3) + (2 * sizeof(inodo)) + (n * sizeof(registro));
-        nuevo.s_first_blo = tamaño + sizeof(sbloque) + n + (n * 3) + (n * sizeof (inodo)) + (64 * 2) + (n * sizeof(registro));
+        nuevo.s_first_blo = posInicio + sizeof(sbloque) + n + (n * 3) + (n * sizeof (inodo)) + (64 * 2) + (n * sizeof(registro));
         nuevo.s_bm_inode_start = posInicio + sizeof(sbloque) + (n * sizeof(registro));
         nuevo.s_bm_block_start = posInicio + sizeof (sbloque) + n + (n * sizeof(registro));
         nuevo.s_inode_start = posInicio + sizeof(sbloque) + n + (n * 3) + (n * sizeof(registro));
@@ -247,8 +247,9 @@ void mkfs(std::vector<std::string> &parametros, std::vector<disco> &discos){
     fwrite(&cero ,sizeof(cero) , 1 ,archivo);
 
     //MARCAR EL PRIMER BLOQUE
+    char c = 'c';
     fseek(archivo, nuevo.s_bm_block_start, SEEK_SET);
-    fwrite(&cero, sizeof(cero), 1, archivo);
+    fwrite(&c, sizeof(c), 1, archivo);
 
     //CREAR Y ESCRIBIR EL INODO
     ninodo.i_uid = 1;
@@ -290,8 +291,9 @@ void mkfs(std::vector<std::string> &parametros, std::vector<disco> &discos){
     fwrite(&cero, (sizeof(ninodo) * 2), 1, archivo);
 
     //MARCAR UN NUEVO BLOQUE PAERA EL ARCHIVO
+    char a = 'a';
     fseek(archivo, nuevo.s_bm_block_start + sizeof(cero), SEEK_SET);
-    fwrite(&cero, sizeof(cero), 1, archivo);
+    fwrite(&a, sizeof(a), 1, archivo);
 
     //LLENAR EL INODO DEL ARCHIVO
     ninodo.i_uid = 1;

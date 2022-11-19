@@ -111,7 +111,6 @@ void unmount(std::vector<std::string> &parametros, std::vector<disco> &discos){
         fread(&bloque, sizeof(sbloque), 1, archivo);
 
         if(bloque.s_filesystem_type == 2 || bloque.s_filesystem_type == 3){
-            bloque.s_mnt_count++;
             bloque.s_mtime = time(0);
             fseek(archivo, mbr.mbr_partition[borrar.posMBR].part_start, SEEK_SET);
             fwrite(&bloque, sizeof(sbloque), 1, archivo);
