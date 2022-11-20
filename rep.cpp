@@ -120,9 +120,9 @@ void rep(std::vector<std::string> &parametros, std::vector<disco> &discos){
     }else if(nombre == "block"){
         block(discos, posDisco, posParticion, ruta);
     }else if(nombre == "bm_inode"){
-        
+        bm_inode(discos, posDisco, posParticion, ruta);
     }else if(nombre == "bm_block"){
-        
+        bm_block(discos, posDisco, posParticion, ruta);
     }else if(nombre == "tree"){
         
     }else if(nombre == "sb"){
@@ -356,7 +356,7 @@ void mbr(std::vector<disco> &discos, int posDisco, std::string &ruta){
         }
     }   
     codigo.append("</TABLE>>];}");
-    
+    fclose(archivo);
 
     //GENERAR EL DOT
     std::ofstream outfile ("grafo.dot");
@@ -670,6 +670,7 @@ void disk(std::vector<disco> &discos, int posDisco, std::string &ruta){
         codigo.append("</TR>");
     }
     codigo.append("</TABLE>>];}");
+    fclose(archivo);
 
     //GENERAR EL DOT
     std::ofstream outfile ("grafo.dot");
@@ -865,6 +866,7 @@ void sb(std::vector<disco> &discos, int posDisco, int posParticion, std::string 
     codigo.append("</TR>");
     
     codigo.append("</TABLE>>];}");
+    fclose(archivo);
     
 
     //GENERAR EL DOT
@@ -1066,6 +1068,7 @@ void inode(std::vector<disco> &discos, int posDisco, int posParticion, std::stri
         }
     }
     codigo.append("}");
+    fclose(archivo);
     
     //GENERAR EL DOT
     std::ofstream outfile ("grafo.dot");
@@ -1242,6 +1245,7 @@ void block(std::vector<disco> &discos, int posDisco, int posParticion, std::stri
         }
     }
     codigo.append("}");
+    fclose(archivo);
     
     //GENERAR EL DOT
     std::ofstream outfile ("grafo.dot");
@@ -1377,6 +1381,7 @@ void journaling(std::vector<disco> &discos, int posDisco, int posParticion, std:
     }
     codigo.append("[color = white]");
     codigo.append("}");
+    fclose(archivo);
     
     //GENERAR EL DOT
     std::ofstream outfile ("grafo.dot");
@@ -1400,5 +1405,151 @@ void journaling(std::vector<disco> &discos, int posDisco, int posParticion, std:
     //GENERAR EL GRAFO
     system(comando.c_str());
     std::cout << "MENSAJE: Reporte Journaling creado correctamente." << std::endl;
+}
+
+void bm_inode(std::vector<disco> &discos, int posDisco, int posParticion, std::string &ruta){
+    //VARIABLES
+    std::string codigo;                                      //Contenedor del txt
+    disco &disc_uso = discos[posDisco];                      //Disco en uso
+    montada &part_uso = disc_uso.particiones[posParticion]; //Particion Montada 
+    FILE *archivo;                                          //Para leer el archivo
+    MBR mbr;                                                //Para leer el mbr
+    int posExtendida;                                       //Posicion para leer la extendida
+    EBR ebr;                                                //Para leer los ebr de las particiones logicas          
+    std::string comando;                                    //Instruccion a mandar a la consola para generar el comando
+    int posInicio;                                          //Posicion donde inicia la particion
+    sbloque sblock;                                         //Para leer el superbloque
+    inodo linodo;                                           //Para leer los inodos 
+    char lectura;                                           //Para leer los caracteres del bitmap  
+    int posLectura;                                         //Usado para las posiciones de lectura                         
+    int contador = 0;                                       //Para el manejo de los espacios
+
+    //VERIFICAR QUE EXISTA EL ARCHIVO
+    archivo = fopen(disc_uso.ruta.c_str(), "r+b");
+    if(archivo == NULL){
+        std::cout << "ERROR: No se encontro el disco." << std::endl;
+        return;
+    }
+
+    //DETERMINAR LA POSICION DE INICIO PARA LEER LA PARTICION
+    if(part_uso.posMBR != -1){
+        MBR mbr;
+        fseek(archivo, 0,SEEK_SET);
+        fread(&mbr, sizeof(MBR), 1, archivo);
+        posInicio = mbr.mbr_partition[part_uso.posMBR].part_start;
+    }else{
+        EBR ebr;
+        fseek(archivo, part_uso.posEBR, SEEK_SET);
+        fread(&ebr, sizeof(EBR), 1, archivo);
+        posInicio = ebr.part_start;
+    }
+
+    //LEER EL SUPERBLOQUE
+    fseek(archivo, posInicio, SEEK_SET);
+    fread(&sblock, sizeof(sbloque), 1, archivo);
+    
+    //ESCRIBIR EL TXT
+    codigo = "";
+
+    for(int i = 0; i < sblock.s_inodes_count; i++){
+        posLectura = sblock.s_bm_inode_start + (sizeof(char) * i);
+        fseek(archivo, posLectura, SEEK_SET);
+        fread(&lectura, sizeof(lectura), 1, archivo);
+
+        if(lectura == '1'){
+            codigo.append("1");
+        }else{
+            codigo.append("0");
+        }
+        codigo.append(" ");
+
+        contador += 1;
+        if(contador == 20){
+            codigo.append("\n");
+            contador = 0;
+        }
+    }
+    fclose(archivo);
+    //GENERAR EL TXT
+    std::ofstream outfile (ruta);
+    outfile << codigo << std::endl;
+    outfile.close();
+
+    std::cout << "MENSAJE: Reporte bm_Inode creado correctamente." << std::endl;
+}
+
+void bm_block(std::vector<disco> &discos, int posDisco, int posParticion, std::string &ruta){
+    //VARIABLES
+    std::string codigo;                                      //Contenedor del txt
+    disco &disc_uso = discos[posDisco];                      //Disco en uso
+    montada &part_uso = disc_uso.particiones[posParticion]; //Particion Montada 
+    FILE *archivo;                                          //Para leer el archivo
+    MBR mbr;                                                //Para leer el mbr
+    int posExtendida;                                       //Posicion para leer la extendida
+    EBR ebr;                                                //Para leer los ebr de las particiones logicas          
+    std::string comando;                                    //Instruccion a mandar a la consola para generar el comando
+    int posInicio;                                          //Posicion donde inicia la particion
+    sbloque sblock;                                         //Para leer el superbloque
+    bcarpetas lcarpeta;                                     //Para leer bloques de carpetas
+    barchivos larchivo;                                     //Para leer bloques de archivos
+    bapuntadores lapuntador;                                //Para leer bloques de apuntadores  
+    char lectura;                                           //Para leer los caracteres del bitmap  
+    int posLectura;                                         //Usado para las posiciones de lectura                         
+    int contador = 0;                                       //Para los saltos de linea
+
+    //VERIFICAR QUE EXISTA EL ARCHIVO
+    archivo = fopen(disc_uso.ruta.c_str(), "r+b");
+    if(archivo == NULL){
+        std::cout << "ERROR: No se encontro el disco." << std::endl;
+        return;
+    }
+
+    //DETERMINAR LA POSICION DE INICIO PARA LEER LA PARTICION
+    if(part_uso.posMBR != -1){
+        MBR mbr;
+        fseek(archivo, 0,SEEK_SET);
+        fread(&mbr, sizeof(MBR), 1, archivo);
+        posInicio = mbr.mbr_partition[part_uso.posMBR].part_start;
+    }else{
+        EBR ebr;
+        fseek(archivo, part_uso.posEBR, SEEK_SET);
+        fread(&ebr, sizeof(EBR), 1, archivo);
+        posInicio = ebr.part_start;
+    }
+
+    //LEER EL SUPERBLOQUE
+    fseek(archivo, posInicio, SEEK_SET);
+    fread(&sblock, sizeof(sbloque), 1, archivo);
+    
+    //ESCRIBIR EL TXT
+    codigo = "";
+
+    for(int i = 0; i < sblock.s_blocks_count; i++){
+        posLectura = sblock.s_bm_block_start + (sizeof(char) * i);
+        fseek(archivo, posLectura, SEEK_SET);
+        fread(&lectura, sizeof(lectura), 1, archivo);
+
+        if(lectura == 'c' || lectura == 'p' || lectura == 'a'){
+            codigo.append("1");
+        }else{
+            codigo.append("0");
+        }
+        codigo.append(" ");
+
+        contador += 1;
+        if(contador == 20){
+            codigo.append("\n");
+            contador = 0;
+        }
+    }
+    fclose(archivo);
+
+    //GENERAR EL TXT
+    std::ofstream outfile (ruta);
+    outfile << codigo << std::endl;
+    outfile.close();
+
+    
+    std::cout << "MENSAJE: Reporte bm_Block creado correctamente." << std::endl;
 }
 

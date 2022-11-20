@@ -2,12 +2,12 @@ digraph G {
  rankdir = TB; node[shape = plaintext]; 
 LOG1[ label = <<TABLE BORDER='2' CELLBORDER='1' CELLSPACING='0' BGCOLOR='#226f54'>
 <TR><TD colspan ='5' ><b>Log 1</b></TD></TR>
-<TR><TD><b>Comando</b></TD><TD><b>Ruta</b></TD><TD><b>Nombre</b></TD><TD><b>Contenido</b></TD><TD><b>Fecha</b></TD></TR><TR><TD>mkdir</TD><TD>/</TD><TD></TD><TD></TD><TD>Sun Nov 20 01:37:35 2022
+<TR><TD><b>Comando</b></TD><TD><b>Ruta</b></TD><TD><b>Nombre</b></TD><TD><b>Contenido</b></TD><TD><b>Fecha</b></TD></TR><TR><TD>mkdir</TD><TD>/</TD><TD></TD><TD></TD><TD>Sun Nov 20 02:16:53 2022
 </TD></TR></TABLE>>];
 LOG2[ label = <<TABLE BORDER='2' CELLBORDER='1' CELLSPACING='0' BGCOLOR='#226f54'>
 <TR><TD colspan ='5' ><b>Log 2</b></TD></TR>
 <TR><TD><b>Comando</b></TD><TD><b>Ruta</b></TD><TD><b>Nombre</b></TD><TD><b>Contenido</b></TD><TD><b>Fecha</b></TD></TR><TR><TD>mkfile</TD><TD>/</TD><TD>users.txt</TD><TD>1,G,root
 1,U,root,root,123
-</TD><TD>Sun Nov 20 01:37:35 2022
+</TD><TD>Sun Nov 20 02:16:53 2022
 </TD></TR></TABLE>>];
 LOG1->LOG2[color = white]}

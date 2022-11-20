@@ -25,4 +25,8 @@ void block(std::vector<disco> &discos, int posDisco, int posParticion, std::stri
 
 void journaling(std::vector<disco> &discos, int posDisco, int posParticion, std::string &ruta);
 
+void bm_inode(std::vector<disco> &discos, int posDisco, int posParticion, std::string &ruta);
+
+void bm_block(std::vector<disco> &discos, int posDisco, int posParticion, std::string &ruta);
+
 #endif
