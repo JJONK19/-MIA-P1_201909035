@@ -232,7 +232,7 @@ void mkfs(std::vector<std::string> &parametros, std::vector<disco> &discos){
         fseek(archivo, posInicio + sizeof(sbloque),SEEK_SET);
         fwrite(&creacion, sizeof(registro), 1, archivo);
 
-        strcpy(creacion.comando ,"mkfike");
+        strcpy(creacion.comando ,"mkfile");
         strcpy(creacion.path ,"/");
         strcpy(creacion.nombre ,"users.txt");
         strcpy(creacion.contenido ,"1,G,root\n1,U,root,root,123\n");

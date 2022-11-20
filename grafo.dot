@@ -1,11 +1,13 @@
 digraph G { 
- rankdir = LR; node[shape = plaintext];
-BLOQUE0[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5'>
-<TR><TD colspan ='2' ><b>Bloque Carpetas 0</b></TD></TR>
-<TR><TD><b>Nombre</b></TD><TD><b>Inodo</b></TD></TR><TR><TD>.</TD><TD>0</TD></TR><TR><TD>..</TD><TD>0</TD></TR><TR><TD>users.txt</TD><TD>1</TD></TR><TR><TD>-</TD><TD>-1</TD></TR></TABLE>>];
-BLOQUE1[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5'>
-<TR><TD><b>Bloque Archivos 1</b></TD></TR>
-<TR><TD>1,G,root
-1,U,root,root,123
+ rankdir = TB; node[shape = plaintext]; 
+LOG1[ label = <<TABLE BORDER='2' CELLBORDER='1' CELLSPACING='0' BGCOLOR='#226f54'>
+<TR><TD colspan ='5' ><b>Log 1</b></TD></TR>
+<TR><TD><b>Comando</b></TD><TD><b>Ruta</b></TD><TD><b>Nombre</b></TD><TD><b>Contenido</b></TD><TD><b>Fecha</b></TD></TR><TR><TD>mkdir</TD><TD>/</TD><TD></TD><TD></TD><TD>Sun Nov 20 01:37:35 2022
 </TD></TR></TABLE>>];
-BLOQUE0->BLOQUE1}
+LOG2[ label = <<TABLE BORDER='2' CELLBORDER='1' CELLSPACING='0' BGCOLOR='#226f54'>
+<TR><TD colspan ='5' ><b>Log 2</b></TD></TR>
+<TR><TD><b>Comando</b></TD><TD><b>Ruta</b></TD><TD><b>Nombre</b></TD><TD><b>Contenido</b></TD><TD><b>Fecha</b></TD></TR><TR><TD>mkfile</TD><TD>/</TD><TD>users.txt</TD><TD>1,G,root
+1,U,root,root,123
+</TD><TD>Sun Nov 20 01:37:35 2022
+</TD></TR></TABLE>>];
+LOG1->LOG2[color = white]}

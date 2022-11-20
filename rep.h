@@ -23,4 +23,6 @@ void inode(std::vector<disco> &discos, int posDisco, int posParticion, std::stri
 
 void block(std::vector<disco> &discos, int posDisco, int posParticion, std::string &ruta);
 
+void journaling(std::vector<disco> &discos, int posDisco, int posParticion, std::string &ruta);
+
 #endif
