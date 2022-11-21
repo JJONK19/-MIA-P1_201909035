@@ -124,7 +124,7 @@ void rep(std::vector<std::string> &parametros, std::vector<disco> &discos){
     }else if(nombre == "bm_block"){
         bm_block(discos, posDisco, posParticion, ruta);
     }else if(nombre == "tree"){
-        
+        tree(discos, posDisco, posParticion, ruta);
     }else if(nombre == "sb"){
         sb(discos, posDisco, posParticion, ruta);
     }else if(nombre == "file"){
@@ -1553,3 +1553,425 @@ void bm_block(std::vector<disco> &discos, int posDisco, int posParticion, std::s
     std::cout << "MENSAJE: Reporte bm_Block creado correctamente." << std::endl;
 }
 
+void tree(std::vector<disco> &discos, int posDisco, int posParticion, std::string &ruta){
+    //VARIABLES
+    std::string codigo;                                      //Contenedor del codigo del dot
+    disco &disc_uso = discos[posDisco];                      //Disco en uso
+    montada &part_uso = disc_uso.particiones[posParticion]; //Particion Montada 
+    FILE *archivo;                                          //Para leer el archivo
+    MBR mbr;                                                //Para leer el mbr
+    int posExtendida;                                       //Posicion para leer la extendida
+    EBR ebr;                                                //Para leer los ebr de las particiones logicas          
+    std::string comando;                                    //Instruccion a mandar a la consola para generar el comando
+    int posInicio;                                          //Posicion donde inicia la particion
+    int posInodos;                                          //Posicion de inicio de los inodos
+    int posBloques;                                         //Posicion de inicio de los bloques
+    sbloque sblock;                                         //Para leer el superbloque
+
+    //VERIFICAR QUE EXISTA EL ARCHIVO
+    archivo = fopen(disc_uso.ruta.c_str(), "r+b");
+    if(archivo == NULL){
+        std::cout << "ERROR: No se encontro el disco." << std::endl;
+        return;
+    }
+
+    //DETERMINAR LA POSICION DE INICIO PARA LEER LA PARTICION
+    if(part_uso.posMBR != -1){
+        MBR mbr;
+        fseek(archivo, 0,SEEK_SET);
+        fread(&mbr, sizeof(MBR), 1, archivo);
+        posInicio = mbr.mbr_partition[part_uso.posMBR].part_start;
+    }else{
+        EBR ebr;
+        fseek(archivo, part_uso.posEBR, SEEK_SET);
+        fread(&ebr, sizeof(EBR), 1, archivo);
+        posInicio = ebr.part_start;
+    }
+
+    //LEER EL SUPERBLOQUE
+    fseek(archivo, posInicio, SEEK_SET);
+    fread(&sblock, sizeof(sbloque), 1, archivo);
+
+    //DETERMINAR LA POSICION DE LOS INODOS
+    posInodos = sblock.s_inode_start;
+
+    //DETERMINAR LA POSICION DE LOS BLOQUES
+    posBloques = sblock.s_block_start;
+
+    fclose(archivo);
+
+    //ESCRIBIR EL DOT
+    codigo = "digraph G { \n rankdir = LR; node[shape = plaintext];\n";
+
+    //Leer el inodo raiz. Es el numero 0.
+    int inodo_leido = 0;
+    std::string padre = "";
+    leer_inodo(disc_uso.ruta, posInodos, posBloques, inodo_leido, codigo, padre);
+    codigo.append("}");
+
+    //GENERAR EL DOT
+    std::ofstream outfile ("grafo.dot");
+    outfile << codigo << std::endl;
+    outfile.close();
+
+    //REMPLAZAR LA EXTENDION DE LA RUTA   
+    //Basado en: https://www.oreilly.com/library/view/c-cookbook/0596007612/ch10s17.html             
+    std::string::size_type pos = ruta.rfind('.', ruta.length());
+    std::string png = "png";
+    if (pos != std::string::npos) {
+        ruta.replace(pos+1, png.length(), png);
+    }
+
+    //CREAR EL COMANDO DOT
+    comando = "dot -Tpng grafo.dot -o";
+    comando.append("'");
+    comando.append(ruta);
+    comando.append("'");
+
+    //GENERAR EL GRAFO
+    system(comando.c_str());
+    std::cout << "MENSAJE: Reporte Tree creado correctamente." << std::endl;
+}
+
+void leer_inodo(std::string &ruta, int &posInodos, int &posBloques, int &no_inodo, std::string &codigo, std::string &padre){
+    //VARIABLES
+    FILE *archivo;                                          //Para leer el archivo
+    inodo linodo;                                           //Para leer inodos
+    int posLectura;                                         //Usado para las posiciones de lectura                         
+    std::string nombre_nodo;                                //Nombre del nodo para conectar
+
+    //ABRIR ARCHIVO
+    archivo = fopen(ruta.c_str(), "r+b");
+
+    //DECLARAR EL INODO
+    posLectura = posInodos + (sizeof(inodo) * no_inodo);
+    fseek(archivo, posLectura, SEEK_SET);
+    fread(&linodo, sizeof(inodo), 1, archivo);
+
+    std::string nombre = "INODO";
+    nombre.append(std::to_string(no_inodo));
+    codigo.append(nombre);
+    nombre = "Inodo ";
+    nombre.append(std::to_string(no_inodo));
+    codigo.append("[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5' BGCOLOR='#0f4c5c'>\n");
+    codigo.append("<TR><TD colspan ='2' ><b>");
+    codigo.append(nombre);
+    codigo.append("</b></TD></TR>\n");
+
+    codigo.append("<TR>");
+    codigo.append("<TD Align='left'>");
+    codigo.append("ID del Propietario:");
+    codigo.append("</TD>");
+    codigo.append("<TD>");
+    codigo.append(std::to_string(linodo.i_uid));
+    codigo.append("</TD>");
+    codigo.append("</TR>");
+
+    codigo.append("<TR>");
+    codigo.append("<TD Align='left'>");
+    codigo.append("ID del Grupo:");
+    codigo.append("</TD>");
+    codigo.append("<TD>");
+    codigo.append(std::to_string(linodo.i_gid));
+    codigo.append("</TD>");
+    codigo.append("</TR>");
+
+    codigo.append("<TR>");
+    codigo.append("<TD Align='left'>");
+    codigo.append("Tamaño del archivo:");
+    codigo.append("</TD>");
+    codigo.append("<TD>");
+    codigo.append(std::to_string(linodo.i_s));
+    codigo.append("</TD>");
+    codigo.append("</TR>");
+
+    codigo.append("<TR>");
+    codigo.append("<TD Align='left'>");
+    codigo.append("Ultima lectura:");
+    codigo.append("</TD>");
+    codigo.append("<TD>");
+    codigo.append(asctime(gmtime(&linodo.i_atime)));
+    codigo.append("</TD>");
+    codigo.append("</TR>");
+
+
+    codigo.append("<TR>");
+    codigo.append("<TD Align='left'>");
+    codigo.append("Fecha de Creación:");
+    codigo.append("</TD>");
+    codigo.append("<TD>");
+    codigo.append(asctime(gmtime(&linodo.i_ctime)));
+    codigo.append("</TD>");
+    codigo.append("</TR>");
+
+
+    codigo.append("<TR>");
+    codigo.append("<TD Align='left'>");
+    codigo.append("Ultima modificación:");
+    codigo.append("</TD>");
+    codigo.append("<TD>");
+    codigo.append(asctime(gmtime(&linodo.i_mtime)));
+    codigo.append("</TD>");
+    codigo.append("</TR>");
+
+
+    for(int j = 0; j < 15; j++){
+        codigo.append("<TR>");
+        codigo.append("<TD Align='left'>");
+        nombre = "Bloque ";
+        nombre.append(std::to_string(j));
+        nombre.append(":");
+        codigo.append(nombre);
+        codigo.append("</TD>");
+        codigo.append("<TD PORT='P");
+        codigo.append(std::to_string(j));
+        codigo.append("'>");
+        codigo.append(std::to_string(linodo.i_block[j]));
+        codigo.append("</TD>");
+        codigo.append("</TR>");
+    }
+
+    codigo.append("<TR>");
+    codigo.append("<TD Align='left'>");
+    codigo.append("Tipo de Inodo:");
+    codigo.append("</TD>");
+    codigo.append("<TD>");
+    codigo.push_back(linodo.i_type);
+    codigo.append("</TD>");
+    codigo.append("</TR>");
+
+    codigo.append("<TR>");
+    codigo.append("<TD Align='left'>");
+    codigo.append("Permisos:");
+    codigo.append("</TD>");
+    codigo.append("<TD>");
+    codigo.append(std::to_string(linodo.i_perm));
+    codigo.append("</TD>");
+    codigo.append("</TR>");
+
+    codigo.append("</TABLE>>];\n");
+
+    //CONECTAR CON EL PADRE
+    nombre = "INODO";
+    nombre.append(std::to_string(no_inodo));
+
+    if(padre != ""){
+        codigo.append(padre);
+        codigo.append("->");
+        codigo.append(nombre);
+        codigo.append("[minlen = 2];");
+        codigo.append("\n");
+    }
+
+    //RECORRER LA LISTA DE BLOQUES DEL INODO
+    for(int i = 0; i < 15; i++){
+        int &direccion = linodo.i_block[i];
+
+        if(direccion == -1){
+            continue;
+        }
+
+        nombre_nodo = nombre;
+        nombre_nodo.append(":P");
+        nombre_nodo.append(std::to_string(i));
+
+        if(i == 12){
+            leer_apuntador(ruta, posInodos, posBloques, direccion, codigo, nombre_nodo, 1, linodo.i_type);
+        }else if(i == 13){
+            leer_apuntador(ruta, posInodos, posBloques, direccion, codigo, nombre_nodo, 2, linodo.i_type);
+        }else if(i == 14){
+            leer_apuntador(ruta, posInodos, posBloques, direccion, codigo, nombre_nodo, 3, linodo.i_type);
+        }else{
+            if(linodo.i_type == '0'){
+                leer_carpeta(ruta, posInodos, posBloques, direccion, codigo, nombre_nodo);
+            }else{
+                leer_archivo(ruta, posInodos, posBloques, direccion, codigo, nombre_nodo);
+            }
+
+        }
+    }
+}   
+
+void leer_carpeta(std::string &ruta, int &posInodos, int &posBloques, int &no_bloque, std::string &codigo, std::string &padre){
+    //VARIABLES
+    FILE *archivo;                                          //Para leer el archivo
+    bcarpetas lcarpeta;                                     //Para leer bloques de carpetas
+    int posLectura;                                         //Usado para las posiciones de lectura                         
+    std::string nombre_nodo;                                //Nombre del nodo para conectar
+
+    //ABRIR ARCHIVO
+    archivo = fopen(ruta.c_str(), "r+b");
+
+    //DECLARAR BLOQUE DE CARPETAS
+    posLectura = posBloques + (64 * no_bloque);
+    fseek(archivo, posLectura, SEEK_SET);
+    fread(&lcarpeta, sizeof(bcarpetas), 1, archivo);
+
+    std::string nombre = "BLOQUE";
+    nombre.append(std::to_string(no_bloque));
+    codigo.append(nombre);
+
+    nombre = "Bloque Carpetas ";
+    nombre.append(std::to_string(no_bloque));
+    codigo.append("[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5' BGCOLOR='#8b8c89'>\n");
+    codigo.append("<TR><TD colspan ='2' ><b>");
+    codigo.append(nombre);
+    codigo.append("</b></TD></TR>\n");
+    codigo.append("<TR><TD><b>Nombre</b></TD><TD><b>Inodo</b></TD></TR>"); 
+
+    for(int j = 0; j < 4; j++){
+        content &temp = lcarpeta.b_content[j];
+        codigo.append("<TR>");
+        codigo.append("<TD>");
+        codigo.append(temp.b_name);
+        codigo.append("</TD>");
+        codigo.append("<TD PORT='P");
+        codigo.append(std::to_string(j));
+        codigo.append("'>");
+        codigo.append(std::to_string(temp.b_inodo));
+        codigo.append("</TD>");
+        codigo.append("</TR>");
+    }
+    codigo.append("</TABLE>>];\n");
+
+    //CONECTAR CON EL PADRE
+    nombre = "BLOQUE";
+    nombre.append(std::to_string(no_bloque));
+
+    codigo.append(padre);
+    codigo.append("->");
+    codigo.append(nombre);
+    codigo.append("[minlen = 2];");
+    codigo.append("\n");
+
+    //RECORRER LA LISTA DE CARPETAS DEL BLOQUE
+    for(int i = 0; i < 4; i++){
+        int &direccion = lcarpeta.b_content[i].b_inodo;
+        std::string carpeta(lcarpeta.b_content[i].b_name);
+
+        if(direccion == -1 || carpeta == "." || carpeta == ".."){
+            continue;
+        }
+
+        nombre_nodo = nombre;
+        nombre_nodo.append(":P");
+        nombre_nodo.append(std::to_string(i));
+        leer_inodo(ruta, posInodos, posBloques, direccion, codigo, nombre_nodo);
+    }
+}
+
+void leer_archivo(std::string &ruta, int &posInodos, int &posBloques, int &no_bloque, std::string &codigo, std::string &padre){
+    //VARIABLES
+    FILE *archivo;                                          //Para leer el archivo
+    barchivos larchivo;                                     //Para leer bloques de archivos
+    int posLectura;                                         //Usado para las posiciones de lectura                         
+    std::string nombre_nodo;                                //Nombre del nodo para conectar
+
+    //ABRIR ARCHIVO
+    archivo = fopen(ruta.c_str(), "r+b");
+
+    //DECLARAR BLOQUE DE ARCHIVOS
+    posLectura = posBloques + (64 * no_bloque);
+    fseek(archivo, posLectura, SEEK_SET);
+    fread(&larchivo, sizeof(barchivos), 1, archivo);
+    std::string nombre = "BLOQUE";
+    nombre.append(std::to_string(no_bloque));
+    codigo.append(nombre);
+
+    nombre = "Bloque Archivos ";
+    nombre.append(std::to_string(no_bloque));
+    codigo.append("[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5' BGCOLOR='#fb8b24'>\n");
+    codigo.append("<TR><TD><b>");
+    codigo.append(nombre);
+    codigo.append("</b></TD></TR>\n"); 
+
+    codigo.append("<TR>");
+    codigo.append("<TD>");
+    codigo.append(larchivo.b_content);
+    codigo.append("</TD>");
+    codigo.append("</TR>");
+    codigo.append("</TABLE>>];\n");
+
+    //CONECTAR CON EL PADRE
+    nombre = "BLOQUE";
+    nombre.append(std::to_string(no_bloque));
+
+    codigo.append(padre);
+    codigo.append("->");
+    codigo.append(nombre);
+    codigo.append("[minlen = 2];");
+    codigo.append("\n");
+}
+
+void leer_apuntador(std::string &ruta, int &posInodos, int &posBloques, int &no_bloque, std::string &codigo, std::string &padre, int grado, char &tipo){
+    //VARIABLES
+    FILE *archivo;                                          //Para leer el archivo
+    bapuntadores lapuntador;                                //Para leer bloques de punterosk
+    int posLectura;                                         //Usado para las posiciones de lectura                         
+    std::string nombre_nodo;                                //Nombre del nodo para conectar
+
+    //ABRIR ARCHIVO
+    archivo = fopen(ruta.c_str(), "r+b");
+
+    //DECLARAR BLOQUE DE CARPETAS
+    posLectura = posBloques + (64 * no_bloque);
+    fseek(archivo, posLectura, SEEK_SET);
+    fread(&lapuntador, sizeof(bapuntadores), 1, archivo);
+    std::string nombre = "BLOQUE";
+    nombre.append(std::to_string(no_bloque));
+    codigo.append(nombre);
+
+    nombre = "Bloque Apuntadores ";
+    nombre.append(std::to_string(no_bloque));
+    codigo.append("[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5' BGCOLOR='#9a031e'>\n");
+    codigo.append("<TR><TD><b>");
+    codigo.append(nombre);
+    codigo.append("</b></TD></TR>\n"); 
+
+    for(int j = 0; j < 16; j++){
+        codigo.append("<TR>");
+        codigo.append("<TD PORT='P");
+        codigo.append(std::to_string(j));
+        codigo.append("'>");
+        codigo.append(std::to_string(lapuntador.b_pointers[j]));
+        codigo.append("</TD>");
+        codigo.append("</TR>");
+    }
+    codigo.append("</TABLE>>];\n");
+
+    //CONECTAR CON EL PADRE
+    nombre = "BLOQUE";
+    nombre.append(std::to_string(no_bloque));
+
+    codigo.append(padre);
+    codigo.append("->");
+    codigo.append(nombre);
+    codigo.append("[minlen = 2];");
+    codigo.append("\n");
+
+    //RECORRER LA LISTA DE CARPETAS DEL BLOQUE
+    for(int i = 0; i < 16; i++){
+        int &direccion = lapuntador.b_pointers[i];
+
+        if(direccion == -1){
+            continue;
+        }
+
+        nombre_nodo = nombre;
+        nombre_nodo.append(":P");
+        nombre_nodo.append(std::to_string(i));
+
+        if(grado == 1){
+            if(tipo == '0'){
+                leer_carpeta(ruta, posInodos, posBloques, direccion, codigo, nombre_nodo);
+            }else{
+                leer_archivo(ruta, posInodos, posBloques, direccion, codigo, nombre_nodo);
+            }
+        }else if(grado == 2){
+            leer_apuntador(ruta, posInodos, posBloques, direccion, codigo, nombre_nodo, 1, tipo);
+        }else{
+            leer_apuntador(ruta, posInodos, posBloques, direccion, codigo, nombre_nodo, 2, tipo);
+        }
+    }
+
+}

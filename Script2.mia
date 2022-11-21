@@ -69,3 +69,4 @@ rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MI
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/journal.png" -name->journaling
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/bm_inode.txt" -name->bm_inode
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/bm_block.txt" -name->bm_block
+rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/tree.png" -name->tree

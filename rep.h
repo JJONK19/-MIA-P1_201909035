@@ -29,4 +29,14 @@ void bm_inode(std::vector<disco> &discos, int posDisco, int posParticion, std::s
 
 void bm_block(std::vector<disco> &discos, int posDisco, int posParticion, std::string &ruta);
 
+void tree(std::vector<disco> &discos, int posDisco, int posParticion, std::string &ruta);
+
+void leer_inodo(std::string &ruta, int &posInodos, int &posBloques,int &no_inodo, std::string &codigo, std::string &padre);
+
+void leer_carpeta(std::string &ruta, int &posInodos, int &posBloques, int &no_bloque, std::string &codigo, std::string &padre);
+
+void leer_archivo(std::string &ruta, int &posInodos, int &posBloques, int &no_bloque, std::string &codigo, std::string &padre);
+
+void leer_apuntador(std::string &ruta, int &posInodos, int &posBloques, int &no_bloque, std::string &codigo, std::string &padre, int grado, char &tipo);
+
 #endif
