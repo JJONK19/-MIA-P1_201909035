@@ -15,7 +15,9 @@
 #include "mount.h"
 #include "unmount.h"
 #include "mkfs.h"
+#include "login.h"
 #include "rep.h"
+#include "logout.h"
 
 void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos);         
 

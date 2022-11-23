@@ -14,6 +14,8 @@
 #include "mount.h"
 #include "unmount.h"
 #include "mkfs.h"
+#include "login.h"
+#include "logout.h"
 #include "rep.h"
 
 

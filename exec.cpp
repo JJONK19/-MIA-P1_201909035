@@ -90,9 +90,9 @@ void exec(std::vector<std::string> &parametros, usuario &sesion, std::vector<dis
         }else if(tipo == "mkfs"){
             mkfs(parametros, discos);
         }else if(tipo == "login"){
-            //login();
+            login(parametros, discos, sesion);
         }else if(tipo == "logout"){
-            //logout();
+            logout(sesion);
         }else if(tipo == "mkgrp"){
             //mkgrp();
         }else if(tipo == "rmgrp"){

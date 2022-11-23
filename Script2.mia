@@ -60,6 +60,14 @@ mkfs -type->full -id->351Disco1 -fs->3fs
 mkfs -id->352Disco1 -fs->3fs
 mkfs -id->353Disco1 
 
+#login
+login -usr->root -pass->123 -id->351Disco1
+login -usr->root -pass->123 -id->351Disco1
+
+#logout
+logout
+logout
+
 #reporte
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/mbr.png" -name->mbr
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/disk.png" -name->disk

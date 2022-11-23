@@ -12,7 +12,8 @@
                 "${fileDirname}/mkdisk.cpp", "${fileDirname}/rmdisk.cpp",
                 "${fileDirname}/fdisk.cpp", "${fileDirname}/mount.cpp",
                 "${fileDirname}/unmount.cpp", "${fileDirname}/rep.cpp",
-                "${fileDirname}/mkfs.cpp",
+                "${fileDirname}/mkfs.cpp", "${fileDirname}/login.cpp",
+                "${fileDirname}/logout.cpp",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],
