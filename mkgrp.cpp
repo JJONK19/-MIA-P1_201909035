@@ -425,18 +425,18 @@ void mkgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
     nuevo += "\n";
 
     //DETERMINAR EL NUMERO DE BLOQUES USADOS INICIALMENTE
-    if(texto.size() % 64 == 0){
-        bloques_iniciales = texto.size() / 64;    
+    if(texto.size() % 63 == 0){
+        bloques_iniciales = texto.size() / 63;    
     }else{
-        bloques_iniciales = (texto.size() / 64) + 1;
+        bloques_iniciales = (texto.size() / 63) + 1;
     }
 
     //AÑADIR LA NUEVA LINEA Y DETERMINAR DE NUEVO NUMERO DE BLOQUES
     texto += nuevo;
-    if(texto.size() % 64 == 0){
-        bloques_finales = texto.size() / 64;    
+    if(texto.size() % 63 == 0){
+        bloques_finales = texto.size() / 63;    
     }else{
-        bloques_finales = (texto.size() / 64) + 1;
+        bloques_finales = (texto.size() / 63) + 1;
     }
 
     //DECIDIR SI SE VA A AÑADIR UN NUEVO BLOQUE
@@ -749,7 +749,7 @@ void mkgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
     }
     //REINICIAR TODOS LOS ESPACIOS DEL INODO
     for(int i = 0; i < 15; i++){
-        linodo.i_block[i] == -1;
+        linodo.i_block[i] = -1;
     }
 
     //REESCRIBIR EL ARCHIVO DE USUARIOS 
@@ -764,6 +764,12 @@ void mkgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
         bapuntadores eapuntador_doble;
         bapuntadores eapuntador_triple;
 
+        for(int z = 0; z < 16; z++){
+            eapuntador.b_pointers[z] = -1;
+            eapuntador_doble.b_pointers[z] = -1;
+            eapuntador_triple.b_pointers[z] = -1;
+        }
+
         if(texto.size() > 64){
             escribir = texto.substr(0, 64); 
             texto = texto.substr(64, texto.length()-1);
@@ -772,7 +778,7 @@ void mkgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
             continuar = false;
         }
         
-        if(revisar){
+        while(revisar){
 
             if(posicion == 12){
                 if(linodo.i_block[posicion] == -1){
@@ -796,7 +802,7 @@ void mkgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                     fwrite(&earchivo, sizeof(barchivos), 1, archivo);
 
                     //Crear y escribir el bloque de apuntadores
-                    eapuntador.b_pointers[0] == bloque_inicial;
+                    eapuntador.b_pointers[0] = bloque_inicial;
                     bloque_inicial -= 1;
                     posLectura = sblock.s_block_start + (sizeof(bapuntadores) * bloque_inicial);
                     fseek(archivo, posLectura, SEEK_SET);
@@ -838,7 +844,7 @@ void mkgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                         fwrite(&earchivo, sizeof(barchivos), 1, archivo);
 
                         //Actualizar y escribir el bloque de apuntadores
-                        lapuntador.b_pointers[espacio] == bloque_inicial;
+                        lapuntador.b_pointers[espacio] = bloque_inicial;
                         posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[posicion]);;
                         fseek(archivo, posLectura, SEEK_SET);
                         fwrite(&lapuntador, sizeof(bapuntadores), 1, archivo);
@@ -877,14 +883,14 @@ void mkgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                     fwrite(&earchivo, sizeof(barchivos), 1, archivo);
 
                     //Crear y escribir el bloque de apuntadores 
-                    eapuntador.b_pointers[0] == bloque_inicial;
+                    eapuntador.b_pointers[0] = bloque_inicial;
                     bloque_inicial -= 1;
                     posLectura = sblock.s_block_start + (sizeof(bapuntadores) * bloque_inicial);
                     fseek(archivo, posLectura, SEEK_SET);
                     fwrite(&eapuntador, sizeof(bapuntadores), 1, archivo);
 
                     //Crear y escribir el bloque de apuntadores dobles
-                    eapuntador_doble.b_pointers[0] == bloque_inicial;
+                    eapuntador_doble.b_pointers[0] = bloque_inicial;
                     bloque_inicial -= 1;
                     posLectura = sblock.s_block_start + (sizeof(bapuntadores) * bloque_inicial);
                     fseek(archivo, posLectura, SEEK_SET);
@@ -925,7 +931,7 @@ void mkgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             fwrite(&earchivo, sizeof(barchivos), 1, archivo);
 
                             //Crear y escribir el bloque de apuntadores
-                            eapuntador.b_pointers[0] == bloque_inicial;
+                            eapuntador.b_pointers[0] = bloque_inicial;
                             bloque_inicial -= 1;
                             posLectura = sblock.s_block_start + (sizeof(bapuntadores) * bloque_inicial);
                             fseek(archivo, posLectura, SEEK_SET);
@@ -974,7 +980,7 @@ void mkgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                 fwrite(&earchivo, sizeof(barchivos), 1, archivo);
 
                                 //Actualizar y escribir el bloque de apuntadores
-                                lapuntador.b_pointers[espacio] == bloque_inicial;
+                                lapuntador.b_pointers[espacio] = bloque_inicial;
                                 posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_doble.b_pointers[i]);;
                                 fseek(archivo, posLectura, SEEK_SET);
                                 fwrite(&lapuntador, sizeof(bapuntadores), 1, archivo);
@@ -1021,21 +1027,21 @@ void mkgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                     fwrite(&earchivo, sizeof(barchivos), 1, archivo);
 
                     //Crear y escribir el bloque de apuntadores 
-                    eapuntador.b_pointers[0] == bloque_inicial;
+                    eapuntador.b_pointers[0] = bloque_inicial;
                     bloque_inicial -= 1;
                     posLectura = sblock.s_block_start + (sizeof(bapuntadores) * bloque_inicial);
                     fseek(archivo, posLectura, SEEK_SET);
                     fwrite(&eapuntador, sizeof(bapuntadores), 1, archivo);
 
                     //Crear y escribir el bloque de apuntadores dobles
-                    eapuntador_doble.b_pointers[0] == bloque_inicial;
+                    eapuntador_doble.b_pointers[0] = bloque_inicial;
                     bloque_inicial -= 1;
                     posLectura = sblock.s_block_start + (sizeof(bapuntadores) * bloque_inicial);
                     fseek(archivo, posLectura, SEEK_SET);
                     fwrite(&eapuntador_doble, sizeof(bapuntadores), 1, archivo);
 
                     //Crear y escribir el bloque de apuntadores triples
-                    eapuntador_triple.b_pointers[0] == bloque_inicial;
+                    eapuntador_triple.b_pointers[0] = bloque_inicial;
                     bloque_inicial -= 1;
                     posLectura = sblock.s_block_start + (sizeof(bapuntadores) * bloque_inicial);
                     fseek(archivo, posLectura, SEEK_SET);
@@ -1083,14 +1089,14 @@ void mkgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             fwrite(&earchivo, sizeof(barchivos), 1, archivo);
 
                             //Crear y escribir el bloque de apuntadores
-                            eapuntador.b_pointers[0] == bloque_inicial;
+                            eapuntador.b_pointers[0] = bloque_inicial;
                             bloque_inicial -= 1;
                             posLectura = sblock.s_block_start + (sizeof(bapuntadores) * bloque_inicial);
                             fseek(archivo, posLectura, SEEK_SET);
                             fwrite(&eapuntador, sizeof(bapuntadores), 1, archivo);
 
                             //Crear y escribir el bloque de apuntadores dobles
-                            eapuntador_doble.b_pointers[0] == bloque_inicial;
+                            eapuntador_doble.b_pointers[0] = bloque_inicial;
                             bloque_inicial -= 1;
                             posLectura = sblock.s_block_start + (sizeof(bapuntadores) * bloque_inicial);
                             fseek(archivo, posLectura, SEEK_SET);
@@ -1136,7 +1142,7 @@ void mkgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                     fwrite(&earchivo, sizeof(barchivos), 1, archivo);
 
                                     //Crear y escribir el bloque de apuntadores
-                                    eapuntador.b_pointers[0] == bloque_inicial;
+                                    eapuntador.b_pointers[0] = bloque_inicial;
                                     bloque_inicial -= 1;
                                     posLectura = sblock.s_block_start + (sizeof(bapuntadores) * bloque_inicial);
                                     fseek(archivo, posLectura, SEEK_SET);
@@ -1182,7 +1188,7 @@ void mkgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                         fwrite(&earchivo, sizeof(barchivos), 1, archivo);
 
                                         //Actualizar y escribir el bloque de apuntadores
-                                        lapuntador.b_pointers[espacio] == bloque_inicial;
+                                        lapuntador.b_pointers[espacio] = bloque_inicial;
                                         posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_doble.b_pointers[j]);;
                                         fseek(archivo, posLectura, SEEK_SET);
                                         fwrite(&lapuntador, sizeof(bapuntadores), 1, archivo);

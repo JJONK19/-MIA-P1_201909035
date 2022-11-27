@@ -17,6 +17,7 @@
 #include "login.h"
 #include "logout.h"
 #include "mkgrp.h"
+#include "mkusr.h"
 #include "rep.h"
 
 

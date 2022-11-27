@@ -98,7 +98,7 @@ void exec(std::vector<std::string> &parametros, usuario &sesion, std::vector<dis
         }else if(tipo == "rmgrp"){
             //rmgrp();
         }else if(tipo == "mkusr"){
-            //mkusr();
+            mkusr(parametros, discos, sesion);
         }else if(tipo == "rmusr"){
             //rmusr();
         }else if(tipo == "chmod"){

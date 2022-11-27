@@ -40,7 +40,7 @@ void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos){
     }else if(tipo == "rmgrp"){
         //rmgrp();
     }else if(tipo == "mkusr"){
-        //mkusr();
+        mkusr(parametros, discos, sesion);
     }else if(tipo == "rmusr"){
         //rmusr();
     }else if(tipo == "chmod"){

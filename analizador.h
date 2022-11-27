@@ -19,6 +19,7 @@
 #include "rep.h"
 #include "logout.h"
 #include "mkgrp.h"
+#include "mkusr.h"
 
 void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos);         
 
