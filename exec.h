@@ -18,6 +18,10 @@
 #include "logout.h"
 #include "mkgrp.h"
 #include "mkusr.h"
+#include "rmusr.h"
+#include "rmgrp.h"
+#include "chgrp.h"
+#include "pause.h"
 #include "rep.h"
 
 

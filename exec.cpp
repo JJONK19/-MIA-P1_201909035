@@ -96,11 +96,11 @@ void exec(std::vector<std::string> &parametros, usuario &sesion, std::vector<dis
         }else if(tipo == "mkgrp"){
             mkgrp(parametros, discos, sesion);
         }else if(tipo == "rmgrp"){
-            //rmgrp();
+            rmgrp(parametros, discos, sesion);
         }else if(tipo == "mkusr"){
             mkusr(parametros, discos, sesion);
         }else if(tipo == "rmusr"){
-            //rmusr();
+            rmusr(parametros, discos, sesion);
         }else if(tipo == "chmod"){
             //chmod();
         }else if(tipo == "mkfile"){
@@ -124,9 +124,9 @@ void exec(std::vector<std::string> &parametros, usuario &sesion, std::vector<dis
         }else if(tipo == "chown"){
             //chown();
         }else if(tipo == "chgrp"){
-            //chgrp();
+            chgrp(parametros, discos, sesion);
         }else if(tipo == "pause"){
-            //pause();
+            pause();
         }else if(tipo == "recovery"){
             //recovery();
         }else if(tipo == "loss"){

@@ -20,6 +20,11 @@
 #include "logout.h"
 #include "mkgrp.h"
 #include "mkusr.h"
+#include "rmusr.h"
+#include "rmgrp.h"
+#include "chgrp.h"
+#include "pause.h"
+
 
 void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos);         
 
