@@ -94,7 +94,7 @@ void exec(std::vector<std::string> &parametros, usuario &sesion, std::vector<dis
         }else if(tipo == "logout"){
             logout(sesion);
         }else if(tipo == "mkgrp"){
-            //mkgrp();
+            mkgrp(parametros, discos, sesion);
         }else if(tipo == "rmgrp"){
             //rmgrp();
         }else if(tipo == "mkusr"){

@@ -16,6 +16,7 @@
 #include "mkfs.h"
 #include "login.h"
 #include "logout.h"
+#include "mkgrp.h"
 #include "rep.h"
 
 

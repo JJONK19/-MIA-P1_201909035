@@ -426,4 +426,4 @@ void login(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
         std::cout << "MENSAJE: Inicio de Sesión Exitoso." << std::endl;
     }
     fclose(archivo);
-}
+    }

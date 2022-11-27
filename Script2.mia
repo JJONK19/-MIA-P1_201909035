@@ -62,11 +62,14 @@ mkfs -id->353Disco1
 
 #login
 login -usr->root -pass->123 -id->351Disco1
-login -usr->root -pass->123 -id->351Disco1
+#login -usr->root -pass->123 -id->351Disco1
 
 #logout
-logout
-logout
+#logout
+#logout
+
+#mkgrp
+mkgrp -name->usuarios
 
 #reporte
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/mbr.png" -name->mbr
