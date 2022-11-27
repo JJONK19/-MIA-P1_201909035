@@ -14,7 +14,9 @@
                 "${fileDirname}/unmount.cpp", "${fileDirname}/rep.cpp",
                 "${fileDirname}/mkfs.cpp", "${fileDirname}/login.cpp",
                 "${fileDirname}/logout.cpp", "${fileDirname}/mkgrp.cpp",
-                "${fileDirname}/mkusr.cpp",
+                "${fileDirname}/mkusr.cpp", "${fileDirname}/rmusr.cpp",
+                "${fileDirname}/rmgrp.cpp", "${fileDirname}/chgrp.cpp",
+                "${fileDirname}/pause.cpp",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],
