@@ -181,7 +181,7 @@ void chgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                 }
             }
         }else if(i == 13){
-            //Recorrer el bloque de apuntadores simple
+            //Recorrer el bloque de apuntadores doble
             posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[i]);
             fseek(archivo, posLectura, SEEK_SET);
             fread(&lapuntador_doble, sizeof(bapuntadores), 1, archivo);
@@ -215,7 +215,7 @@ void chgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                 }
             }
         }else if(i == 14){
-            //Recorrer el bloque de apuntadores simple
+            //Recorrer el bloque de apuntadores triple
             posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[i]);
             fseek(archivo, posLectura, SEEK_SET);
             fread(&lapuntador_triple, sizeof(bapuntadores), 1, archivo);
@@ -422,7 +422,8 @@ void chgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
         if(atributos.size() == 5){  //Los usuarios tienen cinco parametros
             if(atributos[0] != "0"){
                 if(atributos[3] == nombre){
-                    edit = "1,";
+                    edit = atributos[0];
+                    edit += ",";
                     edit += atributos[1];
                     edit += ",";
                     edit += grupo;
@@ -479,7 +480,7 @@ void chgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
         }
 
         if(posRegistro != -1){
-            strcpy(creacion.comando ,"rmgrp");
+            strcpy(creacion.comando ,"chgrp");
             strcpy(creacion.path ,"/");
             strcpy(creacion.nombre ,"");
             strcpy(creacion.contenido, nombre.c_str());
@@ -488,7 +489,9 @@ void chgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
             fwrite(&creacion, sizeof(registro), 1, archivo);
         }
     }
+
     //REINICIAR TODOS LOS ESPACIOS DEL INODO
+    bloque_inicial = linodo.i_block[0];
     for(int i = 0; i < 15; i++){
         linodo.i_block[i] = -1;
     }
@@ -511,9 +514,9 @@ void chgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
             eapuntador_triple.b_pointers[z] = -1;
         }
 
-        if(texto.size() > 64){
-            escribir = texto.substr(0, 64); 
-            texto = texto.substr(64, texto.length()-1);
+        if(texto.size() > 63){
+            escribir = texto.substr(0, 63); 
+            texto = texto.substr(63, texto.length()-1);
         }else{
             escribir = texto;
             continuar = false;

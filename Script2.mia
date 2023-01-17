@@ -77,7 +77,17 @@ mkusr -usr->user1 -pass->usuario -grp->usuarios
 mkusr -usr->admin1 -pass->admin -grp->admins
 mkusr -usr->admin2 -pass->admin -grp->admins
 
+#chgrp
+#chgrp -usr->admin1 -grp->root
+#chgrp -usr->admin2 -grp->root
 
+#rmusr
+rmusr -usr->admin2
+rmusr -usr->admin1
+
+#rmgrp
+#rmgrp -name->usuarios
+#rmgrp -name->admins
 
 #reporte
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/mbr.png" -name->mbr
@@ -87,5 +97,5 @@ rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MI
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/journal.png" -name->journaling
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/bm_inode.txt" -name->bm_inode
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/bm_block.txt" -name->bm_block
-rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/tree.png" -name->tree
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/blocks.png" -name->block
+rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/tree.png" -name->tree

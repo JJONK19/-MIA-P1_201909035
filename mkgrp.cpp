@@ -770,9 +770,9 @@ void mkgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
             eapuntador_triple.b_pointers[z] = -1;
         }
 
-        if(texto.size() > 64){
-            escribir = texto.substr(0, 64); 
-            texto = texto.substr(64, texto.length()-1);
+        if(texto.size() > 63){
+            escribir = texto.substr(0, 63); 
+            texto = texto.substr(63, texto.length()-1);
         }else{
             escribir = texto;
             continuar = false;

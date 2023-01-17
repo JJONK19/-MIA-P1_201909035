@@ -456,6 +456,7 @@ void rmgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
         }
     }
     //REINICIAR TODOS LOS ESPACIOS DEL INODO
+    bloque_inicial = linodo.i_block[0];
     for(int i = 0; i < 15; i++){
         linodo.i_block[i] = -1;
     }
@@ -478,9 +479,9 @@ void rmgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
             eapuntador_triple.b_pointers[z] = -1;
         }
 
-        if(texto.size() > 64){
-            escribir = texto.substr(0, 64); 
-            texto = texto.substr(64, texto.length()-1);
+        if(texto.size() > 63){
+            escribir = texto.substr(0, 63); 
+            texto = texto.substr(63, texto.length()-1);
         }else{
             escribir = texto;
             continuar = false;

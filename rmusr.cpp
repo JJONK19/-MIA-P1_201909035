@@ -47,7 +47,7 @@ void rmusr(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
             return tolower(c);
         });
 
-        if(tag == "name"){
+        if(tag == "usr"){
             nombre = value;
         }else{
             std::cout << "ERROR: El parametro " << tag << " no es valido." << std::endl;
@@ -389,14 +389,14 @@ void rmusr(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
     std::vector<std::string> lineas(std::sregex_token_iterator(texto.begin(), texto.end(), espacio, -1),
         std::sregex_token_iterator());
 
-    //VERIFICAR SI EL GRUPO EXISTE
+    //VERIFICAR SI EL USUARIO EXISTE
     for(int i = 0; i < lineas.size(); i++){
         //Separar por comas los atributos
         std::vector<std::string> atributos(std::sregex_token_iterator(lineas[i].begin(), lineas[i].end(), coma, -1),
             std::sregex_token_iterator());
         
         if(atributos.size() == 5){  //Los usuarios tienen cinco parametros
-            if(atributos[0] != "0"){
+            if(atributos[0] != "0"){ 
                 if(atributos[3] == nombre){
                     editar = "0,";
                     editar += atributos[1];
@@ -422,7 +422,7 @@ void rmusr(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
         fclose(archivo);
         return;
     }
-
+    
     //RECONSTRUIR EL ARCHIVO EDITADO
     texto = "";
     for(int i = 0; i < lineas.size(); i++){
@@ -450,7 +450,7 @@ void rmusr(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
         }
 
         if(posRegistro != -1){
-            strcpy(creacion.comando ,"rmgrp");
+            strcpy(creacion.comando ,"chgrp");
             strcpy(creacion.path ,"/");
             strcpy(creacion.nombre ,"");
             strcpy(creacion.contenido, nombre.c_str());
@@ -460,6 +460,7 @@ void rmusr(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
         }
     }
     //REINICIAR TODOS LOS ESPACIOS DEL INODO
+    bloque_inicial = linodo.i_block[0];
     for(int i = 0; i < 15; i++){
         linodo.i_block[i] = -1;
     }
@@ -482,9 +483,9 @@ void rmusr(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
             eapuntador_triple.b_pointers[z] = -1;
         }
 
-        if(texto.size() > 64){
-            escribir = texto.substr(0, 64); 
-            texto = texto.substr(64, texto.length()-1);
+        if(texto.size() > 63){
+            escribir = texto.substr(0, 63); 
+            texto = texto.substr(63, texto.length()-1);
         }else{
             escribir = texto;
             continuar = false;
