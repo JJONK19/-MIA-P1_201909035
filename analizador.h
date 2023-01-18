@@ -23,6 +23,7 @@
 #include "rmusr.h"
 #include "rmgrp.h"
 #include "chgrp.h"
+#include "chmod.h"
 #include "pause.h"
 
 

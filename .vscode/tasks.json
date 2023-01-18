@@ -16,7 +16,7 @@
                 "${fileDirname}/logout.cpp", "${fileDirname}/mkgrp.cpp",
                 "${fileDirname}/mkusr.cpp", "${fileDirname}/rmusr.cpp",
                 "${fileDirname}/rmgrp.cpp", "${fileDirname}/chgrp.cpp",
-                "${fileDirname}/pause.cpp",
+                "${fileDirname}/pause.cpp", "${fileDirname}/chmod.cpp",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],

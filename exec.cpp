@@ -102,7 +102,7 @@ void exec(std::vector<std::string> &parametros, usuario &sesion, std::vector<dis
         }else if(tipo == "rmusr"){
             rmusr(parametros, discos, sesion);
         }else if(tipo == "chmod"){
-            //chmod();
+            chmod(parametros, discos, sesion);
         }else if(tipo == "mkfile"){
             //mkfile();
         }else if(tipo == "cat"){

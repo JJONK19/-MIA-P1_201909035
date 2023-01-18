@@ -34,7 +34,7 @@ int main(){
         }
 
         //Ejecutar Instruccion
-        cout << "EJECUCIÓN:" <<endl;
+        cout << "EJECUCIÓN:" << endl;
         ejecutar(comando, sesion, discos);
         comando.clear();   
         cout << endl;
