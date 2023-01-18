@@ -471,8 +471,8 @@ void chgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
             fseek(archivo, posLectura, SEEK_SET);
             fread(&creacion, sizeof(registro), 1, archivo);
 
-            if(creacion.comando[0] = '\0'){
-                posRegistro = i;
+            if(creacion.comando[0] == '\0'){
+                posRegistro = posLectura;
                 break;
             }else{
                 posLectura += sizeof(registro);
@@ -480,10 +480,13 @@ void chgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
         }
 
         if(posRegistro != -1){
+            std::string contenido = nombre;
+            contenido += ",";
+            contenido += grupo;
             strcpy(creacion.comando ,"chgrp");
             strcpy(creacion.path ,"/");
             strcpy(creacion.nombre ,"");
-            strcpy(creacion.contenido, nombre.c_str());
+            strcpy(creacion.contenido, contenido.c_str());
             creacion.fecha = time(0);
             fseek(archivo, posRegistro, SEEK_SET);
             fwrite(&creacion, sizeof(registro), 1, archivo);

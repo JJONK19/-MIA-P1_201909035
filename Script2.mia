@@ -82,12 +82,16 @@ mkusr -usr->admin2 -pass->admin -grp->admins
 #chgrp -usr->admin2 -grp->root
 
 #rmusr
-rmusr -usr->admin2
-rmusr -usr->admin1
+#rmusr -usr->admin2
+#rmusr -usr->admin1
 
 #rmgrp
 #rmgrp -name->usuarios
 #rmgrp -name->admins
+
+#Login con diferente usuario 
+logout
+login -usr->admin1 -pass->admin -id->351Disco1
 
 #reporte
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/mbr.png" -name->mbr

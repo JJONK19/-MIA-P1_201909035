@@ -2,9 +2,9 @@ digraph G {
  rankdir = LR; node[shape = plaintext];
 INODO0[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5' BGCOLOR='#0f4c5c'>
 <TR><TD colspan ='2' ><b>Inodo 0</b></TD></TR>
-<TR><TD Align='left'>ID del Propietario:</TD><TD>1</TD></TR><TR><TD Align='left'>ID del Grupo:</TD><TD>1</TD></TR><TR><TD Align='left'>Tamaño del archivo:</TD><TD>0</TD></TR><TR><TD Align='left'>Ultima lectura:</TD><TD>Tue Jan 17 05:26:30 2023
-</TD></TR><TR><TD Align='left'>Fecha de Creación:</TD><TD>Tue Jan 17 05:26:30 2023
-</TD></TR><TR><TD Align='left'>Ultima modificación:</TD><TD>Tue Jan 17 05:26:30 2023
+<TR><TD Align='left'>ID del Propietario:</TD><TD>1</TD></TR><TR><TD Align='left'>ID del Grupo:</TD><TD>1</TD></TR><TR><TD Align='left'>Tamaño del archivo:</TD><TD>0</TD></TR><TR><TD Align='left'>Ultima lectura:</TD><TD>Tue Jan 17 22:32:20 2023
+</TD></TR><TR><TD Align='left'>Fecha de Creación:</TD><TD>Tue Jan 17 22:32:20 2023
+</TD></TR><TR><TD Align='left'>Ultima modificación:</TD><TD>Tue Jan 17 22:32:20 2023
 </TD></TR><TR><TD Align='left'>Bloque 0:</TD><TD PORT='P0'>0</TD></TR><TR><TD Align='left'>Bloque 1:</TD><TD PORT='P1'>-1</TD></TR><TR><TD Align='left'>Bloque 2:</TD><TD PORT='P2'>-1</TD></TR><TR><TD Align='left'>Bloque 3:</TD><TD PORT='P3'>-1</TD></TR><TR><TD Align='left'>Bloque 4:</TD><TD PORT='P4'>-1</TD></TR><TR><TD Align='left'>Bloque 5:</TD><TD PORT='P5'>-1</TD></TR><TR><TD Align='left'>Bloque 6:</TD><TD PORT='P6'>-1</TD></TR><TR><TD Align='left'>Bloque 7:</TD><TD PORT='P7'>-1</TD></TR><TR><TD Align='left'>Bloque 8:</TD><TD PORT='P8'>-1</TD></TR><TR><TD Align='left'>Bloque 9:</TD><TD PORT='P9'>-1</TD></TR><TR><TD Align='left'>Bloque 10:</TD><TD PORT='P10'>-1</TD></TR><TR><TD Align='left'>Bloque 11:</TD><TD PORT='P11'>-1</TD></TR><TR><TD Align='left'>Bloque 12:</TD><TD PORT='P12'>-1</TD></TR><TR><TD Align='left'>Bloque 13:</TD><TD PORT='P13'>-1</TD></TR><TR><TD Align='left'>Bloque 14:</TD><TD PORT='P14'>-1</TD></TR><TR><TD Align='left'>Tipo de Inodo:</TD><TD>0</TD></TR><TR><TD Align='left'>Permisos:</TD><TD>777</TD></TR></TABLE>>];
 BLOQUE0[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5' BGCOLOR='#8b8c89'>
 <TR><TD colspan ='2' ><b>Bloque Carpetas 0</b></TD></TR>
@@ -12,9 +12,9 @@ BLOQUE0[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5' BGCOLOR='#8b8
 INODO0:P0->BLOQUE0[minlen = 2];
 INODO1[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5' BGCOLOR='#0f4c5c'>
 <TR><TD colspan ='2' ><b>Inodo 1</b></TD></TR>
-<TR><TD Align='left'>ID del Propietario:</TD><TD>1</TD></TR><TR><TD Align='left'>ID del Grupo:</TD><TD>1</TD></TR><TR><TD Align='left'>Tamaño del archivo:</TD><TD>126</TD></TR><TR><TD Align='left'>Ultima lectura:</TD><TD>Tue Jan 17 05:26:30 2023
-</TD></TR><TR><TD Align='left'>Fecha de Creación:</TD><TD>Tue Jan 17 05:26:30 2023
-</TD></TR><TR><TD Align='left'>Ultima modificación:</TD><TD>Tue Jan 17 05:26:30 2023
+<TR><TD Align='left'>ID del Propietario:</TD><TD>1</TD></TR><TR><TD Align='left'>ID del Grupo:</TD><TD>1</TD></TR><TR><TD Align='left'>Tamaño del archivo:</TD><TD>126</TD></TR><TR><TD Align='left'>Ultima lectura:</TD><TD>Tue Jan 17 22:32:20 2023
+</TD></TR><TR><TD Align='left'>Fecha de Creación:</TD><TD>Tue Jan 17 22:32:20 2023
+</TD></TR><TR><TD Align='left'>Ultima modificación:</TD><TD>Tue Jan 17 22:32:20 2023
 </TD></TR><TR><TD Align='left'>Bloque 0:</TD><TD PORT='P0'>1</TD></TR><TR><TD Align='left'>Bloque 1:</TD><TD PORT='P1'>2</TD></TR><TR><TD Align='left'>Bloque 2:</TD><TD PORT='P2'>-1</TD></TR><TR><TD Align='left'>Bloque 3:</TD><TD PORT='P3'>-1</TD></TR><TR><TD Align='left'>Bloque 4:</TD><TD PORT='P4'>-1</TD></TR><TR><TD Align='left'>Bloque 5:</TD><TD PORT='P5'>-1</TD></TR><TR><TD Align='left'>Bloque 6:</TD><TD PORT='P6'>-1</TD></TR><TR><TD Align='left'>Bloque 7:</TD><TD PORT='P7'>-1</TD></TR><TR><TD Align='left'>Bloque 8:</TD><TD PORT='P8'>-1</TD></TR><TR><TD Align='left'>Bloque 9:</TD><TD PORT='P9'>-1</TD></TR><TR><TD Align='left'>Bloque 10:</TD><TD PORT='P10'>-1</TD></TR><TR><TD Align='left'>Bloque 11:</TD><TD PORT='P11'>-1</TD></TR><TR><TD Align='left'>Bloque 12:</TD><TD PORT='P12'>-1</TD></TR><TR><TD Align='left'>Bloque 13:</TD><TD PORT='P13'>-1</TD></TR><TR><TD Align='left'>Bloque 14:</TD><TD PORT='P14'>-1</TD></TR><TR><TD Align='left'>Tipo de Inodo:</TD><TD>1</TD></TR><TR><TD Align='left'>Permisos:</TD><TD>777</TD></TR></TABLE>>];
 BLOQUE0:P2->INODO1[minlen = 2];
 BLOQUE1[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5' BGCOLOR='#fb8b24'>
@@ -28,8 +28,8 @@ INODO1:P0->BLOQUE1[minlen = 2];
 BLOQUE2[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5' BGCOLOR='#fb8b24'>
 <TR><TD><b>Bloque Archivos 2</b></TD></TR>
 <TR><TD>,user1,usuario
-0,U,admins,admin1,admin
-0,U,admins,admin2,admin
+3,U,admins,admin1,admin
+4,U,admins,admin2,admin
 </TD></TR></TABLE>>];
 INODO1:P1->BLOQUE2[minlen = 2];
 }

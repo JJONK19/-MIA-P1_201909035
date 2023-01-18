@@ -729,8 +729,9 @@ void mkgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
             fseek(archivo, posLectura, SEEK_SET);
             fread(&creacion, sizeof(registro), 1, archivo);
 
-            if(creacion.comando[0] = '\0'){
-                posRegistro = i;
+            std::cout << creacion.comando << std::endl;
+            if(creacion.comando[0] == '\0'){
+                posRegistro = posLectura;
                 break;
             }else{
                 posLectura += sizeof(registro);
@@ -741,12 +742,13 @@ void mkgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
             strcpy(creacion.comando ,"mkgrp");
             strcpy(creacion.path ,"/");
             strcpy(creacion.nombre ,"");
-            strcpy(creacion.contenido, nuevo.c_str());
+            strcpy(creacion.contenido, nombre.c_str());
             creacion.fecha = time(0);
             fseek(archivo, posRegistro, SEEK_SET);
             fwrite(&creacion, sizeof(registro), 1, archivo);
         }
     }
+
     //REINICIAR TODOS LOS ESPACIOS DEL INODO
     for(int i = 0; i < 15; i++){
         linodo.i_block[i] = -1;

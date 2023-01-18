@@ -441,8 +441,8 @@ void rmusr(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
             fseek(archivo, posLectura, SEEK_SET);
             fread(&creacion, sizeof(registro), 1, archivo);
 
-            if(creacion.comando[0] = '\0'){
-                posRegistro = i;
+            if(creacion.comando[0] == '\0'){
+                posRegistro = posLectura;
                 break;
             }else{
                 posLectura += sizeof(registro);
@@ -450,7 +450,7 @@ void rmusr(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
         }
 
         if(posRegistro != -1){
-            strcpy(creacion.comando ,"chgrp");
+            strcpy(creacion.comando ,"rmusr");
             strcpy(creacion.path ,"/");
             strcpy(creacion.nombre ,"");
             strcpy(creacion.contenido, nombre.c_str());
