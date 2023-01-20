@@ -163,6 +163,8 @@ struct usuario{
     std::string pass;                   //Contraseña del usuario
     std::string disco;                  //ID de la particion en la que esta trabajando
     std::string grupo;                  //Grupo al que pertenece el usuario
+    std::string id_user;                //Numero de usuario 
+    std::string id_grp;                 //Numero de grupo
 };
 
 //********** CONSTANTES **********

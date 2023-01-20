@@ -405,6 +405,7 @@ void login(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                     sesion.pass = pass;
                     sesion.disco = id;
                     sesion.grupo = atributos[2];
+                    sesion.id_user = atributos[0];
                     existe_usuario = true;
                 }
             }else{
@@ -417,6 +418,26 @@ void login(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
         
         if(existe_usuario){
             break;
+        }
+    }
+
+    //BUSCAR EL GRUPO
+    for(int i = 0; i < lineas.size(); i++){
+        //Separar por comas los atributos
+        std::vector<std::string> atributos(std::sregex_token_iterator(lineas[i].begin(), lineas[i].end(), coma, -1),
+            std::sregex_token_iterator());
+        if(atributos.size() == 3){  //Los grupos tienen tres parametros
+            if(atributos[0] != "0"){
+                if(atributos[2] == sesion.grupo){
+                    sesion.id_grp = atributos[0];
+                    break;
+                }
+            }else{
+                if(atributos[2] == sesion.grupo){
+                    std::cout << "ERROR: El grupo al que el usuario pertenece fue eliminado." << std::endl;
+                    return;
+                }
+            }
         }
     }
 

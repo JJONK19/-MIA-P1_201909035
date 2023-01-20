@@ -91,11 +91,17 @@ mkusr -usr->admin2 -pass->admin -grp->admins
 
 #chmod
 #chmod -path->/ -r -ugo->766
-chmod -path->/users.txt -ugo->656
+#chmod -path->/users.txt -ugo->656
 
 #Login con diferente usuario 
-#logout
-#login -usr->admin1 -pass->admin -id->351Disco1
+logout
+login -usr->admin1 -pass->admin -id->351Disco1
+
+#mkdir
+mkdir -path->/home
+#mkdir –p -path->/home/user/docs/usac
+#mkdir -path->"/home/mis documentos/archivos diciembre"
+
 
 #reporte
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/mbr.png" -name->mbr

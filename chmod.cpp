@@ -373,7 +373,7 @@ void chmod(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             continuar = false;
                             break;
                         }else{
-                            int inodo_temporal = lcarpeta.b_content[j].b_inodo;
+                            inodo_temporal = lcarpeta.b_content[j].b_inodo;
                             posicion += 1;
                             posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_temporal);
                             fseek(archivo, posLectura, SEEK_SET);

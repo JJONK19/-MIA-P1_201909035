@@ -114,7 +114,7 @@ void exec(std::vector<std::string> &parametros, usuario &sesion, std::vector<dis
         }else if(tipo == "rename"){
             //rename();
         }else if(tipo == "mkdir"){
-            //mkdir();
+            mkdir(parametros, discos, sesion);
         }else if(tipo == "copy"){
             //copy();
         }else if(tipo == "move"){
