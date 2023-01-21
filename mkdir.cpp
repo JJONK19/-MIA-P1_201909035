@@ -163,7 +163,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
 
     //LEER EL INODO RAIZ
     posLectura = sblock.s_inode_start;
-    inodo_leido = posLectura;
+    inodo_leido = 0;
     fseek(archivo, posLectura, SEEK_SET);
     fread(&linodo, sizeof(inodo), 1, archivo);
 
@@ -178,7 +178,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
     while(continuar){
         bool crear = false;
         int inodo_temporal = -1;
-
+        
         //1. Buscar si existe la carpeta
         for(int i = 0; i < 15; i++){
             if(inodo_temporal != -1){
@@ -336,7 +336,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
 
                 for(int j = 0; j < 4; j++){
                     std::string carpeta(lcarpeta.b_content[j].b_name);
-        
+
                     if(carpeta == path[posicion]){
                         inodo_temporal = lcarpeta.b_content[j].b_inodo;
                         inodo_leido = inodo_temporal;
@@ -349,7 +349,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                 }
             }
         }
-
+        
         //Determinar si se puede crear
         if(inodo_temporal == -1){
             if(padre){
@@ -377,8 +377,23 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
             bapuntadores capuntador_triple;
             char c;
 
+            for(int z = 0; z < 16; z++){
+                capuntador_simple.b_pointers[z] = -1;
+                capuntador_doble.b_pointers[z] = -1;
+                capuntador_triple.b_pointers[z] = -1;
+            }
+
+            for(int z = 0; z < 4; z++){
+                strcpy(ccarpeta.b_content[z].b_name, "-");
+                ccarpeta.b_content[z].b_inodo = -1;
+            }
+
             //Buscar un espacio en los bloques directos
             for(int i = 0; i < 12; i++){
+
+                if(inodo_temporal != -1){
+                    break;
+                }
 
                 if(linodo.i_block[i] != -1){
                     posLectura = sblock.s_block_start + (sizeof(bcarpetas) * linodo.i_block[i]);
@@ -424,18 +439,17 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             posLectura = sblock.s_block_start + (sizeof(bcarpetas) * linodo.i_block[i]);
                             fseek(archivo, posLectura, SEEK_SET);
                             fwrite(&lcarpeta, sizeof(bcarpetas), 1, archivo);
+                            break;
                         }
                     }
-                }
-                
-                if(linodo.i_block[i] == -1){
+                }else{
                     buscar = false;
                     for(int a = 0; a < sblock.s_inodes_count; a++){
                         posLectura = sblock.s_bm_inode_start + (sizeof(char) * a);
                         fseek(archivo, posLectura, SEEK_SET);
                         fread(&c, sizeof(char), 1, archivo);
 
-                        if(c == '0'){
+                        if(c == '\0'){
                             inodo_temporal = a;
                             c = '1';
                             fseek(archivo, posLectura, SEEK_SET);
@@ -449,8 +463,8 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                         fseek(archivo, posLectura, SEEK_SET);
                         fread(&c, sizeof(char), 1, archivo);
 
-                        if(c == '0'){
-                            bloque_usado = a;
+                        if(c == '\0'){
+                            bloque_intermedio = a;
                             c = 'c';
                             fseek(archivo, posLectura, SEEK_SET);
                             fwrite(&c ,sizeof(char), 1 ,archivo);
@@ -463,8 +477,8 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                         fseek(archivo, posLectura, SEEK_SET);
                         fread(&c, sizeof(char), 1, archivo);
 
-                        if(c == '0'){
-                            bloque_intermedio = a;
+                        if(c == '\0'){
+                            bloque_usado = a;
                             c = 'c';
                             fseek(archivo, posLectura, SEEK_SET);
                             fwrite(&c ,sizeof(char), 1 ,archivo);
@@ -485,6 +499,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                     posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_leido);
                     fseek(archivo, posLectura, SEEK_SET);
                     fwrite(&linodo, sizeof(inodo), 1, archivo);
+                    break;
                 }
             }   
 
@@ -497,7 +512,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                         fseek(archivo, posLectura, SEEK_SET);
                         fread(&c, sizeof(char), 1, archivo);
 
-                        if(c == '0'){
+                        if(c == '\0'){
                             inodo_temporal = a;
                             c = '1';
                             fseek(archivo, posLectura, SEEK_SET);
@@ -511,8 +526,8 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                         fseek(archivo, posLectura, SEEK_SET);
                         fread(&c, sizeof(char), 1, archivo);
 
-                        if(c == '0'){
-                            bloque_usado = a;
+                        if(c == '\0'){
+                            bloque_apuntadors = a;
                             c = 'c';
                             fseek(archivo, posLectura, SEEK_SET);
                             fwrite(&c ,sizeof(char), 1 ,archivo);
@@ -525,7 +540,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                         fseek(archivo, posLectura, SEEK_SET);
                         fread(&c, sizeof(char), 1, archivo);
 
-                        if(c == '0'){
+                        if(c == '\0'){
                             bloque_intermedio = a;
                             c = 'c';
                             fseek(archivo, posLectura, SEEK_SET);
@@ -539,8 +554,8 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                         fseek(archivo, posLectura, SEEK_SET);
                         fread(&c, sizeof(char), 1, archivo);
 
-                        if(c == '0'){
-                            bloque_apuntadors = a;
+                        if(c == '\0'){
+                            bloque_usado = a;
                             c = 'c';
                             fseek(archivo, posLectura, SEEK_SET);
                             fwrite(&c ,sizeof(char), 1 ,archivo);
@@ -583,7 +598,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                 fseek(archivo, posLectura, SEEK_SET);
                                 fread(&c, sizeof(char), 1, archivo);
 
-                                if(c == '0'){
+                                if(c == '\0'){
                                     inodo_temporal = a;
                                     c = '1';
                                     fseek(archivo, posLectura, SEEK_SET);
@@ -597,7 +612,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                 fseek(archivo, posLectura, SEEK_SET);
                                 fread(&c, sizeof(char), 1, archivo);
 
-                                if(c == '0'){
+                                if(c == '\0'){
                                     bloque_usado = a;
                                     c = 'c';
                                     fseek(archivo, posLectura, SEEK_SET);
@@ -611,7 +626,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                 fseek(archivo, posLectura, SEEK_SET);
                                 fread(&c, sizeof(char), 1, archivo);
 
-                                if(c == '0'){
+                                if(c == '\0'){
                                     bloque_intermedio = a;
                                     c = 'c';
                                     fseek(archivo, posLectura, SEEK_SET);
@@ -649,7 +664,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                         fseek(archivo, posLectura, SEEK_SET);
                                         fread(&c, sizeof(char), 1, archivo);
 
-                                        if(c == '0'){
+                                        if(c == '\0'){
                                             inodo_temporal = a;
                                             c = '1';
                                             fseek(archivo, posLectura, SEEK_SET);
@@ -663,7 +678,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                         fseek(archivo, posLectura, SEEK_SET);
                                         fread(&c, sizeof(char), 1, archivo);
 
-                                        if(c == '0'){
+                                        if(c == '\0'){
                                             bloque_usado = a;
                                             c = 'c';
                                             fseek(archivo, posLectura, SEEK_SET);
@@ -698,7 +713,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                         fseek(archivo, posLectura, SEEK_SET);
                         fread(&c, sizeof(char), 1, archivo);
 
-                        if(c == '0'){
+                        if(c == '\0'){
                             inodo_temporal = a;
                             c = '1';
                             fseek(archivo, posLectura, SEEK_SET);
@@ -712,7 +727,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                         fseek(archivo, posLectura, SEEK_SET);
                         fread(&c, sizeof(char), 1, archivo);
 
-                        if(c == '0'){
+                        if(c == '\0'){
                             bloque_usado = a;
                             c = 'c';
                             fseek(archivo, posLectura, SEEK_SET);
@@ -726,7 +741,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                         fseek(archivo, posLectura, SEEK_SET);
                         fread(&c, sizeof(char), 1, archivo);
 
-                        if(c == '0'){
+                        if(c == '\0'){
                             bloque_intermedio = a;
                             c = 'c';
                             fseek(archivo, posLectura, SEEK_SET);
@@ -740,7 +755,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                         fseek(archivo, posLectura, SEEK_SET);
                         fread(&c, sizeof(char), 1, archivo);
 
-                        if(c == '0'){
+                        if(c == '\0'){
                             bloque_apuntadors = a;
                             c = 'c';
                             fseek(archivo, posLectura, SEEK_SET);
@@ -754,7 +769,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                         fseek(archivo, posLectura, SEEK_SET);
                         fread(&c, sizeof(char), 1, archivo);
 
-                        if(c == '0'){
+                        if(c == '\0'){
                             bloque_apuntadord = a;
                             c = 'c';
                             fseek(archivo, posLectura, SEEK_SET);
@@ -804,7 +819,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                 fseek(archivo, posLectura, SEEK_SET);
                                 fread(&c, sizeof(char), 1, archivo);
 
-                                if(c == '0'){
+                                if(c == '\0'){
                                     inodo_temporal = a;
                                     c = '1';
                                     fseek(archivo, posLectura, SEEK_SET);
@@ -818,7 +833,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                 fseek(archivo, posLectura, SEEK_SET);
                                 fread(&c, sizeof(char), 1, archivo);
 
-                                if(c == '0'){
+                                if(c == '\0'){
                                     bloque_usado = a;
                                     c = 'c';
                                     fseek(archivo, posLectura, SEEK_SET);
@@ -832,7 +847,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                 fseek(archivo, posLectura, SEEK_SET);
                                 fread(&c, sizeof(char), 1, archivo);
 
-                                if(c == '0'){
+                                if(c == '\0'){
                                     bloque_intermedio = a;
                                     c = 'c';
                                     fseek(archivo, posLectura, SEEK_SET);
@@ -846,7 +861,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                 fseek(archivo, posLectura, SEEK_SET);
                                 fread(&c, sizeof(char), 1, archivo);
 
-                                if(c == '0'){
+                                if(c == '\0'){
                                     bloque_apuntadors = a;
                                     c = 'c';
                                     fseek(archivo, posLectura, SEEK_SET);
@@ -890,7 +905,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                         fseek(archivo, posLectura, SEEK_SET);
                                         fread(&c, sizeof(char), 1, archivo);
 
-                                        if(c == '0'){
+                                        if(c == '\0'){
                                             inodo_temporal = a;
                                             c = '1';
                                             fseek(archivo, posLectura, SEEK_SET);
@@ -904,7 +919,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                         fseek(archivo, posLectura, SEEK_SET);
                                         fread(&c, sizeof(char), 1, archivo);
 
-                                        if(c == '0'){
+                                        if(c == '\0'){
                                             bloque_usado = a;
                                             c = 'c';
                                             fseek(archivo, posLectura, SEEK_SET);
@@ -918,7 +933,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                         fseek(archivo, posLectura, SEEK_SET);
                                         fread(&c, sizeof(char), 1, archivo);
 
-                                        if(c == '0'){
+                                        if(c == '\0'){
                                             bloque_intermedio = a;
                                             c = 'c';
                                             fseek(archivo, posLectura, SEEK_SET);
@@ -956,7 +971,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                                 fseek(archivo, posLectura, SEEK_SET);
                                                 fread(&c, sizeof(char), 1, archivo);
 
-                                                if(c == '0'){
+                                                if(c == '\0'){
                                                     inodo_temporal = a;
                                                     c = '1';
                                                     fseek(archivo, posLectura, SEEK_SET);
@@ -970,7 +985,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                                 fseek(archivo, posLectura, SEEK_SET);
                                                 fread(&c, sizeof(char), 1, archivo);
 
-                                                if(c == '0'){
+                                                if(c == '\0'){
                                                     bloque_usado = a;
                                                     c = 'c';
                                                     fseek(archivo, posLectura, SEEK_SET);
@@ -1011,7 +1026,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                         fseek(archivo, posLectura, SEEK_SET);
                         fread(&c, sizeof(char), 1, archivo);
 
-                        if(c == '0'){
+                        if(c == '\0'){
                             inodo_temporal = a;
                             c = '1';
                             fseek(archivo, posLectura, SEEK_SET);
@@ -1025,7 +1040,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                         fseek(archivo, posLectura, SEEK_SET);
                         fread(&c, sizeof(char), 1, archivo);
 
-                        if(c == '0'){
+                        if(c == '\0'){
                             bloque_usado = a;
                             c = 'c';
                             fseek(archivo, posLectura, SEEK_SET);
@@ -1039,7 +1054,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                         fseek(archivo, posLectura, SEEK_SET);
                         fread(&c, sizeof(char), 1, archivo);
 
-                        if(c == '0'){
+                        if(c == '\0'){
                             bloque_intermedio = a;
                             c = 'c';
                             fseek(archivo, posLectura, SEEK_SET);
@@ -1053,7 +1068,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                         fseek(archivo, posLectura, SEEK_SET);
                         fread(&c, sizeof(char), 1, archivo);
 
-                        if(c == '0'){
+                        if(c == '\0'){
                             bloque_apuntadors = a;
                             c = 'c';
                             fseek(archivo, posLectura, SEEK_SET);
@@ -1067,7 +1082,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                         fseek(archivo, posLectura, SEEK_SET);
                         fread(&c, sizeof(char), 1, archivo);
 
-                        if(c == '0'){
+                        if(c == '\0'){
                             bloque_apuntadord = a;
                             c = 'c';
                             fseek(archivo, posLectura, SEEK_SET);
@@ -1081,7 +1096,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                         fseek(archivo, posLectura, SEEK_SET);
                         fread(&c, sizeof(char), 1, archivo);
 
-                        if(c == '0'){
+                        if(c == '\0'){
                             bloque_apuntadort = a;
                             c = 'c';
                             fseek(archivo, posLectura, SEEK_SET);
@@ -1138,7 +1153,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                 fseek(archivo, posLectura, SEEK_SET);
                                 fread(&c, sizeof(char), 1, archivo);
 
-                                if(c == '0'){
+                                if(c == '\0'){
                                     inodo_temporal = a;
                                     c = '1';
                                     fseek(archivo, posLectura, SEEK_SET);
@@ -1152,7 +1167,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                 fseek(archivo, posLectura, SEEK_SET);
                                 fread(&c, sizeof(char), 1, archivo);
 
-                                if(c == '0'){
+                                if(c == '\0'){
                                     bloque_usado = a;
                                     c = 'c';
                                     fseek(archivo, posLectura, SEEK_SET);
@@ -1166,7 +1181,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                 fseek(archivo, posLectura, SEEK_SET);
                                 fread(&c, sizeof(char), 1, archivo);
 
-                                if(c == '0'){
+                                if(c == '\0'){
                                     bloque_intermedio = a;
                                     c = 'c';
                                     fseek(archivo, posLectura, SEEK_SET);
@@ -1180,7 +1195,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                 fseek(archivo, posLectura, SEEK_SET);
                                 fread(&c, sizeof(char), 1, archivo);
 
-                                if(c == '0'){
+                                if(c == '\0'){
                                     bloque_apuntadors = a;
                                     c = 'c';
                                     fseek(archivo, posLectura, SEEK_SET);
@@ -1194,7 +1209,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                 fseek(archivo, posLectura, SEEK_SET);
                                 fread(&c, sizeof(char), 1, archivo);
 
-                                if(c == '0'){
+                                if(c == '\0'){
                                     bloque_apuntadord = a;
                                     c = 'c';
                                     fseek(archivo, posLectura, SEEK_SET);
@@ -1243,7 +1258,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                         fseek(archivo, posLectura, SEEK_SET);
                                         fread(&c, sizeof(char), 1, archivo);
 
-                                        if(c == '0'){
+                                        if(c == '\0'){
                                             inodo_temporal = a;
                                             c = '1';
                                             fseek(archivo, posLectura, SEEK_SET);
@@ -1257,7 +1272,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                         fseek(archivo, posLectura, SEEK_SET);
                                         fread(&c, sizeof(char), 1, archivo);
 
-                                        if(c == '0'){
+                                        if(c == '\0'){
                                             bloque_usado = a;
                                             c = 'c';
                                             fseek(archivo, posLectura, SEEK_SET);
@@ -1271,7 +1286,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                         fseek(archivo, posLectura, SEEK_SET);
                                         fread(&c, sizeof(char), 1, archivo);
 
-                                        if(c == '0'){
+                                        if(c == '\0'){
                                             bloque_intermedio = a;
                                             c = 'c';
                                             fseek(archivo, posLectura, SEEK_SET);
@@ -1285,7 +1300,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                         fseek(archivo, posLectura, SEEK_SET);
                                         fread(&c, sizeof(char), 1, archivo);
 
-                                        if(c == '0'){
+                                        if(c == '\0'){
                                             bloque_apuntadors = a;
                                             c = 'c';
                                             fseek(archivo, posLectura, SEEK_SET);
@@ -1329,7 +1344,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                                 fseek(archivo, posLectura, SEEK_SET);
                                                 fread(&c, sizeof(char), 1, archivo);
 
-                                                if(c == '0'){
+                                                if(c == '\0'){
                                                     inodo_temporal = a;
                                                     c = '1';
                                                     fseek(archivo, posLectura, SEEK_SET);
@@ -1343,7 +1358,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                                 fseek(archivo, posLectura, SEEK_SET);
                                                 fread(&c, sizeof(char), 1, archivo);
 
-                                                if(c == '0'){
+                                                if(c == '\0'){
                                                     bloque_usado = a;
                                                     c = 'c';
                                                     fseek(archivo, posLectura, SEEK_SET);
@@ -1357,7 +1372,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                                 fseek(archivo, posLectura, SEEK_SET);
                                                 fread(&c, sizeof(char), 1, archivo);
 
-                                                if(c == '0'){
+                                                if(c == '\0'){
                                                     bloque_intermedio = a;
                                                     c = 'c';
                                                     fseek(archivo, posLectura, SEEK_SET);
@@ -1395,7 +1410,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                                         fseek(archivo, posLectura, SEEK_SET);
                                                         fread(&c, sizeof(char), 1, archivo);
 
-                                                        if(c == '0'){
+                                                        if(c == '\0'){
                                                             inodo_temporal = a;
                                                             c = '1';
                                                             fseek(archivo, posLectura, SEEK_SET);
@@ -1409,7 +1424,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                                         fseek(archivo, posLectura, SEEK_SET);
                                                         fread(&c, sizeof(char), 1, archivo);
 
-                                                        if(c == '0'){
+                                                        if(c == '\0'){
                                                             bloque_usado = a;
                                                             c = 'c';
                                                             fseek(archivo, posLectura, SEEK_SET);
@@ -1489,8 +1504,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
             continuar = false;
         }
 
+
+        std::cout << posicion << std::endl;
+        std::cout << path.size() << std::endl; 
         //4. Determinar si se finaliza el proceso 
-        if(linodo.i_type == '1' || posicion ==  path.size()){
+        if(linodo.i_type == '1' || posicion == path.size()){
             continuar = false;
         }
     }

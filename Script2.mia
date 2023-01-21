@@ -61,6 +61,7 @@ mkfs -id->352Disco1 -fs->3fs
 mkfs -id->353Disco1 
 
 #login
+logout
 login -usr->root -pass->123 -id->351Disco1
 #login -usr->root -pass->123 -id->351Disco1
 
@@ -99,6 +100,55 @@ login -usr->admin1 -pass->admin -id->351Disco1
 
 #mkdir
 mkdir -path->/home
+mkdir -path->/home
+mkdir -path->/users
+mkdir -path->/users1
+mkdir -path->/users2
+mkdir -path->/users3
+mkdir -path->/users4
+mkdir -path->/users5
+mkdir -path->/users6
+mkdir -path->/users7
+mkdir -path->/users8
+mkdir -path->/users9
+mkdir -path->/users10
+mkdir -path->/users11
+mkdir -path->/users12
+mkdir -path->/users13
+mkdir -path->/users14
+mkdir -path->/users15
+mkdir -path->/users16
+mkdir -path->/users17
+mkdir -path->/users18
+mkdir -path->/users19
+mkdir -path->/users20
+mkdir -path->/users21
+mkdir -path->/users22
+mkdir -path->/users23
+mkdir -path->/users24
+mkdir -path->/users25
+mkdir -path->/users26
+mkdir -path->/users27
+mkdir -path->/users28
+mkdir -path->/users29
+mkdir -path->/users30
+mkdir -path->/users31
+mkdir -path->/users32
+mkdir -path->/users33
+mkdir -path->/users34
+mkdir -path->/users35
+mkdir -path->/users36
+mkdir -path->/users37
+mkdir -path->/users38
+mkdir -path->/users39
+mkdir -path->/users40
+mkdir -path->/users41
+mkdir -path->/users42 
+mkdir -path->/users43
+mkdir -path->/users44
+
+#mkdir -path->/home/user 
+#mkdir -path->/home/user -p     
 #mkdir –p -path->/home/user/docs/usac
 #mkdir -path->"/home/mis documentos/archivos diciembre"
 
