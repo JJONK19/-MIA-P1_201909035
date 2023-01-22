@@ -29,6 +29,8 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
     bapuntadores lapuntador_triple;            //Para el manejo de bloques de apuntadores triples
     bool continuar = true;                     //Usado como bandera al buscar la ruta
     int inodo_leido = -1;                      //Inodo actual con el que se este trabajando
+    bool error_permisos = false;               //Bandera para indicar que no se pudo crear en una carpeta por su padre
+    bool error_padre = false;                  //Indica que una carpeta no existe y no se pudo crear
 
     //COMPROBACIÓN DE PARAMETROS
     for(int i = 1; i < parametros.size(); i++){
@@ -209,6 +211,12 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
 
                         if(carpeta == path[posicion]){
 
+                            //Actualizar Inodo
+                            linodo.i_atime = time(NULL);
+                            posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_leido);
+                            fseek(archivo, posLectura, SEEK_SET);
+                            fwrite(&linodo, sizeof(inodo), 1, archivo);
+                    
                             inodo_temporal = lcarpeta.b_content[k].b_inodo;
                             inodo_leido = inodo_temporal;
                             posicion += 1;
@@ -251,6 +259,12 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             std::string carpeta(lcarpeta.b_content[l].b_name);
 
                             if(carpeta == path[posicion]){
+                                //Actualizar Inodo
+                                linodo.i_atime = time(NULL);
+                                posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_leido);
+                                fseek(archivo, posLectura, SEEK_SET);
+                                fwrite(&linodo, sizeof(inodo), 1, archivo);
+                        
                                 inodo_temporal = lcarpeta.b_content[l].b_inodo;
                                 inodo_leido = inodo_temporal;
                                 posicion += 1;
@@ -306,13 +320,21 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             for(int m = 0; m < 4; m++){
                                 std::string carpeta(lcarpeta.b_content[m].b_name);
 
-                                inodo_temporal = lcarpeta.b_content[m].b_inodo;
-                                inodo_leido = inodo_temporal;
-                                posicion += 1;
-                                posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_temporal);
-                                fseek(archivo, posLectura, SEEK_SET);
-                                fread(&linodo, sizeof(inodo), 1, archivo);
-                                break;
+                                if(carpeta == path[posicion]){
+                                    //Actualizar Inodo
+                                    linodo.i_atime = time(NULL);
+                                    posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_leido);
+                                    fseek(archivo, posLectura, SEEK_SET);
+                                    fwrite(&linodo, sizeof(inodo), 1, archivo);
+                            
+                                    inodo_temporal = lcarpeta.b_content[m].b_inodo;
+                                    inodo_leido = inodo_temporal;
+                                    posicion += 1;
+                                    posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_temporal);
+                                    fseek(archivo, posLectura, SEEK_SET);
+                                    fread(&linodo, sizeof(inodo), 1, archivo);
+                                    break;
+                                }
                             }
 
                             if(inodo_temporal != -1){
@@ -338,6 +360,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                     std::string carpeta(lcarpeta.b_content[j].b_name);
 
                     if(carpeta == path[posicion]){
+                        linodo.i_atime = time(NULL);
+                        posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_leido);
+                        fseek(archivo, posLectura, SEEK_SET);
+                        fwrite(&linodo, sizeof(inodo), 1, archivo);
+                        
                         inodo_temporal = lcarpeta.b_content[j].b_inodo;
                         inodo_leido = inodo_temporal;
                         posicion += 1;
@@ -352,16 +379,51 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
         
         //Determinar si se puede crear
         if(inodo_temporal == -1){
-            if(padre){
-                crear = true;
+            //Revisar que tenga permisos sobre la carpeta
+            std::string permisos = std::to_string(linodo.i_perm);
+            int ugo = 3;      //1 para dueño, 2 para grupo, 3 para otros
+            bool acceso = false;
+
+            if(stoi(sesion.id_user) == linodo.i_uid){
+                ugo = 1;
+            }else if(stoi(sesion.id_grp) == linodo.i_gid){
+                ugo = 2;
             }
 
-            if(posicion == path.size() - 1){
-                crear = true;
+            if(ugo == 1){
+                if(permisos[0] == '2' || permisos[0] == '3' || permisos[0] == '6' || permisos[0] == '7'){
+                    acceso = true;
+                }
+            }else if(ugo == 2){
+                if(permisos[1] == '2' || permisos[1] == '3' || permisos[1] == '6' || permisos[1] == '7'){
+                    acceso = true;
+                }
+            }else{
+                if(permisos[2] == '2' || permisos[2] == '3' || permisos[2] == '6' || permisos[2] == '7'){
+                    acceso = true;
+                }
+            }
+
+            if(sesion.user == "root"){
+                acceso = true;
+            }
+
+            if(acceso){
+                if(padre){
+                    crear = true;
+                }
+
+                if(posicion == path.size() - 1){
+                    crear = true;
+                }else{
+                    error_padre = true;
+                }
+            }else{
+                continuar = false;
+                error_permisos = true;
             }
         }
 
-        
         //2. Crear la carpeta si no existe
         if(crear){
             bool buscar = true;
@@ -439,6 +501,10 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             posLectura = sblock.s_block_start + (sizeof(bcarpetas) * linodo.i_block[i]);
                             fseek(archivo, posLectura, SEEK_SET);
                             fwrite(&lcarpeta, sizeof(bcarpetas), 1, archivo);
+
+                            //Actualizar el superbloque
+                            sblock.s_free_blocks_count -= 1;
+                            sblock.s_free_inodes_count -= 1;
                             break;
                         }
                     }
@@ -499,6 +565,10 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                     posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_leido);
                     fseek(archivo, posLectura, SEEK_SET);
                     fwrite(&linodo, sizeof(inodo), 1, archivo);
+
+                    //Actualizar el superbloque
+                    sblock.s_free_blocks_count -= 2;
+                    sblock.s_free_inodes_count -= 1;
                     break;
                 }
             }   
@@ -528,7 +598,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
 
                         if(c == '\0'){
                             bloque_apuntadors = a;
-                            c = 'c';
+                            c = 'p';
                             fseek(archivo, posLectura, SEEK_SET);
                             fwrite(&c ,sizeof(char), 1 ,archivo);
                             break;
@@ -582,6 +652,10 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                     posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_leido);
                     fseek(archivo, posLectura, SEEK_SET);
                     fwrite(&linodo, sizeof(inodo), 1, archivo);
+
+                    //Actualizar el superbloque
+                    sblock.s_free_blocks_count -= 3;
+                    sblock.s_free_inodes_count -= 1;
                     
                 }else{    
                     //Leer el inodo de apuntadores
@@ -590,7 +664,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                     fread(&lapuntador, sizeof(bapuntadores), 1, archivo);
 
                     //Revisar si hay espacio
-                    for(int i = 0; i < 16; i++){
+                    for(int i = 0; i < 16; i++){ 
                         if(lapuntador.b_pointers[i] == -1){
                             buscar = false;
                             for(int a = 0; a < sblock.s_inodes_count; a++){
@@ -613,7 +687,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                 fread(&c, sizeof(char), 1, archivo);
 
                                 if(c == '\0'){
-                                    bloque_usado = a;
+                                    bloque_intermedio = a;
                                     c = 'c';
                                     fseek(archivo, posLectura, SEEK_SET);
                                     fwrite(&c ,sizeof(char), 1 ,archivo);
@@ -627,7 +701,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                 fread(&c, sizeof(char), 1, archivo);
 
                                 if(c == '\0'){
-                                    bloque_intermedio = a;
+                                    bloque_usado = a;
                                     c = 'c';
                                     fseek(archivo, posLectura, SEEK_SET);
                                     fwrite(&c ,sizeof(char), 1 ,archivo);
@@ -647,6 +721,10 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[12]);
                             fseek(archivo, posLectura, SEEK_SET);
                             fwrite(&lapuntador, sizeof(bapuntadores), 1, archivo);
+
+                            //Actualizar el superbloque
+                            sblock.s_free_blocks_count -= 2;
+                            sblock.s_free_inodes_count -= 1;
                             break;
                         }else{
                             posLectura = sblock.s_block_start + (sizeof(bcarpetas) * lapuntador.b_pointers[i]);
@@ -655,10 +733,10 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
 
                             for(int j = 0; j < 4; j++){
                                 std::string carpeta(lcarpeta.b_content[j].b_name);
-                    
+
                                 if(carpeta == "-"){
                                     buscar = false;
-
+                                    
                                     for(int a = 0; a < sblock.s_inodes_count; a++){
                                         posLectura = sblock.s_bm_inode_start + (sizeof(char) * a);
                                         fseek(archivo, posLectura, SEEK_SET);
@@ -689,9 +767,13 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
 
                                     strcpy(lcarpeta.b_content[j].b_name, path[posicion].c_str());
                                     lcarpeta.b_content[j].b_inodo = inodo_temporal;
-                                    posLectura = sblock.s_block_start + (sizeof(bcarpetas) * linodo.i_block[i]);
+                                    posLectura = sblock.s_block_start + (sizeof(bcarpetas) * lapuntador.b_pointers[i]);
                                     fseek(archivo, posLectura, SEEK_SET);
                                     fwrite(&lcarpeta, sizeof(bcarpetas), 1, archivo);
+
+                                    //Actualizar el superbloque
+                                    sblock.s_free_blocks_count -= 1;
+                                    sblock.s_free_inodes_count -= 1;
                                     break;
                                 }
                             }
@@ -728,8 +810,22 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                         fread(&c, sizeof(char), 1, archivo);
 
                         if(c == '\0'){
-                            bloque_usado = a;
-                            c = 'c';
+                            bloque_apuntadord = a;
+                            c = 'p';
+                            fseek(archivo, posLectura, SEEK_SET);
+                            fwrite(&c ,sizeof(char), 1 ,archivo);
+                            break;
+                        }
+                    }
+
+                    for(int a = 0; a < sblock.s_blocks_count; a++){
+                        posLectura = sblock.s_bm_block_start + (sizeof(char) * a);
+                        fseek(archivo, posLectura, SEEK_SET);
+                        fread(&c, sizeof(char), 1, archivo);
+
+                        if(c == '\0'){
+                            bloque_apuntadors = a;
+                            c = 'p';
                             fseek(archivo, posLectura, SEEK_SET);
                             fwrite(&c ,sizeof(char), 1 ,archivo);
                             break;
@@ -756,21 +852,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                         fread(&c, sizeof(char), 1, archivo);
 
                         if(c == '\0'){
-                            bloque_apuntadors = a;
-                            c = 'c';
-                            fseek(archivo, posLectura, SEEK_SET);
-                            fwrite(&c ,sizeof(char), 1 ,archivo);
-                            break;
-                        }
-                    }
-
-                    for(int a = 0; a < sblock.s_blocks_count; a++){
-                        posLectura = sblock.s_bm_block_start + (sizeof(char) * a);
-                        fseek(archivo, posLectura, SEEK_SET);
-                        fread(&c, sizeof(char), 1, archivo);
-
-                        if(c == '\0'){
-                            bloque_apuntadord = a;
+                            bloque_usado = a;
                             c = 'c';
                             fseek(archivo, posLectura, SEEK_SET);
                             fwrite(&c ,sizeof(char), 1 ,archivo);
@@ -803,6 +885,10 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                     posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_leido);
                     fseek(archivo, posLectura, SEEK_SET);
                     fwrite(&linodo, sizeof(inodo), 1, archivo);
+
+                    //Actualizar el superbloque
+                    sblock.s_free_blocks_count -= 4;
+                    sblock.s_free_inodes_count -= 1;
                     
                 }else{    
 
@@ -834,8 +920,8 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                 fread(&c, sizeof(char), 1, archivo);
 
                                 if(c == '\0'){
-                                    bloque_usado = a;
-                                    c = 'c';
+                                    bloque_apuntadors = a;
+                                    c = 'p';
                                     fseek(archivo, posLectura, SEEK_SET);
                                     fwrite(&c ,sizeof(char), 1 ,archivo);
                                     break;
@@ -862,7 +948,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                 fread(&c, sizeof(char), 1, archivo);
 
                                 if(c == '\0'){
-                                    bloque_apuntadors = a;
+                                    bloque_usado = a;
                                     c = 'c';
                                     fseek(archivo, posLectura, SEEK_SET);
                                     fwrite(&c ,sizeof(char), 1 ,archivo);
@@ -888,6 +974,10 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[13]);
                             fseek(archivo, posLectura, SEEK_SET);
                             fwrite(&lapuntador_doble, sizeof(bapuntadores), 1, archivo);
+
+                            //Actualizar el superbloque
+                            sblock.s_free_blocks_count -= 3;
+                            sblock.s_free_inodes_count -= 1;
                             break;
 
                         }else{
@@ -920,7 +1010,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                         fread(&c, sizeof(char), 1, archivo);
 
                                         if(c == '\0'){
-                                            bloque_usado = a;
+                                            bloque_intermedio = a;
                                             c = 'c';
                                             fseek(archivo, posLectura, SEEK_SET);
                                             fwrite(&c ,sizeof(char), 1 ,archivo);
@@ -934,7 +1024,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                         fread(&c, sizeof(char), 1, archivo);
 
                                         if(c == '\0'){
-                                            bloque_intermedio = a;
+                                            bloque_usado = a;
                                             c = 'c';
                                             fseek(archivo, posLectura, SEEK_SET);
                                             fwrite(&c ,sizeof(char), 1 ,archivo);
@@ -954,6 +1044,10 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                     posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_doble.b_pointers[i]);
                                     fseek(archivo, posLectura, SEEK_SET);
                                     fwrite(&lapuntador, sizeof(bapuntadores), 1, archivo);
+
+                                    //Actualizar el superbloque
+                                    sblock.s_free_blocks_count -= 2;
+                                    sblock.s_free_inodes_count -= 1;
                                     break;
                                 }else{
                                     posLectura = sblock.s_block_start + (sizeof(bcarpetas) * lapuntador.b_pointers[j]);
@@ -999,6 +1093,10 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                             posLectura = sblock.s_block_start + (sizeof(bcarpetas) * linodo.i_block[j]);
                                             fseek(archivo, posLectura, SEEK_SET);
                                             fwrite(&lcarpeta, sizeof(bcarpetas), 1, archivo);
+
+                                            //Actualizar el superbloque
+                                            sblock.s_free_blocks_count -= 1;
+                                            sblock.s_free_inodes_count -= 1;
                                             break;
                                         }
                                     }
@@ -1041,8 +1139,36 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                         fread(&c, sizeof(char), 1, archivo);
 
                         if(c == '\0'){
-                            bloque_usado = a;
-                            c = 'c';
+                            bloque_apuntadort = a;
+                            c = 'p';
+                            fseek(archivo, posLectura, SEEK_SET);
+                            fwrite(&c ,sizeof(char), 1 ,archivo);
+                            break;
+                        }
+                    }
+
+                    for(int a = 0; a < sblock.s_blocks_count; a++){
+                        posLectura = sblock.s_bm_block_start + (sizeof(char) * a);
+                        fseek(archivo, posLectura, SEEK_SET);
+                        fread(&c, sizeof(char), 1, archivo);
+
+                        if(c == '\0'){
+                            bloque_apuntadord = a;
+                            c = 'p';
+                            fseek(archivo, posLectura, SEEK_SET);
+                            fwrite(&c ,sizeof(char), 1 ,archivo);
+                            break;
+                        }
+                    }
+
+                    for(int a = 0; a < sblock.s_blocks_count; a++){
+                        posLectura = sblock.s_bm_block_start + (sizeof(char) * a);
+                        fseek(archivo, posLectura, SEEK_SET);
+                        fread(&c, sizeof(char), 1, archivo);
+
+                        if(c == '\0'){
+                            bloque_apuntadors = a;
+                            c = 'p';
                             fseek(archivo, posLectura, SEEK_SET);
                             fwrite(&c ,sizeof(char), 1 ,archivo);
                             break;
@@ -1069,35 +1195,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                         fread(&c, sizeof(char), 1, archivo);
 
                         if(c == '\0'){
-                            bloque_apuntadors = a;
-                            c = 'c';
-                            fseek(archivo, posLectura, SEEK_SET);
-                            fwrite(&c ,sizeof(char), 1 ,archivo);
-                            break;
-                        }
-                    }
-
-                    for(int a = 0; a < sblock.s_blocks_count; a++){
-                        posLectura = sblock.s_bm_block_start + (sizeof(char) * a);
-                        fseek(archivo, posLectura, SEEK_SET);
-                        fread(&c, sizeof(char), 1, archivo);
-
-                        if(c == '\0'){
-                            bloque_apuntadord = a;
-                            c = 'c';
-                            fseek(archivo, posLectura, SEEK_SET);
-                            fwrite(&c ,sizeof(char), 1 ,archivo);
-                            break;
-                        }
-                    }
-
-                    for(int a = 0; a < sblock.s_blocks_count; a++){
-                        posLectura = sblock.s_bm_block_start + (sizeof(char) * a);
-                        fseek(archivo, posLectura, SEEK_SET);
-                        fread(&c, sizeof(char), 1, archivo);
-
-                        if(c == '\0'){
-                            bloque_apuntadort = a;
+                            bloque_usado = a;
                             c = 'c';
                             fseek(archivo, posLectura, SEEK_SET);
                             fwrite(&c ,sizeof(char), 1 ,archivo);
@@ -1136,6 +1234,10 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                     posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_leido);
                     fseek(archivo, posLectura, SEEK_SET);
                     fwrite(&linodo, sizeof(inodo), 1, archivo);
+
+                    sblock.s_free_blocks_count -= 5;
+                    sblock.s_free_inodes_count -= 1;
+                    break;
                     
                 }else{
 
@@ -1168,8 +1270,22 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                 fread(&c, sizeof(char), 1, archivo);
 
                                 if(c == '\0'){
-                                    bloque_usado = a;
-                                    c = 'c';
+                                    bloque_apuntadord = a;
+                                    c = 'p';
+                                    fseek(archivo, posLectura, SEEK_SET);
+                                    fwrite(&c ,sizeof(char), 1 ,archivo);
+                                    break;
+                                }
+                            }
+
+                            for(int a = 0; a < sblock.s_blocks_count; a++){
+                                posLectura = sblock.s_bm_block_start + (sizeof(char) * a);
+                                fseek(archivo, posLectura, SEEK_SET);
+                                fread(&c, sizeof(char), 1, archivo);
+
+                                if(c == '\0'){
+                                    bloque_apuntadors = a;
+                                    c = 'p';
                                     fseek(archivo, posLectura, SEEK_SET);
                                     fwrite(&c ,sizeof(char), 1 ,archivo);
                                     break;
@@ -1196,21 +1312,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                 fread(&c, sizeof(char), 1, archivo);
 
                                 if(c == '\0'){
-                                    bloque_apuntadors = a;
-                                    c = 'c';
-                                    fseek(archivo, posLectura, SEEK_SET);
-                                    fwrite(&c ,sizeof(char), 1 ,archivo);
-                                    break;
-                                }
-                            }
-
-                            for(int a = 0; a < sblock.s_blocks_count; a++){
-                                posLectura = sblock.s_bm_block_start + (sizeof(char) * a);
-                                fseek(archivo, posLectura, SEEK_SET);
-                                fread(&c, sizeof(char), 1, archivo);
-
-                                if(c == '\0'){
-                                    bloque_apuntadord = a;
+                                    bloque_usado = a;
                                     c = 'c';
                                     fseek(archivo, posLectura, SEEK_SET);
                                     fwrite(&c ,sizeof(char), 1 ,archivo);
@@ -1242,6 +1344,9 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[14]);
                             fseek(archivo, posLectura, SEEK_SET);
                             fwrite(&lapuntador_triple, sizeof(bapuntadores), 1, archivo);
+
+                            sblock.s_free_blocks_count -= 4;
+                            sblock.s_free_inodes_count -= 1;
                             break;
 
                         }else{
@@ -1273,8 +1378,8 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                         fread(&c, sizeof(char), 1, archivo);
 
                                         if(c == '\0'){
-                                            bloque_usado = a;
-                                            c = 'c';
+                                            bloque_apuntadors = a;
+                                            c = 'p';
                                             fseek(archivo, posLectura, SEEK_SET);
                                             fwrite(&c ,sizeof(char), 1 ,archivo);
                                             break;
@@ -1301,7 +1406,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                         fread(&c, sizeof(char), 1, archivo);
 
                                         if(c == '\0'){
-                                            bloque_apuntadors = a;
+                                            bloque_usado = a;
                                             c = 'c';
                                             fseek(archivo, posLectura, SEEK_SET);
                                             fwrite(&c ,sizeof(char), 1 ,archivo);
@@ -1327,6 +1432,9 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                     posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_triple.b_pointers[i]);
                                     fseek(archivo, posLectura, SEEK_SET);
                                     fwrite(&lapuntador_doble, sizeof(bapuntadores), 1, archivo);
+
+                                    sblock.s_free_blocks_count -= 3;
+                                    sblock.s_free_inodes_count -= 1;
                                     break;
 
                                 }else{
@@ -1359,7 +1467,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                                 fread(&c, sizeof(char), 1, archivo);
 
                                                 if(c == '\0'){
-                                                    bloque_usado = a;
+                                                    bloque_intermedio = a;
                                                     c = 'c';
                                                     fseek(archivo, posLectura, SEEK_SET);
                                                     fwrite(&c ,sizeof(char), 1 ,archivo);
@@ -1373,7 +1481,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                                 fread(&c, sizeof(char), 1, archivo);
 
                                                 if(c == '\0'){
-                                                    bloque_intermedio = a;
+                                                    bloque_usado = a;
                                                     c = 'c';
                                                     fseek(archivo, posLectura, SEEK_SET);
                                                     fwrite(&c ,sizeof(char), 1 ,archivo);
@@ -1393,6 +1501,9 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                             posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_doble.b_pointers[j]);
                                             fseek(archivo, posLectura, SEEK_SET);
                                             fwrite(&lapuntador, sizeof(bapuntadores), 1, archivo);
+
+                                            sblock.s_free_blocks_count -= 2;
+                                            sblock.s_free_inodes_count -= 1;
                                             break;
                                         }else{
                                             posLectura = sblock.s_block_start + (sizeof(bcarpetas) * lapuntador.b_pointers[k]);
@@ -1438,6 +1549,8 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                                     posLectura = sblock.s_block_start + (sizeof(bcarpetas) * linodo.i_block[k]);
                                                     fseek(archivo, posLectura, SEEK_SET);
                                                     fwrite(&lcarpeta, sizeof(bcarpetas), 1, archivo);
+                                                    sblock.s_free_blocks_count -= 1;
+                                                    sblock.s_free_inodes_count -= 1;
                                                     break;
                                                 }
                                             }
@@ -1497,6 +1610,10 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
             fread(&linodo, sizeof(inodo), 1, archivo);
             inodo_leido = inodo_temporal;
             posicion += 1;
+
+            //Actualizar el superbloque
+            fseek(archivo, posInicio, SEEK_SET);
+            fwrite(&sblock, sizeof(sbloque), 1, archivo);
         }
         
         //3. Finalizar el proceso si no existe la carpeta y no esta habilitado -p
@@ -1504,16 +1621,19 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
             continuar = false;
         }
 
-
-        std::cout << posicion << std::endl;
-        std::cout << path.size() << std::endl; 
         //4. Determinar si se finaliza el proceso 
         if(linodo.i_type == '1' || posicion == path.size()){
             continuar = false;
         }
     }
 
-    if(posicion != path.size()){
+    if(error_padre){
+        std::cout << "ERROR: Error en la ruta. Una de las carpetas no existe." << std::endl;
+        return;
+    }else if(error_permisos){
+        std::cout << "ERROR: No posee los permisos para crear la carpeta." << std::endl;
+        return;
+    }else if(posicion != path.size()){
         std::cout << "ERROR: Ocurrió un error. No se pudo crear la carpeta." << std::endl;
         return;
     }

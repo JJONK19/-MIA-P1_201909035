@@ -99,59 +99,21 @@ logout
 login -usr->admin1 -pass->admin -id->351Disco1
 
 #mkdir
-mkdir -path->/home
-mkdir -path->/home
-mkdir -path->/users
-mkdir -path->/users1
-mkdir -path->/users2
-mkdir -path->/users3
-mkdir -path->/users4
-mkdir -path->/users5
-mkdir -path->/users6
-mkdir -path->/users7
-mkdir -path->/users8
-mkdir -path->/users9
-mkdir -path->/users10
-mkdir -path->/users11
-mkdir -path->/users12
-mkdir -path->/users13
-mkdir -path->/users14
-mkdir -path->/users15
-mkdir -path->/users16
-mkdir -path->/users17
-mkdir -path->/users18
-mkdir -path->/users19
-mkdir -path->/users20
-mkdir -path->/users21
-mkdir -path->/users22
-mkdir -path->/users23
-mkdir -path->/users24
-mkdir -path->/users25
-mkdir -path->/users26
-mkdir -path->/users27
-mkdir -path->/users28
-mkdir -path->/users29
-mkdir -path->/users30
-mkdir -path->/users31
-mkdir -path->/users32
-mkdir -path->/users33
-mkdir -path->/users34
-mkdir -path->/users35
-mkdir -path->/users36
-mkdir -path->/users37
-mkdir -path->/users38
-mkdir -path->/users39
-mkdir -path->/users40
-mkdir -path->/users41
-mkdir -path->/users42 
-mkdir -path->/users43
-mkdir -path->/users44
-
+#mkdir -path->/home
 #mkdir -path->/home/user 
-#mkdir -path->/home/user -p     
-#mkdir –p -path->/home/user/docs/usac
-#mkdir -path->"/home/mis documentos/archivos diciembre"
+mkdir -path->/home/user -p     
+#mkdir -p -path->/home/user/docs/usac
+#mkdir -p -path->"/home/mis documentos/archivos diciembre" Nota: Hay un error aca ya que el nombre debe de tener 12 caracteres maximo
 
+logout 
+login -usr->root -pass->123 -id->351Disco1
+mkdir -path->/home/user/xd -p
+
+pause
+
+logout
+login -usr->admin1 -pass->admin -id->351Disco1
+mkdir -path->/home/user/xd/a -p
 
 #reporte
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/mbr.png" -name->mbr
@@ -161,5 +123,5 @@ rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MI
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/journal.png" -name->journaling
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/bm_inode.txt" -name->bm_inode
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/bm_block.txt" -name->bm_block
-rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/blocks.png" -name->block
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/tree.png" -name->tree
+rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/blocks.png" -name->block

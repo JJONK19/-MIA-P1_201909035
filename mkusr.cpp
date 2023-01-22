@@ -472,6 +472,11 @@ void mkusr(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
         comprobar_bloques == true;
     }
 
+    //ACTUALIZAR EL SUPERBLOQUE
+    sblock.s_free_blocks_count -= bloques_finales - bloques_iniciales; 
+    fseek(archivo, posInicio, SEEK_SET);
+    fwrite(&sblock, sizeof(sbloque), 1, archivo);
+
     //DETERMINAR EL NUMERO DE BLOQUES NECESARIOS - DIRECTOS
     int buscados = bloques_finales - bloques_iniciales;
     if(comprobar_bloques){
