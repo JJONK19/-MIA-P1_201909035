@@ -46,7 +46,7 @@ void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos){
     }else if(tipo == "chmod"){
         chmod(parametros, discos, sesion);
     }else if(tipo == "mkfile"){
-        //mkfile();
+        mkfile(parametros, discos, sesion);
     }else if(tipo == "cat"){
         //cat();
     }else if(tipo == "remove"){

@@ -96,6 +96,13 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
     std::vector<std::string> path(std::sregex_token_iterator(ruta.begin(), ruta.end(), separador, -1),
                     std::sregex_token_iterator());
 
+    //PREPARACIÓN DE PARAMETROS - Reducir el tamaño de los nombres al limite
+    for(int i = 0; i < path.size(); i++){
+        if(path[i].size() >= 12){
+            path[i] = path[i].substr(0, 11);
+        }
+    }
+
 
     //REMOVER NUMEROS DEL ID PARA OBTENER EL NOMBRE DEL DISCO
     int posicion = 0;
@@ -411,9 +418,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
             if(acceso){
                 if(padre){
                     crear = true;
-                }
-
-                if(posicion == path.size() - 1){
+                }else if(posicion == path.size() - 1){
                     crear = true;
                 }else{
                     error_padre = true;
@@ -480,6 +485,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                     fwrite(&c ,sizeof(char), 1 ,archivo);
                                     break;
                                 }
+
+                                if(a == sblock.s_inodes_count - 1){
+                                    std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                                    return;
+                                }
                             }
 
                             for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -493,6 +503,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                     fseek(archivo, posLectura, SEEK_SET);
                                     fwrite(&c ,sizeof(char), 1 ,archivo);
                                     break;
+                                }
+
+                                if(a == sblock.s_blocks_count - 1){
+                                    std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                    return;
                                 }
                             }
 
@@ -522,6 +537,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             fwrite(&c ,sizeof(char), 1 ,archivo);
                             break;
                         }
+
+                        if(a == sblock.s_inodes_count - 1){
+                            std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                            return;
+                        }
                     }
 
                     for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -536,6 +556,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             fwrite(&c ,sizeof(char), 1 ,archivo);
                             break;
                         }
+
+                        if(a == sblock.s_blocks_count - 1){
+                            std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            return;
+                        }
                     }
 
                     for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -549,6 +574,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             fseek(archivo, posLectura, SEEK_SET);
                             fwrite(&c ,sizeof(char), 1 ,archivo);
                             break;
+                        }
+
+                        if(a == sblock.s_blocks_count - 1){
+                            std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            return;
                         }
                     }
 
@@ -589,6 +619,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             fwrite(&c ,sizeof(char), 1 ,archivo);
                             break;
                         }
+
+                        if(a == sblock.s_inodes_count - 1){
+                            std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                            return;
+                        }
                     }
 
                     for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -602,6 +637,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             fseek(archivo, posLectura, SEEK_SET);
                             fwrite(&c ,sizeof(char), 1 ,archivo);
                             break;
+                        }
+
+                        if(a == sblock.s_blocks_count - 1){
+                            std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            return;
                         }
                     }
 
@@ -617,6 +657,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             fwrite(&c ,sizeof(char), 1 ,archivo);
                             break;
                         }
+
+                        if(a == sblock.s_blocks_count - 1){
+                            std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            return;
+                        }
                     }
 
                     for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -630,6 +675,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             fseek(archivo, posLectura, SEEK_SET);
                             fwrite(&c ,sizeof(char), 1 ,archivo);
                             break;
+                        }
+
+                        if(a == sblock.s_blocks_count - 1){
+                            std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            return;
                         }
                     }
 
@@ -679,6 +729,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                     fwrite(&c ,sizeof(char), 1 ,archivo);
                                     break;
                                 }
+
+                                if(a == sblock.s_inodes_count - 1){
+                                    std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                                    return;
+                                }
                             }
 
                             for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -693,6 +748,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                     fwrite(&c ,sizeof(char), 1 ,archivo);
                                     break;
                                 }
+
+                                if(a == sblock.s_blocks_count - 1){
+                                    std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                    return;
+                                }
                             }
 
                             for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -706,6 +766,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                     fseek(archivo, posLectura, SEEK_SET);
                                     fwrite(&c ,sizeof(char), 1 ,archivo);
                                     break;
+                                }
+
+                                if(a == sblock.s_blocks_count - 1){
+                                    std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                    return;
                                 }
                             }
 
@@ -749,6 +814,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                             fwrite(&c ,sizeof(char), 1 ,archivo);
                                             break;
                                         }
+
+                                        if(a == sblock.s_inodes_count - 1){
+                                            std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                                            return;
+                                        }
                                     }
 
                                     for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -762,6 +832,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                             fseek(archivo, posLectura, SEEK_SET);
                                             fwrite(&c ,sizeof(char), 1 ,archivo);
                                             break;
+                                        }
+
+                                        if(a == sblock.s_blocks_count - 1){
+                                            std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                            return;
                                         }
                                     }
 
@@ -802,6 +877,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             fwrite(&c ,sizeof(char), 1 ,archivo);
                             break;
                         }
+
+                        if(a == sblock.s_inodes_count - 1){
+                            std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                            return;
+                        }
                     }
 
                     for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -815,6 +895,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             fseek(archivo, posLectura, SEEK_SET);
                             fwrite(&c ,sizeof(char), 1 ,archivo);
                             break;
+                        }
+
+                        if(a == sblock.s_blocks_count - 1){
+                            std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            return;
                         }
                     }
 
@@ -830,6 +915,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             fwrite(&c ,sizeof(char), 1 ,archivo);
                             break;
                         }
+
+                        if(a == sblock.s_blocks_count - 1){
+                            std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            return;
+                        }
                     }
 
                     for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -844,6 +934,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             fwrite(&c ,sizeof(char), 1 ,archivo);
                             break;
                         }
+
+                        if(a == sblock.s_blocks_count - 1){
+                            std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            return;
+                        }
                     }
 
                     for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -857,6 +952,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             fseek(archivo, posLectura, SEEK_SET);
                             fwrite(&c ,sizeof(char), 1 ,archivo);
                             break;
+                        }
+
+                        if(a == sblock.s_blocks_count - 1){
+                            std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            return;
                         }
                     }
 
@@ -912,6 +1012,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                     fwrite(&c ,sizeof(char), 1 ,archivo);
                                     break;
                                 }
+
+                                if(a == sblock.s_inodes_count - 1){
+                                    std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                                    return;
+                                }
                             }
 
                             for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -925,6 +1030,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                     fseek(archivo, posLectura, SEEK_SET);
                                     fwrite(&c ,sizeof(char), 1 ,archivo);
                                     break;
+                                }
+
+                                if(a == sblock.s_blocks_count - 1){
+                                    std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                    return;
                                 }
                             }
 
@@ -940,6 +1050,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                     fwrite(&c ,sizeof(char), 1 ,archivo);
                                     break;
                                 }
+
+                                if(a == sblock.s_blocks_count - 1){
+                                    std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                    return;
+                                }
                             }
 
                             for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -953,6 +1068,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                     fseek(archivo, posLectura, SEEK_SET);
                                     fwrite(&c ,sizeof(char), 1 ,archivo);
                                     break;
+                                }
+
+                                if(a == sblock.s_blocks_count - 1){
+                                    std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                    return;
                                 }
                             }
 
@@ -1002,6 +1122,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                             fwrite(&c ,sizeof(char), 1 ,archivo);
                                             break;
                                         }
+
+                                        if(a == sblock.s_inodes_count - 1){
+                                            std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                                            return;
+                                        }
                                     }
 
                                     for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -1016,6 +1141,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                             fwrite(&c ,sizeof(char), 1 ,archivo);
                                             break;
                                         }
+
+                                        if(a == sblock.s_blocks_count - 1){
+                                            std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                            return;
+                                        }
                                     }
 
                                     for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -1029,6 +1159,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                             fseek(archivo, posLectura, SEEK_SET);
                                             fwrite(&c ,sizeof(char), 1 ,archivo);
                                             break;
+                                        }
+
+                                        if(a == sblock.s_blocks_count - 1){
+                                            std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                            return;
                                         }
                                     }
 
@@ -1072,6 +1207,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                                     fwrite(&c ,sizeof(char), 1 ,archivo);
                                                     break;
                                                 }
+
+                                                if(a == sblock.s_inodes_count - 1){
+                                                    std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                                                    return;
+                                                }
                                             }
 
                                             for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -1085,6 +1225,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                                     fseek(archivo, posLectura, SEEK_SET);
                                                     fwrite(&c ,sizeof(char), 1 ,archivo);
                                                     break;
+                                                }
+
+                                                if(a == sblock.s_blocks_count - 1){
+                                                    std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                                    return;
                                                 }
                                             }
 
@@ -1131,6 +1276,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             fwrite(&c ,sizeof(char), 1 ,archivo);
                             break;
                         }
+
+                        if(a == sblock.s_inodes_count - 1){
+                            std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                            return;
+                        }
                     }
 
                     for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -1144,6 +1294,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             fseek(archivo, posLectura, SEEK_SET);
                             fwrite(&c ,sizeof(char), 1 ,archivo);
                             break;
+                        }
+
+                        if(a == sblock.s_blocks_count - 1){
+                            std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            return;
                         }
                     }
 
@@ -1159,6 +1314,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             fwrite(&c ,sizeof(char), 1 ,archivo);
                             break;
                         }
+
+                        if(a == sblock.s_blocks_count - 1){
+                            std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            return;
+                        }
                     }
 
                     for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -1172,6 +1332,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             fseek(archivo, posLectura, SEEK_SET);
                             fwrite(&c ,sizeof(char), 1 ,archivo);
                             break;
+                        }
+
+                        if(a == sblock.s_blocks_count - 1){
+                            std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            return;
                         }
                     }
 
@@ -1187,6 +1352,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             fwrite(&c ,sizeof(char), 1 ,archivo);
                             break;
                         }
+
+                        if(a == sblock.s_blocks_count - 1){
+                            std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            return;
+                        }
                     }
 
                     for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -1200,6 +1370,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             fseek(archivo, posLectura, SEEK_SET);
                             fwrite(&c ,sizeof(char), 1 ,archivo);
                             break;
+                        }
+
+                        if(a == sblock.s_blocks_count - 1){
+                            std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            return;
                         }
                     }
 
@@ -1262,6 +1437,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                     fwrite(&c ,sizeof(char), 1 ,archivo);
                                     break;
                                 }
+
+                                if(a == sblock.s_inodes_count - 1){
+                                    std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                                    return;
+                                }
                             }
 
                             for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -1275,6 +1455,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                     fseek(archivo, posLectura, SEEK_SET);
                                     fwrite(&c ,sizeof(char), 1 ,archivo);
                                     break;
+                                }
+
+                                if(a == sblock.s_blocks_count - 1){
+                                    std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                    return;
                                 }
                             }
 
@@ -1290,6 +1475,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                     fwrite(&c ,sizeof(char), 1 ,archivo);
                                     break;
                                 }
+
+                                if(a == sblock.s_blocks_count - 1){
+                                    std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                    return;
+                                }
                             }
 
                             for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -1304,6 +1494,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                     fwrite(&c ,sizeof(char), 1 ,archivo);
                                     break;
                                 }
+
+                                if(a == sblock.s_blocks_count - 1){
+                                    std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                    return;
+                                }
                             }
 
                             for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -1317,6 +1512,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                     fseek(archivo, posLectura, SEEK_SET);
                                     fwrite(&c ,sizeof(char), 1 ,archivo);
                                     break;
+                                }
+
+                                if(a == sblock.s_blocks_count - 1){
+                                    std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                    return;
                                 }
                             }
 
@@ -1370,6 +1570,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                             fwrite(&c ,sizeof(char), 1 ,archivo);
                                             break;
                                         }
+
+                                        if(a == sblock.s_inodes_count - 1){
+                                            std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                                            return;
+                                        }
                                     }
 
                                     for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -1383,6 +1588,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                             fseek(archivo, posLectura, SEEK_SET);
                                             fwrite(&c ,sizeof(char), 1 ,archivo);
                                             break;
+                                        }
+
+                                        if(a == sblock.s_blocks_count - 1){
+                                            std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                            return;
                                         }
                                     }
 
@@ -1398,6 +1608,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                             fwrite(&c ,sizeof(char), 1 ,archivo);
                                             break;
                                         }
+
+                                        if(a == sblock.s_blocks_count - 1){
+                                            std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                            return;
+                                        }
                                     }
 
                                     for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -1411,6 +1626,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                             fseek(archivo, posLectura, SEEK_SET);
                                             fwrite(&c ,sizeof(char), 1 ,archivo);
                                             break;
+                                        }
+
+                                        if(a == sblock.s_blocks_count - 1){
+                                            std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                            return;
                                         }
                                     }
 
@@ -1459,6 +1679,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                                     fwrite(&c ,sizeof(char), 1 ,archivo);
                                                     break;
                                                 }
+
+                                                if(a == sblock.s_inodes_count - 1){
+                                                    std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                                                    return;
+                                                }
                                             }
 
                                             for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -1473,6 +1698,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                                     fwrite(&c ,sizeof(char), 1 ,archivo);
                                                     break;
                                                 }
+
+                                                if(a == sblock.s_blocks_count - 1){
+                                                    std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                                    return;
+                                                }
                                             }
 
                                             for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -1486,6 +1716,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                                     fseek(archivo, posLectura, SEEK_SET);
                                                     fwrite(&c ,sizeof(char), 1 ,archivo);
                                                     break;
+                                                }
+
+                                                if(a == sblock.s_blocks_count - 1){
+                                                    std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                                    return;
                                                 }
                                             }
 
@@ -1528,6 +1763,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                                             fwrite(&c ,sizeof(char), 1 ,archivo);
                                                             break;
                                                         }
+
+                                                        if(a == sblock.s_inodes_count - 1){
+                                                            std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                                                            return;
+                                                        }
                                                     }
 
                                                     for(int a = 0; a < sblock.s_blocks_count; a++){
@@ -1541,6 +1781,11 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                                                             fseek(archivo, posLectura, SEEK_SET);
                                                             fwrite(&c ,sizeof(char), 1 ,archivo);
                                                             break;
+                                                        }
+
+                                                        if(a == sblock.s_blocks_count - 1){
+                                                            std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                                            return;
                                                         }
                                                     }
 

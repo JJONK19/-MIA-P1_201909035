@@ -101,19 +101,21 @@ login -usr->admin1 -pass->admin -id->351Disco1
 #mkdir
 #mkdir -path->/home
 #mkdir -path->/home/user 
-mkdir -path->/home/user -p     
+#mkdir -path->/home/user -p 
+#mkdir -p -path->"/home/mis documentos/archivos diciembre"    
 #mkdir -p -path->/home/user/docs/usac
 #mkdir -p -path->"/home/mis documentos/archivos diciembre" Nota: Hay un error aca ya que el nombre debe de tener 12 caracteres maximo
 
+#mkfile
+#mkfile -path->/c.txt -r 
+mkfile -path->/home/user/a.txt -r -s->750
+mkfile -path->/a.txt -r -cont->/users.txt
+mkfile -path->/home/usarios/b.txt -r -cont->/home/user/a.txt
+
+
 logout 
 login -usr->root -pass->123 -id->351Disco1
-mkdir -path->/home/user/xd -p
-
-pause
-
-logout
-login -usr->admin1 -pass->admin -id->351Disco1
-mkdir -path->/home/user/xd/a -p
+chmod -path->/ -r -ugo->766
 
 #reporte
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/mbr.png" -name->mbr

@@ -17,7 +17,7 @@
                 "${fileDirname}/mkusr.cpp", "${fileDirname}/rmusr.cpp",
                 "${fileDirname}/rmgrp.cpp", "${fileDirname}/chgrp.cpp",
                 "${fileDirname}/pause.cpp", "${fileDirname}/chmod.cpp",
-                "${fileDirname}/mkdir.cpp",
+                "${fileDirname}/mkdir.cpp", "${fileDirname}/mkfile.cpp",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],

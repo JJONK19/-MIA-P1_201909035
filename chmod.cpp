@@ -548,14 +548,11 @@ void chmod(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                 }
             }
 
-            std::cout << inodos.size() << std::endl;
             //Si la pila no está vacía, seleccionar el siguiente inodo
             if(inodos.empty()){
                 cambiar = false;
             }else{
-                std::cout << inodo_buscado << std::endl;
                 inodo_buscado = inodos.top();
-                std::cout << inodo_buscado << std::endl;
                 inodos.pop();
 
                 posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_buscado);

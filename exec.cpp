@@ -104,7 +104,7 @@ void exec(std::vector<std::string> &parametros, usuario &sesion, std::vector<dis
         }else if(tipo == "chmod"){
             chmod(parametros, discos, sesion);
         }else if(tipo == "mkfile"){
-            //mkfile();
+            mkfile(parametros, discos, sesion);
         }else if(tipo == "cat"){
             //cat();
         }else if(tipo == "remove"){

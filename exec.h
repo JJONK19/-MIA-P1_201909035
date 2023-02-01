@@ -23,6 +23,7 @@
 #include "chgrp.h"
 #include "chmod.h"
 #include "mkdir.h"
+#include "mkfile.h"
 #include "pause.h"
 #include "rep.h"
 

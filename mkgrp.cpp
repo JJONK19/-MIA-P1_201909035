@@ -734,7 +734,6 @@ void mkgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
             fseek(archivo, posLectura, SEEK_SET);
             fread(&creacion, sizeof(registro), 1, archivo);
 
-            std::cout << creacion.comando << std::endl;
             if(creacion.comando[0] == '\0'){
                 posRegistro = posLectura;
                 break;
