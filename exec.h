@@ -25,6 +25,8 @@
 #include "mkdir.h"
 #include "mkfile.h"
 #include "pause.h"
+#include "loss.h"
+#include "chown.h"
 #include "rep.h"
 
 

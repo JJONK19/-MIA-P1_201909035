@@ -437,6 +437,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
         }
 
         if(inodo_leido == -1){
+            fclose(archivo);
             return;
         }
 
@@ -609,6 +610,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
     if(bloques_extras > 0){
         std::cout << "ERROR: El archivo supera el limite permitido. No hay espacio en el inodo." << std::endl;
+        fclose(archivo);
         return;
     }
 
@@ -629,6 +631,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
     if(espacios_vacios < bloques){
         std::cout << "ERROR: No hay bloques disponibles para escribir el archivo." << std::endl;
+        fclose(archivo);
         return;
     }
 
@@ -859,6 +862,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
     }
 
     if(inodo_leido == -1){
+        fclose(archivo);
         return;
     }
 
@@ -893,6 +897,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
     if(!acceso){
         std::cout << "ERROR: No posee permisos para escribir en esta carpeta." << std::endl;
+        fclose(archivo);
         return;
     }
 
@@ -955,6 +960,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                         if(a == sblock.s_inodes_count - 1){
                             std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                            fclose(archivo);
                             return;
                         }
                     }
@@ -987,6 +993,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                 if(a == sblock.s_inodes_count - 1){
                     std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                    fclose(archivo);
                     return;
                 }
             }
@@ -1006,6 +1013,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                 if(a == sblock.s_blocks_count - 1){
                     std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                    fclose(archivo);
                     return;
                 }
             }
@@ -1050,6 +1058,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                 if(a == sblock.s_inodes_count - 1){
                     std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                    fclose(archivo);
                     return;
                 }
             }
@@ -1069,6 +1078,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                 if(a == sblock.s_blocks_count - 1){
                     std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                    fclose(archivo);
                     return;
                 }
             }
@@ -1088,6 +1098,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                 if(a == sblock.s_blocks_count - 1){
                     std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                    fclose(archivo);
                     return;
                 }
             }
@@ -1141,6 +1152,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                         if(a == sblock.s_inodes_count - 1){
                             std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                            fclose(archivo);
                             return;
                         }
                     }
@@ -1160,6 +1172,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                         if(a == sblock.s_blocks_count - 1){
                             std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            fclose(archivo);
                             return;
                         }
                     }
@@ -1207,6 +1220,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                                 if(a == sblock.s_inodes_count - 1){
                                     std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                                    fclose(archivo);
                                     return;
                                 }
                             }
@@ -1250,6 +1264,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                 if(a == sblock.s_inodes_count - 1){
                     std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                    fclose(archivo);
                     return;
                 }
             }
@@ -1269,6 +1284,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                 if(a == sblock.s_blocks_count - 1){
                     std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                    fclose(archivo);
                     return;
                 }
             }
@@ -1288,6 +1304,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                 if(a == sblock.s_blocks_count - 1){
                     std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                    fclose(archivo);
                     return;
                 }
             }
@@ -1307,6 +1324,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                 if(a == sblock.s_blocks_count - 1){
                     std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                    fclose(archivo);
                     return;
                 }
             }
@@ -1366,6 +1384,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                         if(a == sblock.s_inodes_count - 1){
                             std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                            fclose(archivo);
                             return;
                         }
                     }
@@ -1385,6 +1404,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                         if(a == sblock.s_blocks_count - 1){
                             std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            fclose(archivo);
                             return;
                         }
                     }
@@ -1404,6 +1424,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                         if(a == sblock.s_blocks_count - 1){
                             std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            fclose(archivo);
                             return;
                         }
                     }
@@ -1457,6 +1478,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                                 if(a == sblock.s_inodes_count - 1){
                                     std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                                    fclose(archivo);
                                     return;
                                 }
                             }
@@ -1476,6 +1498,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                                 if(a == sblock.s_blocks_count - 1){
                                     std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                    fclose(archivo);
                                     return;
                                 }
                             }
@@ -1523,6 +1546,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                                         if(a == sblock.s_inodes_count - 1){
                                             std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                                            fclose(archivo);
                                             return;
                                         }
                                     }
@@ -1572,6 +1596,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                 if(a == sblock.s_inodes_count - 1){
                     std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                    fclose(archivo);
                     return;
                 }
             }
@@ -1591,6 +1616,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                 if(a == sblock.s_blocks_count - 1){
                     std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                    fclose(archivo);
                     return;
                 }
             }
@@ -1610,6 +1636,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                 if(a == sblock.s_blocks_count - 1){
                     std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                    fclose(archivo);
                     return;
                 }
             }
@@ -1629,6 +1656,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                 if(a == sblock.s_blocks_count - 1){
                     std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                    fclose(archivo);
                     return;
                 }
             }
@@ -1648,6 +1676,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                 if(a == sblock.s_blocks_count - 1){
                     std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                    fclose(archivo);
                     return;
                 }
             }
@@ -1713,6 +1742,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                         if(a == sblock.s_inodes_count - 1){
                             std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                            fclose(archivo);
                             return;
                         }
                     }
@@ -1732,6 +1762,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                         if(a == sblock.s_blocks_count - 1){
                             std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            fclose(archivo);
                             return;
                         }
                     }
@@ -1751,6 +1782,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                         if(a == sblock.s_blocks_count - 1){
                             std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            fclose(archivo);
                             return;
                         }
                     }
@@ -1770,6 +1802,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                         if(a == sblock.s_blocks_count - 1){
                             std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            fclose(archivo);
                             return;
                         }
                     }
@@ -1827,6 +1860,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                                 if(a == sblock.s_inodes_count - 1){
                                     std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                                    fclose(archivo);
                                     return;
                                 }
                             }
@@ -1846,6 +1880,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                                 if(a == sblock.s_blocks_count - 1){
                                     std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                    fclose(archivo);
                                     return;
                                 }
                             }
@@ -1865,6 +1900,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                                 if(a == sblock.s_blocks_count - 1){
                                     std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                    fclose(archivo);
                                     return;
                                 }
                             }
@@ -1917,6 +1953,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                                         if(a == sblock.s_inodes_count - 1){
                                             std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                                            fclose(archivo);
                                             return;
                                         }
                                     }
@@ -1936,6 +1973,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                                         if(a == sblock.s_blocks_count - 1){
                                             std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                            fclose(archivo);
                                             return;
                                         }
                                     }
@@ -1982,6 +2020,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                                                 if(a == sblock.s_inodes_count - 1){
                                                     std::cout << "ERROR: No hay inodos disponibles." << std::endl;
+                                                    fclose(archivo);
                                                     return;
                                                 }
                                             }
@@ -2088,6 +2127,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                         if(a == sblock.s_blocks_count - 1){
                             std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            fclose(archivo);
                             return;
                         }
                     }
@@ -2108,6 +2148,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                         if(a == sblock.s_blocks_count - 1){
                             std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            fclose(archivo);
                             return;
                         }
                     }
@@ -2162,6 +2203,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                             if(a == sblock.s_blocks_count - 1){
                                 std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                fclose(archivo);
                                 return;
                             }
                         }
@@ -2202,6 +2244,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                         if(a == sblock.s_blocks_count - 1){
                             std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            fclose(archivo);
                             return;
                         }
                     }
@@ -2222,6 +2265,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                         if(a == sblock.s_blocks_count - 1){
                             std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            fclose(archivo);
                             return;
                         }
                     }
@@ -2242,6 +2286,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                         if(a == sblock.s_blocks_count - 1){
                             std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            fclose(archivo);
                             return;
                         }
                     }
@@ -2295,6 +2340,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                                 if(a == sblock.s_blocks_count - 1){
                                     std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                    fclose(archivo);
                                     return;
                                 }
                             }
@@ -2315,6 +2361,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                                 if(a == sblock.s_blocks_count - 1){
                                     std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                    fclose(archivo);
                                     return;
                                 }
                             }
@@ -2377,6 +2424,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                                     if(a == sblock.s_blocks_count - 1){
                                         std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                        fclose(archivo);
                                         return;
                                     }
                                 }
@@ -2419,6 +2467,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                         if(a == sblock.s_blocks_count - 1){
                             std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            fclose(archivo);
                             return;
                         }
                     }
@@ -2439,6 +2488,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                         if(a == sblock.s_blocks_count - 1){
                             std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            fclose(archivo);
                             return;
                         }
                     }
@@ -2459,6 +2509,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                         if(a == sblock.s_blocks_count - 1){
                             std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            fclose(archivo);
                             return;
                         }
                     }
@@ -2479,6 +2530,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                         if(a == sblock.s_blocks_count - 1){
                             std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                            fclose(archivo);
                             return;
                         }
                     }
@@ -2539,6 +2591,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                                 if(a == sblock.s_blocks_count - 1){
                                     std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                    fclose(archivo);
                                     return;
                                 }
                             }
@@ -2559,6 +2612,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                                 if(a == sblock.s_blocks_count - 1){
                                     std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                    fclose(archivo);
                                     return;
                                 }
                             }
@@ -2579,6 +2633,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                                 if(a == sblock.s_blocks_count - 1){
                                     std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                    fclose(archivo);
                                     return;
                                 }
                             }
@@ -2637,6 +2692,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                                         if(a == sblock.s_blocks_count - 1){
                                             std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                            fclose(archivo);
                                             return;
                                         }
                                     }
@@ -2657,6 +2713,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                                         if(a == sblock.s_blocks_count - 1){
                                             std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                            fclose(archivo);
                                             return;
                                         }
                                     }
@@ -2716,6 +2773,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                                             if(a == sblock.s_blocks_count - 1){
                                                 std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                                                fclose(archivo);
                                                 return;
                                             }
                                         }
@@ -2767,6 +2825,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                     if(a == sblock.s_blocks_count - 1){
                         std::cout << "ERROR: No hay bloques disponibles." << std::endl;
+                        fclose(archivo);
                         return;
                     }
                 }

@@ -111,6 +111,7 @@ login -usr->admin1 -pass->admin -id->351Disco1
 mkfile -path->/home/user/a.txt -r -s->750
 mkfile -path->/a.txt -r -cont->/users.txt
 mkfile -path->/home/usarios/b.txt -r -cont->/home/user/a.txt
+chown -path->/  -r -usr->root
 
 
 logout 

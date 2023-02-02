@@ -27,6 +27,8 @@
 #include "mkdir.h"
 #include "mkfile.h"
 #include "pause.h"
+#include "loss.h"
+#include "chown.h"
 
 
 void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos);         

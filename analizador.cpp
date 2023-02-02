@@ -64,7 +64,7 @@ void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos){
     }else if(tipo == "find"){
         //find();
     }else if(tipo == "chown"){
-        //chown();
+        chown(parametros, discos, sesion);
     }else if(tipo == "chgrp"){
         chgrp(parametros, discos, sesion);
     }else if(tipo == "pause"){
@@ -72,7 +72,7 @@ void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos){
     }else if(tipo == "recovery"){
         //recovery();
     }else if(tipo == "loss"){
-        //loss();
+        loss(parametros, discos);
     }else if(tipo == "rep"){
         rep(parametros, discos);
     }else if(tipo == "exec"){

@@ -388,7 +388,6 @@ void chmod(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                 }
             }
         }
-
     }
     
 
@@ -569,6 +568,7 @@ void chmod(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
         int posRegistro = -1;
 
         //Buscar un Journal Vacio
+        //En contenido: -r(T o F), ugo
         posLectura = posInicio + sizeof(sbloque);
         for(int i = 0; i < sblock.s_inodes_count; i++){
             fseek(archivo, posLectura, SEEK_SET);
@@ -583,10 +583,18 @@ void chmod(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
         }
 
         if(posRegistro != -1){
+            std::string contenido = "";
+            if(recursivo){
+                contenido.append("T");
+            }else{
+                contenido.append("F");
+            }
+            contenido.append(",");
+            contenido.append(ugo);
             strcpy(creacion.comando ,"chmod");
             strcpy(creacion.path ,ruta.c_str());
             strcpy(creacion.nombre ,"");
-            strcpy(creacion.contenido, ugo.c_str());
+            strcpy(creacion.contenido, contenido.c_str());
             creacion.fecha = time(0);
             fseek(archivo, posRegistro, SEEK_SET);
             fwrite(&creacion, sizeof(registro), 1, archivo);
