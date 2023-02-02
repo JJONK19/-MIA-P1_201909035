@@ -12,6 +12,7 @@ void mkdisk(std::vector<std::string> &parametros){
     char fit_char = '0';                       //El fit se maneja como caracter 
     std::string unidad = "";                   //Atributo -u        
     std::string ruta = "";                     //Atributo path
+    MBR mbr;                                   //Para manejar el MBR
  
     //COMPROBACIÓN DE PARAMETROS
     for(int i = 1; i < parametros.size(); i++){
@@ -125,13 +126,12 @@ void mkdisk(std::vector<std::string> &parametros){
     //CREAR EL ARCHIVO BINARIO (DISCO) Y LLENARLO DE 0s
     archivo = fopen(ruta.c_str(), "wb");
     for(int i = 0; i < tamaño; i++){
-        fwrite(&vacio, 1,1,archivo);
+        fwrite(&vacio, sizeof(vacio), 1, archivo);
     }
     
     //CREAR EL MBR Y LLENARLO CON VALORES DEFAULT
-    MBR mbr;
     mbr.mbr_tamano = tamaño;
-    mbr.mbr_dsk_signature = rand()%500;
+    mbr.mbr_dsk_signature = rand()%9999;
     mbr.mbr_fecha_creacion = time(NULL);
     mbr.dsk_fit = fit_char;
     for(int i = 0; i < 4; i++){
@@ -143,7 +143,7 @@ void mkdisk(std::vector<std::string> &parametros){
     }
 
     //ESCRIBIR EL STRUCT EN EL DISCO
-    fseek(archivo, 0, SEEK_SET);                  //El MBR está al inicio del archivo
+    fseek(archivo, 0, SEEK_SET);                  
     fwrite(&mbr, sizeof(MBR), 1, archivo);
     fclose(archivo);
     std::cout << "MENSAJE: Archivo creado correctamente." << std::endl;

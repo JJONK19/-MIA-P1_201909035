@@ -20,6 +20,7 @@ void mkfs(std::vector<std::string> &parametros, std::vector<disco> &discos){
     inodo ninodo;                              //Para el manejo de los inodos
     bcarpetas ncarpeta;                         //Para el manejo de bloques de carpetas
     barchivos narchivo;                        //Para el manejo de bloques de archivo
+    int posLectura = -1;                       //Para posiciones en el disco     
 
     //COMPROBACIÓN DE PARAMETROS
     for(int i = 1; i < parametros.size(); i++){
@@ -170,9 +171,9 @@ void mkfs(std::vector<std::string> &parametros, std::vector<disco> &discos){
         nuevo.s_mnt_count = 1; //Se encuentra montado actualmente
         nuevo.s_magic = 0xEF53;
         nuevo.s_inode_s = sizeof(inodo);
-        nuevo.s_block_s = 64;
+        nuevo.s_block_s = sizeof(barchivos);
         nuevo.s_firts_ino = posInicio + sizeof(sbloque) + (n * sizeof(char)) + ((n * sizeof(char)) * 3) + (2 * sizeof(inodo));
-        nuevo.s_first_blo = posInicio + sizeof(sbloque) + (n * sizeof(char)) + ((n * sizeof(char)) * 3) + (n * sizeof(inodo)) + (64 * 2);
+        nuevo.s_first_blo = posInicio + sizeof(sbloque) + (n * sizeof(char)) + ((n * sizeof(char)) * 3) + (n * sizeof(inodo)) + (sizeof(barchivos) * 2);
         nuevo.s_bm_inode_start = posInicio + sizeof(sbloque);
         nuevo.s_bm_block_start = posInicio + sizeof(sbloque) + (n * sizeof(char));
         nuevo.s_inode_start = posInicio + sizeof(sbloque) + (n * sizeof(char)) + ((n * sizeof(char)) * 3);
@@ -193,9 +194,9 @@ void mkfs(std::vector<std::string> &parametros, std::vector<disco> &discos){
         nuevo.s_mnt_count = 1; //Se encuentra montado actualmente
         nuevo.s_magic = 0xEF53;
         nuevo.s_inode_s = sizeof(inodo);
-        nuevo.s_block_s = 64;
+        nuevo.s_block_s = sizeof(barchivos);
         nuevo.s_firts_ino = posInicio + sizeof(sbloque) + (n * sizeof(char)) + ((n * sizeof(char))*3) + (2 * sizeof(inodo)) + (n * sizeof(registro));
-        nuevo.s_first_blo = posInicio + sizeof(sbloque) + (n * sizeof(char)) + ((n * sizeof(char)) * 3) + (n * sizeof (inodo)) + (64 * 2) + (n * sizeof(registro));
+        nuevo.s_first_blo = posInicio + sizeof(sbloque) + (n * sizeof(char)) + ((n * sizeof(char)) * 3) + (n * sizeof (inodo)) + (sizeof(barchivos) * 2) + (n * sizeof(registro));
         nuevo.s_bm_inode_start = posInicio + sizeof(sbloque) + (n * sizeof(registro));
         nuevo.s_bm_block_start = posInicio + sizeof (sbloque) + (n * sizeof(char)) + (n * sizeof(registro));
         nuevo.s_inode_start = posInicio + sizeof(sbloque) + (n * sizeof(char)) + ((n * sizeof(char)) * 3) + (n * sizeof(registro));
@@ -207,7 +208,7 @@ void mkfs(std::vector<std::string> &parametros, std::vector<disco> &discos){
 
     //LLENAR CON 0s EL BITMAP DE INODOS
     fseek(archivo, nuevo.s_bm_inode_start, SEEK_SET);
-    fwrite(&cero, sizeof(cero), nuevo.s_inodes_count , archivo);
+    fwrite(&cero, sizeof(cero), nuevo.s_inodes_count, archivo);
 
     //ESCRIBIR CON 0s EL BITMAP DE BLOQUES
     fseek(archivo, nuevo.s_bm_block_start, SEEK_SET);
@@ -215,7 +216,7 @@ void mkfs(std::vector<std::string> &parametros, std::vector<disco> &discos){
 
     //LLENAR LOS BLOQUES CON ESPACIOS VACIOS
     fseek(archivo ,nuevo.s_block_start, SEEK_SET);
-    fwrite(&vacio , sizeof(vacio), nuevo.s_blocks_count * 64 , archivo);
+    fwrite(&vacio , sizeof(vacio), nuevo.s_blocks_count * sizeof(barchivos) , archivo);
 
     //LLENAR LOS INODOS CON ESPACIOS VACIOS
     fseek(archivo ,nuevo.s_inode_start, SEEK_SET);
@@ -244,7 +245,7 @@ void mkfs(std::vector<std::string> &parametros, std::vector<disco> &discos){
     //MARCAR EL PRIMER INODO
     cero = '1';
     fseek(archivo, nuevo.s_bm_inode_start, SEEK_SET);
-    fwrite(&cero ,sizeof(cero) , 1 ,archivo);
+    fwrite(&cero, sizeof(cero), 1, archivo);
 
     //MARCAR EL PRIMER BLOQUE
     char c = 'c';
@@ -287,18 +288,21 @@ void mkfs(std::vector<std::string> &parametros, std::vector<disco> &discos){
     fwrite(&ncarpeta, sizeof(bcarpetas), 1, archivo);
     
     //MARCAR UN NUEVO INODO PARA EL ARCHIVO 
-    fseek(archivo, nuevo.s_bm_inode_start + sizeof(cero), SEEK_SET);
+    posLectura = nuevo.s_bm_inode_start + sizeof(cero);
+    fseek(archivo, posLectura, SEEK_SET);
     fwrite(&cero, sizeof(cero), 1, archivo);
 
     //MARCAR UN NUEVO BLOQUE PAERA EL ARCHIVO
     char a = 'a';
-    fseek(archivo, nuevo.s_bm_block_start + sizeof(a), SEEK_SET);
+    posLectura = nuevo.s_bm_block_start + sizeof(a);
+    fseek(archivo, posLectura, SEEK_SET);
     fwrite(&a, sizeof(a), 1, archivo);
 
     //LLENAR EL INODO DEL ARCHIVO
+    std::string contenido = "1,G,root\n1,U,root,root,123\n";
     ninodo.i_uid = 1;
     ninodo.i_gid = 1;
-    ninodo.i_s = 27;
+    ninodo.i_s = contenido.size();
     ninodo.i_atime = time(NULL);
     ninodo.i_ctime = time(NULL);
     ninodo.i_mtime = time(NULL);
@@ -308,12 +312,14 @@ void mkfs(std::vector<std::string> &parametros, std::vector<disco> &discos){
     ninodo.i_block[0] = 1;
     ninodo.i_type = '1';
     ninodo.i_perm = 777;
-    fseek(archivo, nuevo.s_inode_start + sizeof(inodo), SEEK_SET);
+    posLectura = nuevo.s_inode_start + sizeof(inodo);
+    fseek(archivo, posLectura, SEEK_SET);
     fwrite(&ninodo, sizeof(inodo), 1, archivo);
     
     //LLENAR Y ESCRIBIR EL BLOQUE DE ARCHIVOS
-    strcpy(narchivo.b_content, "1,G,root\n1,U,root,root,123\n");
-    fseek(archivo, nuevo.s_block_start + sizeof (barchivos), SEEK_SET);
+    strcpy(narchivo.b_content, contenido.c_str());
+    posLectura = nuevo.s_block_start + sizeof (barchivos);
+    fseek(archivo, posLectura, SEEK_SET);
     fwrite(&narchivo, sizeof(barchivos), 1, archivo);
     
     std::cout << "MENSAJE: Particion formateada correctamente." << std::endl;
