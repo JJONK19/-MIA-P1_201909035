@@ -2892,7 +2892,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
             strcpy(creacion.path ,ruta_copia.c_str());
             strcpy(creacion.nombre ,nombre_archivo.c_str());
             strcpy(creacion.contenido, cont.c_str());
-            creacion.fecha = time(0);
+            creacion.fecha = time(NULL);
             fseek(archivo, posRegistro, SEEK_SET);
             fwrite(&creacion, sizeof(registro), 1, archivo);
         }

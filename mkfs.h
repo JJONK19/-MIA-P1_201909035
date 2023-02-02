@@ -1,5 +1,5 @@
-#ifndef MKFS_H
-#define MKFS_H
+#ifndef MKFS
+#define MKFS
 
 #include <iostream>
 #include <algorithm>

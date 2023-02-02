@@ -228,7 +228,7 @@ void mkfs(std::vector<std::string> &parametros, std::vector<disco> &discos){
         strcpy(creacion.path ,"/");
         strcpy(creacion.nombre ,"");
         strcpy(creacion.contenido ,"");
-        creacion.fecha = time(0);
+        creacion.fecha = time(NULL);
         fseek(archivo, posInicio + sizeof(sbloque),SEEK_SET);
         fwrite(&creacion, sizeof(registro), 1, archivo);
 
@@ -236,7 +236,7 @@ void mkfs(std::vector<std::string> &parametros, std::vector<disco> &discos){
         strcpy(creacion.path ,"/");
         strcpy(creacion.nombre ,"users.txt");
         strcpy(creacion.contenido ,"1,G,root\n1,U,root,root,123\n");
-        creacion.fecha = time(0);
+        creacion.fecha = time(NULL);
         fseek(archivo, posInicio + sizeof(sbloque) + sizeof(registro) ,SEEK_SET);
         fwrite(&creacion, sizeof(registro), 1, archivo);
     }

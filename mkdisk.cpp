@@ -132,7 +132,7 @@ void mkdisk(std::vector<std::string> &parametros){
     MBR mbr;
     mbr.mbr_tamano = tamaño;
     mbr.mbr_dsk_signature = rand()%500;
-    mbr.mbr_fecha_creacion = time(0);
+    mbr.mbr_fecha_creacion = time(NULL);
     mbr.dsk_fit = fit_char;
     for(int i = 0; i < 4; i++){
         strcpy(mbr.mbr_partition[i].part_name, "");

@@ -1,5 +1,5 @@
-#ifndef FDISK_H
-#define FDISK_H
+#ifndef FDISK
+#define FDISK
 
 #include <iostream>
 #include <vector>

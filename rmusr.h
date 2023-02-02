@@ -1,5 +1,5 @@
-#ifndef RMUSR_H
-#define RMUSR_H
+#ifndef RMUSR
+#define RMUSR
 
 #include <iostream>
 #include <regex>

@@ -1,5 +1,5 @@
-#ifndef MKDISK_H
-#define MKDISK_H
+#ifndef MKDISK
+#define MKDISK
 
 #include <iostream>
 #include <exception>

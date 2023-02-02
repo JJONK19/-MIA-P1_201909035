@@ -1,5 +1,5 @@
-#ifndef CHMOD_H
-#define CHMOD_H
+#ifndef CHMOD
+#define CHMOD
 
 #include <iostream>
 #include <regex>

@@ -1,5 +1,5 @@
-#ifndef ANALIZADOR_H
-#define ANALIZADOR_H
+#ifndef ANALIZADOR
+#define ANALIZADOR
 
 #include <string>
 #include <algorithm>

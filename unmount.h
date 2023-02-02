@@ -1,5 +1,5 @@
-#ifndef UNMOUNT_H
-#define UNMOUNT_H
+#ifndef UNMOUNT
+#define UNMOUNT
 
 #include <iostream>
 

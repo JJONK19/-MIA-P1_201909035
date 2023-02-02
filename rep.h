@@ -1,5 +1,5 @@
-#ifndef REP_H
-#define REP_H
+#ifndef REP
+#define REP
 
 #include <iostream>
 #include <filesystem>

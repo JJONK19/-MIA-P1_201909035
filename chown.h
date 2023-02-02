@@ -1,5 +1,5 @@
-#ifndef CHOWN_H
-#define CHOWN_H
+#ifndef CHOWN
+#define CHOWN
 
 #include <iostream>
 #include <regex>

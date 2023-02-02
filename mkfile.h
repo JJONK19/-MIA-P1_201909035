@@ -1,5 +1,5 @@
-#ifndef MKFILE_H
-#define MKFILE_H
+#ifndef MKFILE
+#define MKFILE
 
 #include <iostream>
 #include <regex>

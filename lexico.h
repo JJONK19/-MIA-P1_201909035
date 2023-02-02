@@ -1,5 +1,5 @@
-#ifndef LEXICO_H
-#define LEXICO_H
+#ifndef LEXICO
+#define LEXICO
 
 #include <string>
 #include <algorithm>

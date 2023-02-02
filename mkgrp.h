@@ -1,5 +1,5 @@
-#ifndef MKGRP_H
-#define MKGRP_H
+#ifndef MKGRP
+#define MKGRP
 
 #include <iostream>
 #include <regex>

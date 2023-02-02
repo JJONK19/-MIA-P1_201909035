@@ -487,7 +487,7 @@ void chgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
             strcpy(creacion.path ,"/");
             strcpy(creacion.nombre ,"");
             strcpy(creacion.contenido, contenido.c_str());
-            creacion.fecha = time(0);
+            creacion.fecha = time(NULL);
             fseek(archivo, posRegistro, SEEK_SET);
             fwrite(&creacion, sizeof(registro), 1, archivo);
         }

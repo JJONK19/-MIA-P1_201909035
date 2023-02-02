@@ -1,5 +1,5 @@
-#ifndef STRUCTS_H
-#define STRUCTS_H
+#ifndef STRUCTS
+#define STRUCTS
 
 #include <time.h>
 #include <string>

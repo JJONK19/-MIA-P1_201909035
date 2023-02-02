@@ -1,5 +1,5 @@
-#ifndef MOUNT_H
-#define MOUNT_H
+#ifndef MOUNT
+#define MOUNT
 
 #include <iostream>
 #include <filesystem>

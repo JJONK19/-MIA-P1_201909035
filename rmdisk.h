@@ -1,5 +1,5 @@
-#ifndef RMDISK_H
-#define RMDISK_H
+#ifndef RMDISK
+#define RMDISK
 
 #include <iostream>
 #include <exception>

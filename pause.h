@@ -1,5 +1,5 @@
-#ifndef PAUSE_H
-#define PAUSE_H
+#ifndef PAUSE
+#define PAUSE
 
 #include <iostream>
 

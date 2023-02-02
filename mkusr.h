@@ -1,5 +1,5 @@
-#ifndef MKUSR_H
-#define MKUSR_H
+#ifndef MKUSR
+#define MKUSR
 
 #include <iostream>
 #include <regex>

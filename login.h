@@ -1,5 +1,5 @@
-#ifndef LOGIN_H
-#define LOGIN_H
+#ifndef LOGIN
+#define LOGIN
 
 #include <iostream>
 #include <regex>

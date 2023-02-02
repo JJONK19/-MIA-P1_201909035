@@ -1,5 +1,5 @@
-#ifndef LOSS_H
-#define LOSS_H
+#ifndef LOSS
+#define LOSS
 
 #include <iostream>
 #include <regex>

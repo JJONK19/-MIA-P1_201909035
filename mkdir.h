@@ -1,5 +1,5 @@
-#ifndef MKDIR_H
-#define MKDIR_H
+#ifndef MKDIR
+#define MKDIR
 
 #include <iostream>
 #include <regex>

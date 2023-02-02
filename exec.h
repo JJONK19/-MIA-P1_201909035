@@ -1,5 +1,5 @@
-#ifndef EXEC_H
-#define EXEC_H
+#ifndef EXEC
+#define EXEC
 
 #include <iostream>
 #include <iterator>

@@ -1,5 +1,5 @@
-#ifndef CHGRP_H
-#define CHGRP_H
+#ifndef CHGRP
+#define CHGRP
 
 #include <iostream>
 #include <regex>

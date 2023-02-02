@@ -1,5 +1,5 @@
-#ifndef RMGRP_H
-#define RMGRP_H
+#ifndef RMGRP
+#define RMGRP
 
 #include <iostream>
 #include <regex>
