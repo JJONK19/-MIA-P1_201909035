@@ -52,7 +52,7 @@ void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos){
     }else if(tipo == "remove"){
         //remove();
     }else if(tipo == "edit"){
-        //edit();
+        edit(parametros, discos, sesion);
     }else if(tipo == "rename"){
         //rename();
     }else if(tipo == "mkdir"){

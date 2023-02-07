@@ -29,6 +29,7 @@
 #include "pause.h"
 #include "loss.h"
 #include "chown.h"
+#include "edit.h"
 
 
 void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos);         

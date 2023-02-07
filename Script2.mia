@@ -114,10 +114,12 @@ mkfile -path->/a.txt -r -cont->/users.txt
 mkfile -path->/home/usarios/b.txt -r -cont->/home/user/a.txt
 #chown -path->/  -r -usr->root
 
+#edit
+edit -path->/a.txt -cont->/home/usarios/b.txt
 
 logout 
 login -usr->root -pass->123 -id->351Disco1
-chmod -path->/user.txt -r -ugo->766
+chmod -path->/users.txt -r -ugo->766
 
 #reporte
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/mbr.png" -name->mbr

@@ -27,6 +27,7 @@
 #include "pause.h"
 #include "loss.h"
 #include "chown.h"
+#include "edit.h"
 #include "rep.h"
 
 

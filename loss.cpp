@@ -120,19 +120,19 @@ void loss(std::vector<std::string> &parametros, std::vector<disco> &discos){
 
     //LLENAR CON 0s EL BITMAP DE INODOS
     fseek(archivo, sblock.s_bm_inode_start, SEEK_SET);
-    fwrite(&c, sizeof(c), sblock.s_inodes_count , archivo);
+    fwrite(&c, sizeof(char), sblock.s_inodes_count , archivo);
 
     //ESCRIBIR CON 0s EL BITMAP DE BLOQUES
     fseek(archivo, sblock.s_bm_block_start, SEEK_SET);
-    fwrite(&c, sizeof(c), sblock.s_blocks_count, archivo);
+    fwrite(&c, sizeof(char), sblock.s_blocks_count, archivo);
 
     //LLENAR LOS BLOQUES CON ESPACIOS VACIOS
     fseek(archivo ,sblock.s_block_start, SEEK_SET);
-    fwrite(&c , sizeof(c), sblock.s_blocks_count * 64 , archivo);
+    fwrite(&c , sizeof(char), sblock.s_blocks_count * 64 , archivo);
 
     //LLENAR LOS INODOS CON ESPACIOS VACIOS
     fseek(archivo ,sblock.s_inode_start, SEEK_SET);
-    fwrite(&c , sizeof(c), sblock.s_inodes_count * sizeof(inodo), archivo);
+    fwrite(&c , sizeof(char), sblock.s_inodes_count * sizeof(inodo), archivo);
 
     std::cout << "MENSAJE: Sistema dañado correctamente." << std::endl;
     fclose(archivo);
