@@ -12,7 +12,7 @@ int main(){
     //VARIABLES
     bool continuar = true;
     string comando = "";  
-
+    
     //CONSOLA DE COMANDOS
     cout << "****************************************************************************************************" << endl;
     cout << endl;

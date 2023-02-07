@@ -640,6 +640,11 @@ void chown(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                 }
             }
         }
+        if(inodo_buscado == -1){
+            std::cout << "ERROR: La ruta ingresada es erronea." << std::endl;
+            fclose(archivo);
+            return;
+        }
     }
     
 

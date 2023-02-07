@@ -4,6 +4,7 @@
 #include <iostream>
 #include <regex>
 #include <stack>
+#include <string.h>
 
 #include "structs.h"
 #include "mkdir.h"

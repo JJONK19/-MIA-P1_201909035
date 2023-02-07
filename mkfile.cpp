@@ -974,6 +974,25 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
                     //Actualizar el superbloque
                     sblock.s_free_inodes_count -= 1;
                     break;
+                }else if(carpeta == nombre_archivo){
+                    buscar = false;
+                    //CONFIRMAR BORRADO
+                    std::string confirmar;
+                    std::cout << "¿Desea sobrescribir? [Y/N]" << std::endl;
+                    std::getline(std::cin, confirmar);
+
+                    if(confirmar == "N" || confirmar == "n"){
+                        fclose(archivo);
+                        return;
+                    }else if(confirmar == "Y" || confirmar == "y"){
+                        
+                    }else{
+                        std::cout <<"ERROR: Entrada inesperada." << std::endl;
+                        fclose(archivo);
+                        return;
+                    }
+                    inodo_temporal = lcarpeta.b_content[j].b_inodo;
+                    break;
                 }
             }
         }else{
@@ -1233,6 +1252,25 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                             //Actualizar el superbloque
                             sblock.s_free_inodes_count -= 1;
+                            break;
+                        }else if(carpeta == nombre_archivo){
+                            buscar = false;
+                        
+                            std::string confirmar;
+                            std::cout << "¿Desea sobrescribir? [Y/N]" << std::endl;
+                            std::getline(std::cin, confirmar);
+
+                            if(confirmar == "N" || confirmar == "n"){
+                                fclose(archivo);
+                                return;
+                            }else if(confirmar == "Y" || confirmar == "y"){
+                                
+                            }else{
+                                std::cout <<"ERROR: Entrada inesperada." << std::endl;
+                                fclose(archivo);
+                                return;
+                            }
+                            inodo_temporal = lcarpeta.b_content[j].b_inodo;
                             break;
                         }
                     }
@@ -1559,6 +1597,25 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
 
                                     //Actualizar el superbloque
                                     sblock.s_free_inodes_count -= 1;
+                                    break;
+                                }else if(carpeta == nombre_archivo){
+                                    buscar = false;
+                                
+                                    std::string confirmar;
+                                    std::cout << "¿Desea sobrescribir? [Y/N]" << std::endl;
+                                    std::getline(std::cin, confirmar);
+
+                                    if(confirmar == "N" || confirmar == "n"){
+                                        fclose(archivo);
+                                        return;
+                                    }else if(confirmar == "Y" || confirmar == "y"){
+                                        
+                                    }else{
+                                        std::cout <<"ERROR: Entrada inesperada." << std::endl;
+                                        fclose(archivo);
+                                        return;
+                                    }
+                                    inodo_temporal = lcarpeta.b_content[k].b_inodo;
                                     break;
                                 }
                             }
@@ -2031,6 +2088,25 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
                                             fseek(archivo, posLectura, SEEK_SET);
                                             fwrite(&lcarpeta, sizeof(bcarpetas), 1, archivo);
                                             sblock.s_free_inodes_count -= 1;
+                                            break;
+                                        }else if(carpeta == nombre_archivo){
+                                            buscar = false;
+                                        
+                                            std::string confirmar;
+                                            std::cout << "¿Desea sobrescribir? [Y/N]" << std::endl;
+                                            std::getline(std::cin, confirmar);
+
+                                            if(confirmar == "N" || confirmar == "n"){
+                                                fclose(archivo);
+                                                return;
+                                            }else if(confirmar == "Y" || confirmar == "y"){
+                                                
+                                            }else{
+                                                std::cout <<"ERROR: Entrada inesperada." << std::endl;
+                                                fclose(archivo);
+                                                return;
+                                            }
+                                            inodo_temporal = lcarpeta.b_content[l].b_inodo;
                                             break;
                                         }
                                     }
@@ -2846,7 +2922,7 @@ void mkfile(std::vector<std::string> &parametros, std::vector<disco> &discos, us
         }
     }
                     
-    //REESCRIBIR EL INODO CON TODOS LOS CAMBIOS
+    //ESCRIBIR EL INODO CON TODOS LOS CAMBIOS
     linodo.i_mtime = time(NULL);
     posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_leido);
     fseek(archivo, posLectura, SEEK_SET);

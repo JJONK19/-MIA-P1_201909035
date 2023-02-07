@@ -39,4 +39,8 @@ void leer_archivo(std::string &ruta, int &posInodos, int &posBloques, int &no_bl
 
 void leer_apuntador(std::string &ruta, int &posInodos, int &posBloques, int &no_bloque, std::string &codigo, std::string &padre, int grado, char &tipo);
 
+void file(std::vector<disco> &discos, int posDisco, int posParticion, std::string &ruta, std::string &ruta_archivo);
+
+void ls(std::vector<disco> &discos, int posDisco, int posParticion, std::string &ruta, std::string &ruta_archivo);
+
 #endif

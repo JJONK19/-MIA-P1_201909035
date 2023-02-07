@@ -109,14 +109,15 @@ login -usr->admin1 -pass->admin -id->351Disco1
 #mkfile
 #mkfile -path->/c.txt -r 
 mkfile -path->/home/user/a.txt -r -s->750
+mkfile -path->/home/user/a.txt -r -s->20
 mkfile -path->/a.txt -r -cont->/users.txt
 mkfile -path->/home/usarios/b.txt -r -cont->/home/user/a.txt
-chown -path->/  -r -usr->root
+#chown -path->/  -r -usr->root
 
 
 logout 
 login -usr->root -pass->123 -id->351Disco1
-chmod -path->/ -r -ugo->766
+chmod -path->/user.txt -r -ugo->766
 
 #reporte
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/mbr.png" -name->mbr
@@ -128,3 +129,5 @@ rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MI
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/bm_block.txt" -name->bm_block
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/tree.png" -name->tree
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/blocks.png" -name->block
+rep -id->351Disco1 -Path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/file.txt" -ruta->"/home/usarios/b.txt" -name->file
+rep -id->351Disco1 -Path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/ls.png" -ruta->"/" -name->ls

@@ -46,8 +46,8 @@ void rep(std::vector<std::string> &parametros, std::vector<disco> &discos){
     }
 
     //COMPROBAR PARAMETROS OBLIGATORIOS
-    if(nombre == "0" || ruta == "" || id == ""){
-            required = false;
+    if(nombre == "" || ruta == "" || id == ""){
+        required = false;
     }
 
     if(!required){
@@ -128,9 +128,9 @@ void rep(std::vector<std::string> &parametros, std::vector<disco> &discos){
     }else if(nombre == "sb"){
         sb(discos, posDisco, posParticion, ruta);
     }else if(nombre == "file"){
-        
+        file(discos, posDisco, posParticion, ruta, rutaS);
     }else if(nombre == "ls"){
-        
+        ls(discos, posDisco, posParticion, ruta, rutaS);
     }else{
         std::cout << "ERROR: Tipo de reporte invalido." << std::endl;
     }
@@ -1974,4 +1974,1292 @@ void leer_apuntador(std::string &ruta, int &posInodos, int &posBloques, int &no_
         }
     }
 
+}
+
+void file(std::vector<disco> &discos, int posDisco, int posParticion, std::string &ruta, std::string &ruta_contenido){
+    //VARIABLES
+    disco &disc_uso = discos[posDisco];                      //Disco en uso
+    montada &part_uso = disc_uso.particiones[posParticion]; //Particion Montada 
+    FILE *archivo;                                          //Para leer el archivo
+    MBR mbr;                                                //Para leer el mbr
+    int posExtendida;                                       //Posicion para leer la extendida
+    EBR ebr;                                                //Para leer los ebr de las particiones logicas          
+    std::string comando;                                    //Instruccion a mandar a la consola para generar el comando
+    int posInicio;                                          //Posicion donde inicia la particion
+    sbloque sblock;                                         //Para leer el superbloque
+    inodo linodo;                                           //Para leer los inodos 
+    barchivos larchivo;                                      //Para leer bloques de archivos
+    bcarpetas lcarpeta;                                     //Para leer bloques de carpeta
+    bapuntadores lapuntador;                               //Para leer bloques de apuntadores simple
+    bapuntadores lapuntador_doble;                          //Para leer bloques de apuntadores doble
+    bapuntadores lapuntador_triple;                         //Para leer bloques de apuntadores triple
+    int posLectura;                                         //Usado para las posiciones de lectura
+    int inodo_leido;                                        //Numero de inodo leido actualmente
+    std::string contenido = "";                             //Para almacenar el contenido del archivo
+
+    //VERIFICAR QUE EXISTA EL ARCHIVO
+    archivo = fopen(disc_uso.ruta.c_str(), "r+b");
+    if(archivo == NULL){
+        std::cout << "ERROR: No se encontro el disco." << std::endl;
+        return;
+    }
+
+    //VERIFICAR QUE VENGA LA RUTA DEL ARCHIVO A LEER
+    if(ruta_contenido == ""){
+        std::cout << "ERROR: Se necesita la ruta del archivo a leer." << std::endl;
+        return; 
+    }
+
+    //DETERMINAR LA POSICION DE INICIO PARA LEER LA PARTICION
+    if(part_uso.posMBR != -1){
+        MBR mbr;
+        fseek(archivo, 0,SEEK_SET);
+        fread(&mbr, sizeof(MBR), 1, archivo);
+        posInicio = mbr.mbr_partition[part_uso.posMBR].part_start;
+    }else{
+        EBR ebr;
+        fseek(archivo, part_uso.posEBR, SEEK_SET);
+        fread(&ebr, sizeof(EBR), 1, archivo);
+        posInicio = ebr.part_start;
+    }
+
+    //LEER EL SUPERBLOQUE
+    fseek(archivo, posInicio, SEEK_SET);
+    fread(&sblock, sizeof(sbloque), 1, archivo);
+
+    //LEER EL INODO RAIZ
+    posLectura = sblock.s_inode_start;
+    inodo_leido = 0;
+    fseek(archivo, posLectura, SEEK_SET);
+    fread(&linodo, sizeof(inodo), 1, archivo);
+
+    //SEPARAR LOS NOMBRES QUE VENGAN EN LA RUTA
+    std::regex separador("/");
+    std::vector<std::string> path_cont(std::sregex_token_iterator(ruta_contenido.begin(), ruta_contenido.end(), separador, -1),
+        std::sregex_token_iterator());
+
+    //BUSCAR EL ARCHIVO
+    int posicion = 1;
+    int continuar = true;
+    if(ruta_contenido == "/"){
+        continuar = false;
+    }else if(path_cont[0] != "\0"){
+        continuar = false;
+    }
+
+    //Mover la posicion al inodo donde se encuentra el archivo
+    while(continuar){
+        int inodo_temporal = -1;
+        
+        //Buscar si existe la carpeta
+        for(int i = 0; i < 15; i++){
+            if(inodo_temporal != -1){
+                break;
+            }
+
+            if(linodo.i_block[i] == -1){
+                continue;
+            }
+
+            if(i == 12){
+                //Recorrer el bloque de apuntadores simple
+                posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[i]);
+                fseek(archivo, posLectura, SEEK_SET);
+                fread(&lapuntador, sizeof(bapuntadores), 1, archivo);
+
+                for(int j = 0; j < 16; j++){
+                    if(lapuntador.b_pointers[j] == -1){
+                        continue;
+                    }
+
+                    posLectura = sblock.s_block_start + (sizeof(bcarpetas) * lapuntador.b_pointers[j]);
+                    fseek(archivo, posLectura, SEEK_SET);
+                    fread(&lcarpeta, sizeof(bcarpetas), 1, archivo);
+
+                    for(int k = 0; k < 4; k++){
+                        std::string carpeta(lcarpeta.b_content[k].b_name);
+
+                        if(carpeta == path_cont[posicion]){
+
+                            //Actualizar Inodo
+                            linodo.i_atime = time(NULL);
+                            posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_leido);
+                            fseek(archivo, posLectura, SEEK_SET);
+                            fwrite(&linodo, sizeof(inodo), 1, archivo);
+                    
+                            inodo_temporal = lcarpeta.b_content[k].b_inodo;
+                            inodo_leido = inodo_temporal;
+                            posicion += 1;
+                            posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_temporal);
+                            fseek(archivo, posLectura, SEEK_SET);
+                            fread(&linodo, sizeof(inodo), 1, archivo);
+                            break;
+                        }
+                    }
+
+                    if(inodo_temporal != -1){
+                        break;
+                    }
+                }
+            }else if(i == 13){
+                //Recorrer el bloque de apuntadores doble
+                posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[i]);
+                fseek(archivo, posLectura, SEEK_SET);
+                fread(&lapuntador_doble, sizeof(bapuntadores), 1, archivo);
+
+                for(int j = 0; j < 16; j++){
+                    if(lapuntador_doble.b_pointers[j] == -1){
+                        continue;
+                    }
+
+                    posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_doble.b_pointers[j]);
+                    fseek(archivo, posLectura, SEEK_SET);
+                    fread(&lapuntador, sizeof(bapuntadores), 1, archivo);
+
+                    for(int k = 0; k < 16; k++){
+                        if(lapuntador.b_pointers[k] == -1){
+                            continue;
+                        }
+
+                        posLectura = sblock.s_block_start + (sizeof(bcarpetas) * lapuntador.b_pointers[k]);
+                        fseek(archivo, posLectura, SEEK_SET);
+                        fread(&lcarpeta, sizeof(bcarpetas), 1, archivo);
+
+                        for(int l = 0; l < 4; l++){
+                            std::string carpeta(lcarpeta.b_content[l].b_name);
+
+                            if(carpeta == path_cont[posicion]){
+                                //Actualizar Inodo
+                                linodo.i_atime = time(NULL);
+                                posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_leido);
+                                fseek(archivo, posLectura, SEEK_SET);
+                                fwrite(&linodo, sizeof(inodo), 1, archivo);
+                        
+                                inodo_temporal = lcarpeta.b_content[l].b_inodo;
+                                inodo_leido = inodo_temporal;
+                                posicion += 1;
+                                posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_temporal);
+                                fseek(archivo, posLectura, SEEK_SET);
+                                fread(&linodo, sizeof(inodo), 1, archivo);
+                                break;
+                            }
+                        }
+
+                        if(inodo_temporal != -1){
+                            break;
+                        }
+                    }
+
+                    if(inodo_temporal != -1){
+                        break;
+                    }
+                }
+            }else if(i == 14){
+                //Recorrer el bloque de apuntadores triple
+                posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[i]);
+                fseek(archivo, posLectura, SEEK_SET);
+                fread(&lapuntador_triple, sizeof(bapuntadores), 1, archivo);
+
+                for(int j = 0; j < 16; j++){
+                    if(lapuntador_triple.b_pointers[j] == -1){
+                        continue;
+                    }
+
+                    posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_triple.b_pointers[j]);
+                    fseek(archivo, posLectura, SEEK_SET);
+                    fread(&lapuntador_doble, sizeof(bapuntadores), 1, archivo);
+
+                    for(int k = 0; k < 16; k++){
+                        if(lapuntador_doble.b_pointers[k] == -1){
+                            continue;
+                        }
+
+                        posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_doble.b_pointers[k]);
+                        fseek(archivo, posLectura, SEEK_SET);
+                        fread(&lapuntador, sizeof(bapuntadores), 1, archivo);
+
+                        for(int l = 0; l < 16; l++){
+                            if(lapuntador.b_pointers[l] == -1){
+                                continue;
+                            }
+
+                            posLectura = sblock.s_block_start + (sizeof(bcarpetas) * lapuntador.b_pointers[l]);
+                            fseek(archivo, posLectura, SEEK_SET);
+                            fread(&lcarpeta, sizeof(bcarpetas), 1, archivo);
+
+                            for(int m = 0; m < 4; m++){
+                                std::string carpeta(lcarpeta.b_content[m].b_name);
+
+                                if(carpeta == path_cont[posicion]){
+                                    //Actualizar Inodo
+                                    linodo.i_atime = time(NULL);
+                                    posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_leido);
+                                    fseek(archivo, posLectura, SEEK_SET);
+                                    fwrite(&linodo, sizeof(inodo), 1, archivo);
+                            
+                                    inodo_temporal = lcarpeta.b_content[m].b_inodo;
+                                    inodo_leido = inodo_temporal;
+                                    posicion += 1;
+                                    posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_temporal);
+                                    fseek(archivo, posLectura, SEEK_SET);
+                                    fread(&linodo, sizeof(inodo), 1, archivo);
+                                    break;
+                                }
+                            }
+
+                            if(inodo_temporal != -1){
+                                break;
+                            }
+                        }
+
+                        if(inodo_temporal != -1){
+                            break;
+                        }
+                    }
+                    
+                    if(inodo_temporal != -1){
+                        break;
+                    }
+                }
+            }else{
+                posLectura = sblock.s_block_start + (sizeof(bcarpetas) * linodo.i_block[i]);
+                fseek(archivo, posLectura, SEEK_SET);
+                fread(&lcarpeta, sizeof(bcarpetas), 1, archivo);
+
+                for(int j = 0; j < 4; j++){
+                    std::string carpeta(lcarpeta.b_content[j].b_name);
+
+                    if(carpeta == path_cont[posicion]){
+                        linodo.i_atime = time(NULL);
+                        posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_leido);
+                        fseek(archivo, posLectura, SEEK_SET);
+                        fwrite(&linodo, sizeof(inodo), 1, archivo);
+                        
+                        inodo_temporal = lcarpeta.b_content[j].b_inodo;
+                        inodo_leido = inodo_temporal;
+                        posicion += 1;
+                        posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_temporal);
+                        fseek(archivo, posLectura, SEEK_SET);
+                        fread(&linodo, sizeof(inodo), 1, archivo);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if(inodo_temporal == -1){
+            continuar = false;
+            std::cout << "ERROR: La ruta ingresada del contenido no existe." << std::endl;
+            inodo_leido = -1;
+        }else if(posicion == path_cont.size() && linodo.i_type == '1'){
+            continuar = false;
+        }else if(posicion == path_cont.size() && linodo.i_type == '0'){
+            continuar = false;
+            std::cout << "ERROR: No se encontró el archivo con el contenido a leer." << std::endl;
+            inodo_leido = -1;
+        }
+    }
+
+    if(inodo_leido == -1){
+        fclose(archivo);
+        return;
+    }
+
+    //Leer el contenido del archivo
+    std::string temp;
+    for(int i = 0; i < 15; i++){
+        if(linodo.i_block[i] == -1){
+            continue;
+        }
+
+        if(i == 12){
+            //Recorrer el bloque de apuntadores simple
+            posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[i]);
+            fseek(archivo, posLectura, SEEK_SET);
+            fread(&lapuntador, sizeof(bapuntadores), 1, archivo);
+
+            for(int j = 0; j < 16; j++){
+                if(lapuntador.b_pointers[j] == -1){
+                    continue;
+                }
+
+                posLectura = sblock.s_block_start + (sizeof(barchivos) * lapuntador.b_pointers[j]);
+                fseek(archivo, posLectura, SEEK_SET);
+                fread(&larchivo, sizeof(barchivos), 1, archivo);
+
+
+                temp = larchivo.b_content; 
+                contenido += temp;
+            }
+        }else if(i == 13){
+            //Recorrer el bloque de apuntadores simple
+            posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[i]);
+            fseek(archivo, posLectura, SEEK_SET);
+            fread(&lapuntador_doble, sizeof(bapuntadores), 1, archivo);
+
+            for(int j = 0; j < 16; j++){
+                if(lapuntador_doble.b_pointers[j] == -1){
+                    continue;
+                }
+
+                posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_doble.b_pointers[j]);
+                fseek(archivo, posLectura, SEEK_SET);
+                fread(&lapuntador, sizeof(bapuntadores), 1, archivo);
+
+                for(int k = 0; k < 16; k++){
+                    if(lapuntador.b_pointers[k] == -1){
+                        continue;
+                    }
+
+                    posLectura = sblock.s_block_start + (sizeof(barchivos) * lapuntador.b_pointers[k]);
+                    fseek(archivo, posLectura, SEEK_SET);
+                    fread(&larchivo, sizeof(barchivos), 1, archivo);
+
+                    temp = larchivo.b_content; 
+                    contenido += temp;
+                }
+            }
+        }else if(i == 14){
+            //Recorrer el bloque de apuntadores simple
+            posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[i]);
+            fseek(archivo, posLectura, SEEK_SET);
+            fread(&lapuntador_triple, sizeof(bapuntadores), 1, archivo);
+
+            for(int j = 0; j < 16; j++){
+                if(lapuntador_triple.b_pointers[j] == -1){
+                    continue;
+                }
+
+                posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_triple.b_pointers[j]);
+                fseek(archivo, posLectura, SEEK_SET);
+                fread(&lapuntador_doble, sizeof(bapuntadores), 1, archivo);
+
+                for(int k = 0; k < 16; k++){
+                    if(lapuntador_doble.b_pointers[k] == -1){
+                        continue;
+                    }
+
+                    posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_doble.b_pointers[k]);
+                    fseek(archivo, posLectura, SEEK_SET);
+                    fread(&lapuntador, sizeof(bapuntadores), 1, archivo);
+
+                    for(int l = 0; l < 16; l++){
+                        if(lapuntador.b_pointers[l] == -1){
+                            continue;
+                        }
+
+                        posLectura = sblock.s_block_start + (sizeof(barchivos) * lapuntador.b_pointers[l]);
+                        fseek(archivo, posLectura, SEEK_SET);
+                        fread(&larchivo, sizeof(barchivos), 1, archivo);
+
+                        temp = larchivo.b_content; 
+                        contenido += temp;
+                    }
+                }
+            }
+        }else{
+            posLectura = sblock.s_block_start + (sizeof(barchivos) * linodo.i_block[i]);
+            fseek(archivo, posLectura, SEEK_SET);
+            fread(&larchivo, sizeof(barchivos), 1, archivo);
+
+            temp = larchivo.b_content; 
+            contenido += temp;
+        }
+    }
+
+    fclose(archivo);
+    //GENERAR EL TXT
+    std::ofstream outfile (ruta);
+    outfile << contenido << std::endl;
+    outfile.close();
+
+    std::cout << "MENSAJE: Reporte file creado correctamente." << std::endl;
+}
+
+void ls(std::vector<disco> &discos, int posDisco, int posParticion, std::string &ruta, std::string &ruta_contenido){
+    //VARIABLES
+    std::string codigo;                                      //Contenedor del txt
+    disco &disc_uso = discos[posDisco];                      //Disco en uso
+    montada &part_uso = disc_uso.particiones[posParticion]; //Particion Montada 
+    FILE *archivo;                                          //Para leer el archivo
+    MBR mbr;                                                //Para leer el mbr
+    int posExtendida;                                       //Posicion para leer la extendida
+    EBR ebr;                                                //Para leer los ebr de las particiones logicas          
+    std::string comando;                                    //Instruccion a mandar a la consola para generar el comando
+    int posInicio;                                          //Posicion donde inicia la particion
+    sbloque sblock;                                         //Para leer el superbloque
+    inodo linodo;                                           //Para leer los inodos 
+    bcarpetas lcarpeta;                                     //Para leer bloques de carpeta
+    barchivos larchivo;                                     //Para leer bloques de archivos
+    bapuntadores lapuntador;                               //Para leer bloques de apuntadores simple
+    bapuntadores lapuntador_doble;                          //Para leer bloques de apuntadores doble
+    bapuntadores lapuntador_triple;                         //Para leer bloques de apuntadores triple
+    int posLectura;                                         //Usado para las posiciones de lectura
+    int inodo_buscado = -1;                                 //Numero de Inodo del archivo o carpeta
+    std::string nombre_archivo;
+
+    //VERIFICAR QUE EXISTA EL ARCHIVO
+    archivo = fopen(disc_uso.ruta.c_str(), "r+b");
+    if(archivo == NULL){
+        std::cout << "ERROR: No se encontro el disco." << std::endl;
+        return;
+    }
+
+    //VERIFICAR QUE VENGA LA RUTA DEL ARCHIVO A LEER
+    if(ruta_contenido == ""){
+        std::cout << "ERROR: Se necesita la ruta del archivo a leer." << std::endl;
+        return; 
+    }
+
+    //SEPARAR LA RUTA 
+    std::regex separador("/");
+    std::vector<std::string> path(std::sregex_token_iterator(ruta_contenido.begin(), ruta_contenido.end(), separador, -1),
+        std::sregex_token_iterator());
+
+    //OBTENER EL NOMBRE DEL ARCHIVO O RUTA
+    nombre_archivo = ruta_contenido.substr(ruta_contenido.find_last_of("\\/") + 1, ruta_contenido.size() - 1);
+
+    //DETERMINAR LA POSICION DE INICIO PARA LEER LA PARTICION
+    if(part_uso.posMBR != -1){
+        MBR mbr;
+        fseek(archivo, 0,SEEK_SET);
+        fread(&mbr, sizeof(MBR), 1, archivo);
+        posInicio = mbr.mbr_partition[part_uso.posMBR].part_start;
+    }else{
+        EBR ebr;
+        fseek(archivo, part_uso.posEBR, SEEK_SET);
+        fread(&ebr, sizeof(EBR), 1, archivo);
+        posInicio = ebr.part_start;
+    }
+
+    //LEER EL SUPERBLOQUE
+    fseek(archivo, posInicio, SEEK_SET);
+    fread(&sblock, sizeof(sbloque), 1, archivo);
+
+    //LEER EL INODO RAIZ
+    posLectura = sblock.s_inode_start;
+    fseek(archivo, posLectura, SEEK_SET);
+    fread(&linodo, sizeof(inodo), 1, archivo);
+
+    //BUSCAR EL ARCHIVO DE USUARIOS 
+    for(int i = 0; i < 15; i++){
+        if(inodo_buscado != -1){
+            break;
+        }
+
+        if(linodo.i_block[i] == -1){
+            continue;
+        }
+
+        if(i == 12){
+            //Recorrer el bloque de apuntadores simple
+            posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[i]);
+            fseek(archivo, posLectura, SEEK_SET);
+            fread(&lapuntador, sizeof(bapuntadores), 1, archivo);
+
+            for(int j = 0; j < 16; j++){
+                if(lapuntador.b_pointers[j] == -1){
+                    continue;
+                }
+
+                posLectura = sblock.s_block_start + (sizeof(bcarpetas) * lapuntador.b_pointers[j]);
+                fseek(archivo, posLectura, SEEK_SET);
+                fread(&lcarpeta, sizeof(bcarpetas), 1, archivo);
+
+                for(int k = 0; k < 4; k++){
+                    std::string carpeta(lcarpeta.b_content[k].b_name);
+
+                    if(carpeta == "users.txt"){
+                        inodo_buscado = lcarpeta.b_content[k].b_inodo;
+                        break;
+                    }
+                }
+            }
+        }else if(i == 13){
+            //Recorrer el bloque de apuntadores doble
+            posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[i]);
+            fseek(archivo, posLectura, SEEK_SET);
+            fread(&lapuntador_doble, sizeof(bapuntadores), 1, archivo);
+
+            for(int j = 0; j < 16; j++){
+                if(lapuntador_doble.b_pointers[j] == -1){
+                    continue;
+                }
+
+                posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_doble.b_pointers[j]);
+                fseek(archivo, posLectura, SEEK_SET);
+                fread(&lapuntador, sizeof(bapuntadores), 1, archivo);
+
+                for(int k = 0; k < 16; k++){
+                    if(lapuntador.b_pointers[k] == -1){
+                        continue;
+                    }
+
+                    posLectura = sblock.s_block_start + (sizeof(bcarpetas) * lapuntador.b_pointers[k]);
+                    fseek(archivo, posLectura, SEEK_SET);
+                    fread(&lcarpeta, sizeof(bcarpetas), 1, archivo);
+
+                    for(int l = 0; l < 4; l++){
+                        std::string carpeta(lcarpeta.b_content[l].b_name);
+
+                        if(carpeta == "users.txt"){
+                            inodo_buscado = lcarpeta.b_content[l].b_inodo;
+                            break;
+                        }
+                    }
+                }
+            }
+        }else if(i == 14){
+            //Recorrer el bloque de apuntadores triple
+            posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[i]);
+            fseek(archivo, posLectura, SEEK_SET);
+            fread(&lapuntador_triple, sizeof(bapuntadores), 1, archivo);
+
+            for(int j = 0; j < 16; j++){
+                if(lapuntador_triple.b_pointers[j] == -1){
+                    continue;
+                }
+
+                posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_triple.b_pointers[j]);
+                fseek(archivo, posLectura, SEEK_SET);
+                fread(&lapuntador_doble, sizeof(bapuntadores), 1, archivo);
+
+                for(int k = 0; k < 16; k++){
+                    if(lapuntador_doble.b_pointers[k] == -1){
+                        continue;
+                    }
+
+                    posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_doble.b_pointers[k]);
+                    fseek(archivo, posLectura, SEEK_SET);
+                    fread(&lapuntador, sizeof(bapuntadores), 1, archivo);
+
+                    for(int l = 0; l < 16; l++){
+                        if(lapuntador.b_pointers[l] == -1){
+                            continue;
+                        }
+
+                        posLectura = sblock.s_block_start + (sizeof(bcarpetas) * lapuntador.b_pointers[l]);
+                        fseek(archivo, posLectura, SEEK_SET);
+                        fread(&lcarpeta, sizeof(bcarpetas), 1, archivo);
+
+                        for(int m = 0; m < 4; m++){
+                            std::string carpeta(lcarpeta.b_content[m].b_name);
+
+                            if(carpeta == "users.txt"){
+                                inodo_buscado = lcarpeta.b_content[m].b_inodo;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }else{
+            posLectura = sblock.s_block_start + (sizeof(bcarpetas) * linodo.i_block[i]);
+            fseek(archivo, posLectura, SEEK_SET);
+            fread(&lcarpeta, sizeof(bcarpetas), 1, archivo);
+
+            for(int j = 0; j < 4; j++){
+                std::string carpeta(lcarpeta.b_content[j].b_name);
+    
+                if(carpeta == "users.txt"){
+                    inodo_buscado = lcarpeta.b_content[j].b_inodo;
+                    break;
+                }
+            }
+        }
+    }
+
+    if(inodo_buscado == -1){
+        std::cout << "ERROR: No se encontró el archivo de usuarios." << std::endl;
+        fclose(archivo);
+        return;
+    }
+
+    //LEER EL INODO DEL ARCHIVO
+    posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_buscado);
+    fseek(archivo, posLectura, SEEK_SET);
+    fread(&linodo, sizeof(inodo), 1, archivo);
+
+    //LEER EL ARCHIVO DE USUARIOS 
+    std::string texto = "";
+    std::string temp; 
+    for(int i = 0; i < 15; i++){
+        if(linodo.i_block[i] == -1){
+            continue;
+        }
+
+        if(i == 12){
+            //Recorrer el bloque de apuntadores simple
+            posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[i]);
+            fseek(archivo, posLectura, SEEK_SET);
+            fread(&lapuntador, sizeof(bapuntadores), 1, archivo);
+
+            for(int j = 0; j < 16; j++){
+                if(lapuntador.b_pointers[j] == -1){
+                    continue;
+                }
+
+                posLectura = sblock.s_block_start + (sizeof(barchivos) * lapuntador.b_pointers[j]);
+                fseek(archivo, posLectura, SEEK_SET);
+                fread(&larchivo, sizeof(barchivos), 1, archivo);
+
+
+                temp = larchivo.b_content; 
+                texto += temp;
+            }
+        }else if(i == 13){
+            //Recorrer el bloque de apuntadores simple
+            posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[i]);
+            fseek(archivo, posLectura, SEEK_SET);
+            fread(&lapuntador_doble, sizeof(bapuntadores), 1, archivo);
+
+            for(int j = 0; j < 16; j++){
+                if(lapuntador_doble.b_pointers[j] == -1){
+                    continue;
+                }
+
+                posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_doble.b_pointers[j]);
+                fseek(archivo, posLectura, SEEK_SET);
+                fread(&lapuntador, sizeof(bapuntadores), 1, archivo);
+
+                for(int k = 0; k < 16; k++){
+                    if(lapuntador.b_pointers[k] == -1){
+                        continue;
+                    }
+
+                    posLectura = sblock.s_block_start + (sizeof(barchivos) * lapuntador.b_pointers[k]);
+                    fseek(archivo, posLectura, SEEK_SET);
+                    fread(&larchivo, sizeof(barchivos), 1, archivo);
+
+                    temp = larchivo.b_content; 
+                    texto += temp;
+                }
+            }
+        }else if(i == 14){
+            //Recorrer el bloque de apuntadores simple
+            posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[i]);
+            fseek(archivo, posLectura, SEEK_SET);
+            fread(&lapuntador_triple, sizeof(bapuntadores), 1, archivo);
+
+            for(int j = 0; j < 16; j++){
+                if(lapuntador_triple.b_pointers[j] == -1){
+                    continue;
+                }
+
+                posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_triple.b_pointers[j]);
+                fseek(archivo, posLectura, SEEK_SET);
+                fread(&lapuntador_doble, sizeof(bapuntadores), 1, archivo);
+
+                for(int k = 0; k < 16; k++){
+                    if(lapuntador_doble.b_pointers[k] == -1){
+                        continue;
+                    }
+
+                    posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_doble.b_pointers[k]);
+                    fseek(archivo, posLectura, SEEK_SET);
+                    fread(&lapuntador, sizeof(bapuntadores), 1, archivo);
+
+                    for(int l = 0; l < 16; l++){
+                        if(lapuntador.b_pointers[l] == -1){
+                            continue;
+                        }
+
+                        posLectura = sblock.s_block_start + (sizeof(barchivos) * lapuntador.b_pointers[l]);
+                        fseek(archivo, posLectura, SEEK_SET);
+                        fread(&larchivo, sizeof(barchivos), 1, archivo);
+
+                        temp = larchivo.b_content; 
+                        texto += temp;
+                    }
+                }
+            }
+        }else{
+            posLectura = sblock.s_block_start + (sizeof(barchivos) * linodo.i_block[i]);
+            fseek(archivo, posLectura, SEEK_SET);
+            fread(&larchivo, sizeof(barchivos), 1, archivo);
+
+            temp = larchivo.b_content; 
+            texto += temp;
+        }
+    }
+
+    //SEPARAR EL ARCHIVO POR LINEAS
+    std::regex espacio("\n");
+    std::regex coma(",");
+    std::vector<std::string> lineas(std::sregex_token_iterator(texto.begin(), texto.end(), espacio, -1),
+        std::sregex_token_iterator());
+
+    //LEER EL INODO RAIZ
+    posLectura = sblock.s_inode_start;
+    fseek(archivo, posLectura, SEEK_SET);
+    fread(&linodo, sizeof(inodo), 1, archivo);
+    
+    //BUSCAR EL INODO DE LA CARPETA O ARCHIVO A MODIFICAR
+    int posicion = 1;
+    bool continuar = true;
+    inodo_buscado = -1;
+    if(ruta_contenido == "/"){
+        inodo_buscado = 0;
+        continuar = false;
+    }else if(path[0] != "\0"){
+        continuar = false;
+    }   
+
+    while(continuar){
+        int inodo_temporal = -1;
+        
+        for(int i = 0; i < 15; i++){
+            if(inodo_buscado != -1 || inodo_temporal != -1){
+                break;
+            }
+
+            if(linodo.i_block[i] == -1){
+                continue;
+            }
+
+            if(i == 12){
+                //Recorrer el bloque de apuntadores simple
+                posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[i]);
+                fseek(archivo, posLectura, SEEK_SET);
+                fread(&lapuntador, sizeof(bapuntadores), 1, archivo);
+
+                for(int j = 0; j < 16; j++){
+                    if(lapuntador.b_pointers[j] == -1){
+                        continue;
+                    }
+
+                    posLectura = sblock.s_block_start + (sizeof(bcarpetas) * lapuntador.b_pointers[j]);
+                    fseek(archivo, posLectura, SEEK_SET);
+                    fread(&lcarpeta, sizeof(bcarpetas), 1, archivo);
+
+                    for(int k = 0; k < 4; k++){
+                        std::string carpeta(lcarpeta.b_content[k].b_name);
+
+                        if(carpeta == path[posicion]){
+                            if(posicion == path.size() - 1){
+                                inodo_buscado = lcarpeta.b_content[k].b_inodo;
+                                continuar = false;
+                                break;
+                            }else{
+                                inodo_temporal = lcarpeta.b_content[k].b_inodo;
+                                posicion += 1;
+                                posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_temporal);
+                                fseek(archivo, posLectura, SEEK_SET);
+                                fread(&linodo, sizeof(inodo), 1, archivo);
+
+                                if(linodo.i_type == '1'){
+                                    continuar = false;
+                                    break;
+                                }
+                            }  
+                        }
+                    }
+                }
+            }else if(i == 13){
+                //Recorrer el bloque de apuntadores doble
+                posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[i]);
+                fseek(archivo, posLectura, SEEK_SET);
+                fread(&lapuntador_doble, sizeof(bapuntadores), 1, archivo);
+
+                for(int j = 0; j < 16; j++){
+                    if(lapuntador_doble.b_pointers[j] == -1){
+                        continue;
+                    }
+
+                    posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_doble.b_pointers[j]);
+                    fseek(archivo, posLectura, SEEK_SET);
+                    fread(&lapuntador, sizeof(bapuntadores), 1, archivo);
+
+                    for(int k = 0; k < 16; k++){
+                        if(lapuntador.b_pointers[k] == -1){
+                            continue;
+                        }
+
+                        posLectura = sblock.s_block_start + (sizeof(bcarpetas) * lapuntador.b_pointers[k]);
+                        fseek(archivo, posLectura, SEEK_SET);
+                        fread(&lcarpeta, sizeof(bcarpetas), 1, archivo);
+
+                        for(int l = 0; l < 4; l++){
+                            std::string carpeta(lcarpeta.b_content[l].b_name);
+
+                            if(carpeta == path[posicion]){
+                                if(posicion == path.size() - 1){
+                                    inodo_buscado = lcarpeta.b_content[l].b_inodo;
+                                    continuar = false;
+                                    break;
+                                }else{
+                                    inodo_temporal = lcarpeta.b_content[l].b_inodo;
+                                    posicion += 1;
+                                    posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_temporal);
+                                    fseek(archivo, posLectura, SEEK_SET);
+                                    fread(&linodo, sizeof(inodo), 1, archivo);
+
+                                    if(linodo.i_type == '1'){
+                                        continuar = false;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }else if(i == 14){
+                //Recorrer el bloque de apuntadores triple
+                posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[i]);
+                fseek(archivo, posLectura, SEEK_SET);
+                fread(&lapuntador_triple, sizeof(bapuntadores), 1, archivo);
+
+                for(int j = 0; j < 16; j++){
+                    if(lapuntador_triple.b_pointers[j] == -1){
+                        continue;
+                    }
+
+                    posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_triple.b_pointers[j]);
+                    fseek(archivo, posLectura, SEEK_SET);
+                    fread(&lapuntador_doble, sizeof(bapuntadores), 1, archivo);
+
+                    for(int k = 0; k < 16; k++){
+                        if(lapuntador_doble.b_pointers[k] == -1){
+                            continue;
+                        }
+
+                        posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_doble.b_pointers[k]);
+                        fseek(archivo, posLectura, SEEK_SET);
+                        fread(&lapuntador, sizeof(bapuntadores), 1, archivo);
+
+                        for(int l = 0; l < 16; l++){
+                            if(lapuntador.b_pointers[l] == -1){
+                                continue;
+                            }
+
+                            posLectura = sblock.s_block_start + (sizeof(bcarpetas) * lapuntador.b_pointers[l]);
+                            fseek(archivo, posLectura, SEEK_SET);
+                            fread(&lcarpeta, sizeof(bcarpetas), 1, archivo);
+
+                            for(int m = 0; m < 4; m++){
+                                std::string carpeta(lcarpeta.b_content[m].b_name);
+
+                                if(carpeta == path[posicion]){
+                                    if(posicion == path.size() - 1){
+                                        inodo_buscado = lcarpeta.b_content[m].b_inodo;
+                                        continuar = false;
+                                        break;
+                                    }else{
+                                        inodo_temporal = lcarpeta.b_content[m].b_inodo;
+                                        posicion += 1;
+                                        posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_temporal);
+                                        fseek(archivo, posLectura, SEEK_SET);
+                                        fread(&linodo, sizeof(inodo), 1, archivo);
+
+                                        if(linodo.i_type == '1'){
+                                            continuar = false;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }else{
+                posLectura = sblock.s_block_start + (sizeof(bcarpetas) * linodo.i_block[i]);
+                fseek(archivo, posLectura, SEEK_SET);
+                fread(&lcarpeta, sizeof(bcarpetas), 1, archivo);
+
+                for(int j = 0; j < 4; j++){
+                    std::string carpeta(lcarpeta.b_content[j].b_name);
+        
+                    if(carpeta == path[posicion]){
+                        if(posicion == path.size() - 1){
+                            inodo_buscado = lcarpeta.b_content[j].b_inodo;
+                            continuar = false;
+                            break;
+                        }else{
+                            inodo_temporal = lcarpeta.b_content[j].b_inodo;
+                            posicion += 1;
+                            posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_temporal);
+                            fseek(archivo, posLectura, SEEK_SET);
+                            fread(&linodo, sizeof(inodo), 1, archivo);
+
+                            if(linodo.i_type == '1'){
+                                continuar = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if(inodo_buscado == -1){
+            std::cout << "ERROR: La ruta ingresada es erronea." << std::endl;
+            fclose(archivo);
+            return;
+        }
+    }
+
+    //LEER EL INODO BUSCADO 
+    posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_buscado);
+    fseek(archivo, posLectura, SEEK_SET);
+    fread(&linodo, sizeof(inodo), 1, archivo);
+
+    //ESCRIBIR EL DOT
+    codigo = "digraph mbr {node [shape=plaintext] struct1 [label= <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='0'>";
+    
+    codigo.append("<TR>");
+    codigo.append("<TD BGCOLOR='#cd6155' WIDTH='300'>PERMISOS</TD>");
+    codigo.append("<TD WIDTH='200' BGCOLOR='#cd6155'>DUEÑO</TD>");
+    codigo.append("<TD WIDTH='200' BGCOLOR='#cd6155'>GRUPO</TD>");
+    codigo.append("<TD WIDTH='200' BGCOLOR='#cd6155'>TAMAÑO</TD>");
+    codigo.append("<TD WIDTH='200' BGCOLOR='#cd6155'>FECHA</TD>");
+    codigo.append("<TD WIDTH='200' BGCOLOR='#cd6155'>TIPO</TD>");
+    codigo.append("<TD WIDTH='200' BGCOLOR='#cd6155'>NOMBRE</TD>");
+    codigo.append("</TR>");
+
+    //EN CASO SEA SOLO UN ARCHIVO
+    if(linodo.i_type != '0'){
+        codigo.append("<TR>");
+        std::string temp = std::to_string(linodo.i_perm);
+        std::string permisos = "";
+        for(int i = 0; i < 3; i++){
+            if(temp[i] == '0'){
+                permisos.append("---");
+            }else if(temp[i] == '1'){
+                permisos.append("--x");
+            }else if(temp[i] == '2'){
+                permisos.append("-w-");
+            }else if(temp[i] == '3'){
+                permisos.append("-wx");
+            }else if(temp[i] == '4'){
+                permisos.append("r--");
+            }else if(temp[i] == '5'){
+                permisos.append("r-x");
+            }else if(temp[i] == '6'){
+                permisos.append("rw-");
+            }else if(temp[i] == '7'){
+                permisos.append("rwx");
+            }
+        }
+        codigo.append("<TD WIDTH='300'>");
+        codigo.append(permisos);
+        codigo.append("</TD>");
+
+        //Dueño
+        std::string grupo = "";
+        bool existe_usuario = false;               
+        for(int i = 0; i < lineas.size(); i++){
+            //Separar por comas los atributos
+            std::vector<std::string> atributos(std::sregex_token_iterator(lineas[i].begin(), lineas[i].end(), coma, -1),
+                std::sregex_token_iterator());
+            if(atributos.size() == 5){  //Los usuarios tienen cinco parametros
+                if(atributos[0] == std::to_string(linodo.i_uid)){
+                    temp  = atributos[3];
+                    grupo = atributos[2];
+                    existe_usuario = true;
+                }
+            }
+
+            if(existe_usuario){
+                break;
+            }
+        }
+
+        if(!existe_usuario){
+            temp = "Desconocido";
+            grupo = "Desconocido";
+        }
+        codigo.append("<TD WIDTH='300'>");
+        codigo.append(temp);
+        codigo.append("</TD>");
+
+        codigo.append("<TD WIDTH='300'>");
+        codigo.append(grupo);
+        codigo.append("</TD>");
+
+        //Tamaño
+        codigo.append("<TD WIDTH='300'>");
+        codigo.append(std::to_string(linodo.i_s));
+        codigo.append("</TD>");
+        //Fecha creacion
+        codigo.append("<TD WIDTH='300'>");
+        codigo.append(asctime(gmtime(&linodo.i_ctime)));
+        codigo.append("</TD>");
+        //Tipo
+        codigo.append("<TD WIDTH='300'>");
+        if(linodo.i_type == '0'){
+            codigo.append("Carpeta");
+        }else{
+            codigo.append("Archivo");
+        }
+        codigo.append("</TD>");
+        //Nombre
+        codigo.append("<TD WIDTH='300'>");
+        codigo.append(nombre_archivo);
+        codigo.append("</TD>");
+        codigo.append("</TR>");
+    }
+    
+    //EN CASO SEA UNA CARPETA Y SUS CONTENIDOS
+    bool cambiar = true;
+    std::stack<int> inodos;
+    std::stack<std::string> nombres;
+    if(linodo.i_type == '0'){
+
+        while(cambiar){
+
+            //AÑADIR LA INFO DEL INODO
+            codigo.append("<TR>");
+            std::string temp = std::to_string(linodo.i_perm);
+            std::string permisos = "";
+            for(int i = 0; i < 3; i++){
+                if(temp[i] == '0'){
+                    permisos.append("---");
+                }else if(temp[i] == '1'){
+                    permisos.append("--x");
+                }else if(temp[i] == '2'){
+                    permisos.append("-w-");
+                }else if(temp[i] == '3'){
+                    permisos.append("-wx");
+                }else if(temp[i] == '4'){
+                    permisos.append("r--");
+                }else if(temp[i] == '5'){
+                    permisos.append("r-x");
+                }else if(temp[i] == '6'){
+                    permisos.append("rw-");
+                }else if(temp[i] == '7'){
+                    permisos.append("rwx");
+                }
+            }
+            codigo.append("<TD WIDTH='100'>");
+            codigo.append(permisos);
+            codigo.append("</TD>");
+
+            //Dueño
+            std::string grupo = "";
+            bool existe_usuario = false;               
+            for(int i = 0; i < lineas.size(); i++){
+                //Separar por comas los atributos
+                std::vector<std::string> atributos(std::sregex_token_iterator(lineas[i].begin(), lineas[i].end(), coma, -1),
+                    std::sregex_token_iterator());
+                if(atributos.size() == 5){  //Los usuarios tienen cinco parametros
+                    if(atributos[0] == std::to_string(linodo.i_uid)){
+                        temp  = atributos[3];
+                        grupo = atributos[2];
+                        existe_usuario = true;
+                    }
+                }
+
+                if(existe_usuario){
+                    break;
+                }
+            }
+
+            if(!existe_usuario){
+                temp = "Desconocido";
+                grupo = "Desconocido";
+            }
+            codigo.append("<TD WIDTH='100'>");
+            codigo.append(temp);
+            codigo.append("</TD>");
+
+            codigo.append("<TD WIDTH='100'>");
+            codigo.append(grupo);
+            codigo.append("</TD>");
+
+            //Tamaño
+            codigo.append("<TD WIDTH='100'>");
+            codigo.append(std::to_string(linodo.i_s));
+            codigo.append("</TD>");
+            //Fecha creacion
+            codigo.append("<TD WIDTH='100'>");
+            codigo.append(asctime(gmtime(&linodo.i_ctime)));
+            codigo.append("</TD>");
+            //Tipo
+            codigo.append("<TD WIDTH='100'>");
+            if(linodo.i_type == '0'){
+                codigo.append("Carpeta");
+            }else{
+                codigo.append("Archivo");
+            }
+            codigo.append("</TD>");
+            //Nombre
+            codigo.append("<TD WIDTH='100'>");
+            codigo.append(nombre_archivo);
+            codigo.append("</TD>");
+            codigo.append("</TR>");
+
+            //Recorrer el inodo si es de carpeta y añadir posiciones a la pila
+            if(linodo.i_type == '0'){
+                for(int i = 0; i < 15; i++){
+                    
+                    if(linodo.i_block[i] == -1){
+                        continue;
+                    }
+                    if(i == 0){
+                        posLectura = sblock.s_block_start + (sizeof(bcarpetas) * linodo.i_block[i]);
+                        fseek(archivo, posLectura, SEEK_SET);
+                        fread(&lcarpeta, sizeof(bcarpetas), 1, archivo);
+
+                        for(int j = 2; j < 4; j++){
+                            if(lcarpeta.b_content[j].b_inodo != -1){
+                                inodos.push(lcarpeta.b_content[j].b_inodo);
+                                nombres.push(lcarpeta.b_content[j].b_name);
+                            }
+                        }
+
+                    }else if(i == 12){
+                        //Recorrer el bloque de apuntadores simple
+                        posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[i]);
+                        fseek(archivo, posLectura, SEEK_SET);
+                        fread(&lapuntador, sizeof(bapuntadores), 1, archivo);
+
+                        for(int j = 0; j < 16; j++){
+                            if(lapuntador.b_pointers[j] == -1){
+                                continue;
+                            }
+
+                            posLectura = sblock.s_block_start + (sizeof(bcarpetas) * lapuntador.b_pointers[j]);
+                            fseek(archivo, posLectura, SEEK_SET);
+                            fread(&lcarpeta, sizeof(bcarpetas), 1, archivo);
+
+                            for(int k = 0; k < 4; k++){
+                                if(lcarpeta.b_content[k].b_inodo != -1){
+                                    inodos.push(lcarpeta.b_content[k].b_inodo);
+                                    nombres.push(lcarpeta.b_content[j].b_name);
+                                }
+                            }
+                        }
+                    }else if(i == 13){
+                        //Recorrer el bloque de apuntadores doble
+                        posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[i]);
+                        fseek(archivo, posLectura, SEEK_SET);
+                        fread(&lapuntador_doble, sizeof(bapuntadores), 1, archivo);
+
+                        for(int j = 0; j < 16; j++){
+                            if(lapuntador_doble.b_pointers[j] == -1){
+                                continue;
+                            }
+
+                            posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_doble.b_pointers[j]);
+                            fseek(archivo, posLectura, SEEK_SET);
+                            fread(&lapuntador, sizeof(bapuntadores), 1, archivo);
+
+                            for(int k = 0; k < 16; k++){
+                                if(lapuntador.b_pointers[k] == -1){
+                                    continue;
+                                }
+
+                                posLectura = sblock.s_block_start + (sizeof(bcarpetas) * lapuntador.b_pointers[k]);
+                                fseek(archivo, posLectura, SEEK_SET);
+                                fread(&lcarpeta, sizeof(bcarpetas), 1, archivo);
+
+                                for(int l = 0; l < 4; l++){
+                                    if(lcarpeta.b_content[l].b_inodo != -1){
+                                        inodos.push(lcarpeta.b_content[l].b_inodo);
+                                        nombres.push(lcarpeta.b_content[j].b_name);
+                                    }
+                                }
+                            }
+                        }
+                    }else if(i == 14){
+                        //Recorrer el bloque de apuntadores triple
+                        posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[i]);
+                        fseek(archivo, posLectura, SEEK_SET);
+                        fread(&lapuntador_triple, sizeof(bapuntadores), 1, archivo);
+
+                        for(int j = 0; j < 16; j++){
+                            if(lapuntador_triple.b_pointers[j] == -1){
+                                continue;
+                            }
+
+                            posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_triple.b_pointers[j]);
+                            fseek(archivo, posLectura, SEEK_SET);
+                            fread(&lapuntador_doble, sizeof(bapuntadores), 1, archivo);
+
+                            for(int k = 0; k < 16; k++){
+                                if(lapuntador_doble.b_pointers[k] == -1){
+                                    continue;
+                                }
+
+                                posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_doble.b_pointers[k]);
+                                fseek(archivo, posLectura, SEEK_SET);
+                                fread(&lapuntador, sizeof(bapuntadores), 1, archivo);
+
+                                for(int l = 0; l < 16; l++){
+                                    if(lapuntador.b_pointers[l] == -1){
+                                        continue;
+                                    }
+
+                                    posLectura = sblock.s_block_start + (sizeof(bcarpetas) * lapuntador.b_pointers[l]);
+                                    fseek(archivo, posLectura, SEEK_SET);
+                                    fread(&lcarpeta, sizeof(bcarpetas), 1, archivo);
+
+                                    for(int m = 0; m < 4; m++){
+                                        if(lcarpeta.b_content[m].b_inodo != -1){
+                                            inodos.push(lcarpeta.b_content[m].b_inodo);
+                                            nombres.push(lcarpeta.b_content[j].b_name);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }else{
+                        posLectura = sblock.s_block_start + (sizeof(bcarpetas) * linodo.i_block[i]);
+                        fseek(archivo, posLectura, SEEK_SET);
+                        fread(&lcarpeta, sizeof(bcarpetas), 1, archivo);
+
+                        for(int j = 0; j < 4; j++){
+                            if(lcarpeta.b_content[j].b_inodo != -1){
+                                inodos.push(lcarpeta.b_content[j].b_inodo);
+                                nombres.push(lcarpeta.b_content[j].b_name);
+                            }
+                        }
+                    }
+                }
+            }
+
+            //Si la pila no está vacía, seleccionar el siguiente inodo
+            if(inodos.empty()){
+                cambiar = false;
+            }else{
+                inodo_buscado = inodos.top();
+                inodos.pop();
+
+                nombre_archivo = nombres.top();
+                nombres.pop();
+
+                posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_buscado);
+                fseek(archivo, posLectura, SEEK_SET);
+                fread(&linodo, sizeof(inodo), 1, archivo);
+            }
+        }
+        
+    }
+
+    codigo.append("</TABLE>>];}");
+    fclose(archivo);
+    
+
+    //GENERAR EL DOT
+    std::ofstream outfile ("grafo.dot");
+    outfile << codigo << std::endl;
+    outfile.close();
+
+    //REMPLAZAR LA EXTENDION DE LA RUTA   
+    //Basado en: https://www.oreilly.com/library/view/c-cookbook/0596007612/ch10s17.html             
+    std::string::size_type pos = ruta.rfind('.', ruta.length());
+    std::string png = "png";
+    if (pos != std::string::npos) {
+        ruta.replace(pos+1, png.length(), png);
+    }
+
+    //CREAR EL COMANDO DOT
+    comando = "dot -Tpng grafo.dot -o";
+    comando.append("'");
+    comando.append(ruta);
+    comando.append("'");
+
+    //GENERAR EL GRAFO
+    system(comando.c_str());
+    std::cout << "MENSAJE: Reporte ls creado correctamente." << std::endl;
 }
