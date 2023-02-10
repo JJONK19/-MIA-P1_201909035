@@ -200,7 +200,9 @@ void chmod(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
         inodo_buscado = 0;
         continuar = false;
     }else if(path[0] != "\0"){
-        continuar = false;
+        std::cout << "ERROR: La ruta ingresada es erronea." << std::endl;
+        fclose(archivo);
+        return;
     }
     
     while(continuar){
@@ -370,6 +372,7 @@ void chmod(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                     if(carpeta == path[posicion]){
                         if(posicion == path.size() - 1){
                             inodo_buscado = lcarpeta.b_content[j].b_inodo;
+                            posicion += 1;
                             continuar = false;
                             break;
                         }else{
@@ -389,20 +392,19 @@ void chmod(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
             }
         }
 
-        if(inodo_buscado == -1){
-            std::cout << "ERROR: La ruta ingresada es erronea." << std::endl;
+        if(inodo_temporal == -1 && posicion != path.size()){
+            continuar = false;
+            std::cout << "ERROR: La ruta ingresada no existe." << std::endl;
+            fclose(archivo);
+            return;
+        }else if(posicion == path.size() && inodo_buscado == -1){
+            continuar = false;
+            std::cout << "ERROR: La ruta es erronea." << std::endl;
             fclose(archivo);
             return;
         }
     }
     
-
-    if(inodo_buscado == -1){
-        std::cout << "ERROR: La ruta ingresada es erronea." << std::endl;
-        fclose(archivo);
-        return;
-    }
-
     //LEER EL INODO BUSCADO 
     posLectura = sblock.s_inode_start + (sizeof(inodo) * inodo_buscado);
     fseek(archivo, posLectura, SEEK_SET);
@@ -410,7 +412,13 @@ void chmod(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
 
     //MODIFICAR PERMISOS DEL INODO Y REESCRIBIRLO
     if(!recursivo || linodo.i_type != '0'){
-        linodo.i_perm = std::stoi(ugo);
+        try{
+            linodo.i_perm = std::stoi(ugo);
+        }catch(...){
+            std::cout << "ERROR: UGO debe de ser un valor númerico." << std::endl;
+            fclose(archivo);
+            return;
+        }
         linodo.i_mtime = time(NULL);
         fseek(archivo, posLectura, SEEK_SET);
         fwrite(&linodo, sizeof(inodo), 1, archivo);
@@ -423,7 +431,13 @@ void chmod(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
 
         while(cambiar){
             //Cambiar permisos
-            linodo.i_perm = std::stoi(ugo);
+            try{
+                linodo.i_perm = std::stoi(ugo);
+            }catch(...){
+                std::cout << "ERROR: UGO debe de ser un valor númerico." << std::endl;
+                fclose(archivo);
+                return;
+            }
             linodo.i_mtime = time(NULL);
             fseek(archivo, posLectura, SEEK_SET);
             fwrite(&linodo, sizeof(inodo), 1, archivo);

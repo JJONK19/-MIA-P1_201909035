@@ -108,7 +108,7 @@ void exec(std::vector<std::string> &parametros, usuario &sesion, std::vector<dis
         }else if(tipo == "cat"){
             //cat();
         }else if(tipo == "remove"){
-            //remove();
+            remove(parametros, discos, sesion);
         }else if(tipo == "edit"){
             edit(parametros, discos, sesion);
         }else if(tipo == "rename"){

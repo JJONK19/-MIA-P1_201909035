@@ -452,7 +452,9 @@ void chown(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
         inodo_buscado = 0;
         continuar = false;
     }else if(path[0] != "\0"){
-        continuar = false;
+        std::cout << "ERROR: La ruta ingresada es erronea." << std::endl;
+        fclose(archivo);
+        return;
     }
     
     while(continuar){
@@ -622,6 +624,7 @@ void chown(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                     if(carpeta == path[posicion]){
                         if(posicion == path.size() - 1){
                             inodo_buscado = lcarpeta.b_content[j].b_inodo;
+                            posicion += 1;
                             continuar = false;
                             break;
                         }else{
@@ -640,18 +643,17 @@ void chown(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                 }
             }
         }
-        if(inodo_buscado == -1){
-            std::cout << "ERROR: La ruta ingresada es erronea." << std::endl;
+        if(inodo_temporal == -1 && posicion != path.size()){
+            continuar = false;
+            std::cout << "ERROR: La ruta ingresada no existe." << std::endl;
+            fclose(archivo);
+            return;
+        }else if(posicion == path.size() && inodo_buscado == -1){
+            continuar = false;
+            std::cout << "ERROR: La ruta es erronea." << std::endl;
             fclose(archivo);
             return;
         }
-    }
-    
-
-    if(inodo_buscado == -1){
-        std::cout << "ERROR: La ruta ingresada es erronea." << std::endl;
-        fclose(archivo);
-        return;
     }
 
     //LEER EL INODO BUSCADO 

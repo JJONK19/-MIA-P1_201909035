@@ -28,6 +28,7 @@
 #include "loss.h"
 #include "chown.h"
 #include "edit.h"
+#include "remove.h"
 #include "rep.h"
 
 

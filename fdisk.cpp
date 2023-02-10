@@ -34,7 +34,12 @@ void fdisk(std::vector<std::string> &parametros){
         });
 
         if(tag == "s"){
-            tamaño = stoi(value);
+            try{
+                tamaño = stoi(value);
+            }catch(...){
+                std::cout << "ERROR: El tamaño debe de ser un valor númerico." << std::endl;
+                return;
+            }
             if(comando == ""){
                 comando = "create";
             }
@@ -54,7 +59,12 @@ void fdisk(std::vector<std::string> &parametros){
         }else if(tag == "name"){
             nombre = value;
         }else if(tag == "add"){
-            añadir = stoi(value);
+            try{
+                añadir = stoi(value);
+            }catch(...){
+                std::cout << "ERROR: El espacio a añadir debe de ser un valor númerico." << std::endl;
+                return;
+            }
             if(comando == ""){
                 comando = "add";
             }

@@ -180,7 +180,9 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
     if(ruta == "/"){
         continuar = false;
     }else if(path[0] != "\0"){
-        continuar = false;
+        std::cout << "ERROR: La ruta ingresada es erronea." << std::endl;
+        fclose(archivo);
+        return;
     }
     
     while(continuar){

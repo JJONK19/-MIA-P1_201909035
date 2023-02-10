@@ -50,7 +50,7 @@ void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos){
     }else if(tipo == "cat"){
         //cat();
     }else if(tipo == "remove"){
-        //remove();
+        remove(parametros, discos, sesion);
     }else if(tipo == "edit"){
         edit(parametros, discos, sesion);
     }else if(tipo == "rename"){

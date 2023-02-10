@@ -29,7 +29,12 @@ void mkdisk(std::vector<std::string> &parametros){
         });
 
         if(tag == "s"){
-            tamaño = std::stoi(value);
+            try{
+                tamaño = std::stoi(value);
+            }catch(...){
+                std::cout << "ERROR: El tamaño debe de ser un valor númerico." << std::endl;
+                return;
+            }
         }else if(tag == "f"){
             fit = value;
         }else if(tag == "u"){

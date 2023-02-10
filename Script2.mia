@@ -110,16 +110,26 @@ login -usr->admin1 -pass->admin -id->351Disco1
 #mkfile -path->/c.txt -r 
 mkfile -path->/home/user/a.txt -r -s->750
 mkfile -path->/home/user/a.txt -r -s->20
-mkfile -path->/a.txt -r -cont->/users.txt
-mkfile -path->/home/usarios/b.txt -r -cont->/home/user/a.txt
+mkfile -path->/a.txt -r -cont->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/a.txt"
+mkfile -path->/home/usarios/b.txt -r -s->20
 #chown -path->/  -r -usr->root
 
 #edit
-edit -path->/a.txt -cont->/home/usarios/b.txt
+#edit -path->/a.txt -cont->/home/usarios/b.txt
 
 logout 
 login -usr->root -pass->123 -id->351Disco1
-chmod -path->/users.txt -r -ugo->766
+#chmod -path->/ -r -ugo->777
+#chmod -path->/home/usarios -r -ugo->000
+chmod -path->/home/usarios/b.txt -r -ugo->000
+
+#Login con diferente usuario 
+logout
+login -usr->admin1 -pass->admin -id->351Disco1
+
+#remove
+#remove -path->/home/usarios/b.txt
+remove -path->/home
 
 #reporte
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/mbr.png" -name->mbr

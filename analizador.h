@@ -30,6 +30,7 @@
 #include "loss.h"
 #include "chown.h"
 #include "edit.h"
+#include "remove.h"
 
 
 void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos);         

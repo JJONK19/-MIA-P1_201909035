@@ -19,7 +19,7 @@
                 "${fileDirname}/pause.cpp", "${fileDirname}/chmod.cpp",
                 "${fileDirname}/mkdir.cpp", "${fileDirname}/mkfile.cpp",
                 "${fileDirname}/loss.cpp", "${fileDirname}/chown.cpp",
-                "${fileDirname}/edit.cpp", 
+                "${fileDirname}/edit.cpp", "${fileDirname}/remove.cpp", 
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],

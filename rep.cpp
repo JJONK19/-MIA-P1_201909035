@@ -1790,6 +1790,7 @@ void leer_inodo(std::string &ruta, int &posInodos, int &posBloques, int &no_inod
 
         }
     }
+    fclose(archivo);
 }   
 
 void leer_carpeta(std::string &ruta, int &posInodos, int &posBloques, int &no_bloque, std::string &codigo, std::string &padre){
@@ -1858,6 +1859,7 @@ void leer_carpeta(std::string &ruta, int &posInodos, int &posBloques, int &no_bl
         nombre_nodo.append(std::to_string(i));
         leer_inodo(ruta, posInodos, posBloques, direccion, codigo, nombre_nodo);
     }
+    fclose(archivo);
 }
 
 void leer_archivo(std::string &ruta, int &posInodos, int &posBloques, int &no_bloque, std::string &codigo, std::string &padre){
@@ -1901,6 +1903,7 @@ void leer_archivo(std::string &ruta, int &posInodos, int &posBloques, int &no_bl
     codigo.append(nombre);
     codigo.append("[minlen = 2];");
     codigo.append("\n");
+    fclose(archivo);
 }
 
 void leer_apuntador(std::string &ruta, int &posInodos, int &posBloques, int &no_bloque, std::string &codigo, std::string &padre, int grado, char &tipo){
@@ -1973,7 +1976,7 @@ void leer_apuntador(std::string &ruta, int &posInodos, int &posBloques, int &no_
             leer_apuntador(ruta, posInodos, posBloques, direccion, codigo, nombre_nodo, 2, tipo);
         }
     }
-
+    fclose(archivo);
 }
 
 void file(std::vector<disco> &discos, int posDisco, int posParticion, std::string &ruta, std::string &ruta_contenido){
@@ -2873,6 +2876,7 @@ void ls(std::vector<disco> &discos, int posDisco, int posParticion, std::string 
                         if(posicion == path.size() - 1){
                             inodo_buscado = lcarpeta.b_content[j].b_inodo;
                             continuar = false;
+                            posicion += 1;
                             break;
                         }else{
                             inodo_temporal = lcarpeta.b_content[j].b_inodo;
@@ -2891,8 +2895,14 @@ void ls(std::vector<disco> &discos, int posDisco, int posParticion, std::string 
             }
         }
 
-        if(inodo_buscado == -1){
-            std::cout << "ERROR: La ruta ingresada es erronea." << std::endl;
+        if(inodo_temporal == -1 && posicion != path.size()){
+            continuar = false;
+            std::cout << "ERROR: La ruta ingresada no existe." << std::endl;
+            fclose(archivo);
+            return;
+        }else if(posicion == path.size() && inodo_buscado == -1){
+            continuar = false;
+            std::cout << "ERROR: La ruta es erronea." << std::endl;
             fclose(archivo);
             return;
         }

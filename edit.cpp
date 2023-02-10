@@ -553,7 +553,9 @@ void edit(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
     if(ruta == "/"){
         continuar = false;
     }else if(path[0] != "\0"){
-        continuar = false;
+        std::cout << "ERROR: La ruta ingresada es erronea." << std::endl;
+        fclose(archivo);
+        return;
     }
 
     //Mover la posicion al inodo donde se encuentra el archivo
@@ -776,13 +778,14 @@ void edit(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
 
     //BUSCAR LOS BLOQUES QUE HAY QUE BORRAR
     std::vector<int> borrar;
-    //Recorrer el inodo si es de carpeta y añadir posiciones a la pila
     for(int i = 0; i < 15; i++){
         
         if(linodo.i_block[i] == -1){
             continue;
         }
-        
+
+        borrar.push_back(linodo.i_block[i]);
+
         if(i == 12){
             //Recorrer el bloque de apuntadores simple
             posLectura = sblock.s_block_start + (sizeof(bapuntadores) * linodo.i_block[i]);
@@ -807,6 +810,8 @@ void edit(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
                     continue;
                 }
 
+                borrar.push_back(lapuntador_doble.b_pointers[j]);
+
                 posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_doble.b_pointers[j]);
                 fseek(archivo, posLectura, SEEK_SET);
                 fread(&lapuntador, sizeof(bapuntadores), 1, archivo);
@@ -830,6 +835,8 @@ void edit(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
                     continue;
                 }
 
+                borrar.push_back(lapuntador_triple.b_pointers[j]);
+
                 posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_triple.b_pointers[j]);
                 fseek(archivo, posLectura, SEEK_SET);
                 fread(&lapuntador_doble, sizeof(bapuntadores), 1, archivo);
@@ -838,6 +845,8 @@ void edit(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
                     if(lapuntador_doble.b_pointers[k] == -1){
                         continue;
                     }
+
+                    borrar.push_back(lapuntador_doble.b_pointers[k]);
 
                     posLectura = sblock.s_block_start + (sizeof(bapuntadores) * lapuntador_doble.b_pointers[k]);
                     fseek(archivo, posLectura, SEEK_SET);
@@ -852,8 +861,6 @@ void edit(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
                     }
                 }
             }
-        }else{
-            borrar.push_back(linodo.i_block[i]);
         }
     }
 
@@ -864,9 +871,7 @@ void edit(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
 
     //BORRAR LOS BLOQUES EN EL BITMAP
     char s = '\0'; 
-    std::cout << "Tamaño " << borrar.size() << std::endl;
     for(int a = 0; a < borrar.size(); a++){
-        std::cout << borrar[a] << std::endl;
         posLectura = sblock.s_bm_block_start + (sizeof(char) * borrar[a]);
         fseek(archivo, posLectura, SEEK_SET);
         fwrite(&s, sizeof(char), 1, archivo);
@@ -934,6 +939,10 @@ void edit(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
     continuar = true;
     posicion = 0;
     char c;
+
+    if(contenido.size() == 0){
+        continuar = false;
+    }
 
     while(continuar){
         bool revisar = true;
