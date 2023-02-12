@@ -199,6 +199,7 @@ void remove(std::vector<std::string> &parametros, std::vector<disco> &discos, us
                         if(carpeta == path[posicion]){
                             if(posicion == path.size() - 1){
                                 inodo_leido = lcarpeta.b_content[k].b_inodo;
+                                posicion += 1;
                                 continuar = false;
                                 break;
                             }else{
@@ -247,6 +248,7 @@ void remove(std::vector<std::string> &parametros, std::vector<disco> &discos, us
                             if(carpeta == path[posicion]){
                                 if(posicion == path.size() - 1){
                                     inodo_leido = lcarpeta.b_content[l].b_inodo;
+                                    posicion += 1;
                                     continuar = false;
                                     break;
                                 }else{
@@ -305,6 +307,7 @@ void remove(std::vector<std::string> &parametros, std::vector<disco> &discos, us
                                 if(carpeta == path[posicion]){
                                     if(posicion == path.size() - 1){
                                         inodo_leido = lcarpeta.b_content[m].b_inodo;
+                                        posicion += 1;
                                         continuar = false;
                                         break;
                                     }else{

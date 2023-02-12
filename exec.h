@@ -29,6 +29,7 @@
 #include "chown.h"
 #include "edit.h"
 #include "remove.h"
+#include "copy.h"
 #include "rep.h"
 
 

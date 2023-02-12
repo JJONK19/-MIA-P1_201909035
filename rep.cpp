@@ -2741,6 +2741,7 @@ void ls(std::vector<disco> &discos, int posDisco, int posParticion, std::string 
                         if(carpeta == path[posicion]){
                             if(posicion == path.size() - 1){
                                 inodo_buscado = lcarpeta.b_content[k].b_inodo;
+                                posicion += 1;
                                 continuar = false;
                                 break;
                             }else{
@@ -2788,6 +2789,7 @@ void ls(std::vector<disco> &discos, int posDisco, int posParticion, std::string 
                             if(carpeta == path[posicion]){
                                 if(posicion == path.size() - 1){
                                     inodo_buscado = lcarpeta.b_content[l].b_inodo;
+                                    posicion += 1;
                                     continuar = false;
                                     break;
                                 }else{
@@ -2845,6 +2847,7 @@ void ls(std::vector<disco> &discos, int posDisco, int posParticion, std::string 
                                 if(carpeta == path[posicion]){
                                     if(posicion == path.size() - 1){
                                         inodo_buscado = lcarpeta.b_content[m].b_inodo;
+                                        posicion += 1;
                                         continuar = false;
                                         break;
                                     }else{

@@ -1020,6 +1020,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                     //Revisar el inodo doble
                     for(int i = 0; i < 16; i++){
                         if(lapuntador_doble.b_pointers[i] == -1){
+                            buscar = false;
                             for(int a = 0; a < sblock.s_inodes_count; a++){
                                 posLectura = sblock.s_bm_inode_start + (sizeof(char) * a);
                                 fseek(archivo, posLectura, SEEK_SET);
@@ -1598,6 +1599,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
                             //Recorrer el bloque de apuntadores dobles 
                             for(int j = 0; j < 16; j++){
                                 if(lapuntador_doble.b_pointers[j] == -1){
+                                    buscar = false;
                                     for(int a = 0; a < sblock.s_inodes_count; a++){
                                         posLectura = sblock.s_bm_inode_start + (sizeof(char) * a);
                                         fseek(archivo, posLectura, SEEK_SET);

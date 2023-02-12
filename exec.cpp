@@ -116,7 +116,7 @@ void exec(std::vector<std::string> &parametros, usuario &sesion, std::vector<dis
         }else if(tipo == "mkdir"){
             mkdir(parametros, discos, sesion);
         }else if(tipo == "copy"){
-            //copy();
+            copy(parametros, discos, sesion);
         }else if(tipo == "move"){
             //move();
         }else if(tipo == "find"){

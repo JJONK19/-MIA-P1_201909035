@@ -31,6 +31,7 @@
 #include "chown.h"
 #include "edit.h"
 #include "remove.h"
+#include "copy.h"
 
 
 void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos);         
