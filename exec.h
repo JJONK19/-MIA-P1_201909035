@@ -30,6 +30,7 @@
 #include "edit.h"
 #include "remove.h"
 #include "copy.h"
+#include "move.h"
 #include "rep.h"
 
 

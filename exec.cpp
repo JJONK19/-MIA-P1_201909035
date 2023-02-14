@@ -118,7 +118,7 @@ void exec(std::vector<std::string> &parametros, usuario &sesion, std::vector<dis
         }else if(tipo == "copy"){
             copy(parametros, discos, sesion);
         }else if(tipo == "move"){
-            //move();
+            move(parametros, discos, sesion);
         }else if(tipo == "find"){
             //find();
         }else if(tipo == "chown"){

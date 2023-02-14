@@ -119,8 +119,8 @@ mkfile -path->/home/usarios/b.txt -r -s->20
 
 logout 
 login -usr->root -pass->123 -id->351Disco1
-#chmod -path->/ -r -ugo->777
-chmod -path->/home/user -r -ugo->000
+chmod -path->/ -r -ugo->777
+#chmod -path->/home/user -r -ugo->000
 #chmod -path->/home/usarios/b.txt -r -ugo->000
 
 #Login con diferente usuario 
@@ -131,11 +131,16 @@ login -usr->admin1 -pass->admin -id->351Disco1
 #copy -path->/home/usarios/b.txt -destino->/
 #copy -path->/users.txt -destino->/home/usarios
 #copy -path->/home/usarios -destino->/
-copy -path->/home -destino->/home/usarios
+#copy -path->/home -destino->/home/usarios
 
 #remove
 #remove -path->/home/usarios/b.txt
 #remove -path->/home
+
+#move
+#move -path->/home/user/a.txt -destino->/
+move -path->/home/user -destino->/
+move -path->/a.txt -destino->/home/usarios
 
 #reporte
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/mbr.png" -name->mbr
