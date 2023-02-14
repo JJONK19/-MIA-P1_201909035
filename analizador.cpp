@@ -48,7 +48,7 @@ void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos){
     }else if(tipo == "mkfile"){
         mkfile(parametros, discos, sesion);
     }else if(tipo == "cat"){
-        //cat();
+        cat(parametros, discos, sesion);
     }else if(tipo == "remove"){
         remove(parametros, discos, sesion);
     }else if(tipo == "edit"){

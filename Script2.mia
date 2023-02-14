@@ -142,11 +142,14 @@ login -usr->admin1 -pass->admin -id->351Disco1
 #move -path->/home/user -destino->/
 #move -path->/a.txt -destino->/home/usarios
 
+#rename
+rename -path->/home/usarios/b.txt -name->b1.txt
+
 #find
 #find -path->"/"  -name->*.txt
 
-#rename
-rename -path->/home/usarios/b.txt -name->b1.txt
+#cat
+cat –file1->/users.txt –file2->/home/usarios/b1.txt –file3->/home/user/a.txt 
 
 #reporte
 rep -id->351Disco1 -path->"/home/jjonk19/Documentos/Ingenieria/Proyectos/MIA/-MIA-P1_201909035/ Mis Discos/mbr.png" -name->mbr

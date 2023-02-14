@@ -21,7 +21,8 @@
                 "${fileDirname}/loss.cpp", "${fileDirname}/chown.cpp",
                 "${fileDirname}/edit.cpp", "${fileDirname}/remove.cpp",
                 "${fileDirname}/copy.cpp", "${fileDirname}/move.cpp",
-                "${fileDirname}/find.cpp", "${fileDirname}/rename.cpp", 
+                "${fileDirname}/find.cpp", "${fileDirname}/rename.cpp",
+                "${fileDirname}/cat.cpp", 
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],

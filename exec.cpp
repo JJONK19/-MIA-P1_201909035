@@ -106,7 +106,7 @@ void exec(std::vector<std::string> &parametros, usuario &sesion, std::vector<dis
         }else if(tipo == "mkfile"){
             mkfile(parametros, discos, sesion);
         }else if(tipo == "cat"){
-            //cat();
+            cat(parametros, discos, sesion);
         }else if(tipo == "remove"){
             remove(parametros, discos, sesion);
         }else if(tipo == "edit"){

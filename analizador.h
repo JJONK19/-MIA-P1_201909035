@@ -35,6 +35,7 @@
 #include "move.h"
 #include "find.h"
 #include "rename.h"
+#include "cat.h"
 
 
 void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos);         

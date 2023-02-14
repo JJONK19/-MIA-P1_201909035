@@ -33,6 +33,7 @@
 #include "move.h"
 #include "find.h"
 #include "rename.h"
+#include "cat.h"
 #include "rep.h"
 
 
