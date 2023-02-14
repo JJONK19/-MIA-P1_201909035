@@ -20,7 +20,8 @@
                 "${fileDirname}/mkdir.cpp", "${fileDirname}/mkfile.cpp",
                 "${fileDirname}/loss.cpp", "${fileDirname}/chown.cpp",
                 "${fileDirname}/edit.cpp", "${fileDirname}/remove.cpp",
-                "${fileDirname}/copy.cpp", "${fileDirname}/move.cpp", 
+                "${fileDirname}/copy.cpp", "${fileDirname}/move.cpp",
+                "${fileDirname}/find.cpp", 
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],

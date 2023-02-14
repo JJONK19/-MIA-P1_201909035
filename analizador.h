@@ -33,6 +33,7 @@
 #include "remove.h"
 #include "copy.h"
 #include "move.h"
+#include "find.h"
 
 
 void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos);         

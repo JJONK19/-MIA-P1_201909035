@@ -607,9 +607,6 @@ void move(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
     fseek(archivo, posLectura, SEEK_SET);
     fread(&linodo, sizeof(inodo), 1, archivo);
 
-    std::cout << "PAdre: " << inodo_padre << std::endl;
-    std::cout << "Destino: " << inodo_destino << std::endl;
-    std::cout << "Mover: " << inodo_mover << std::endl;
     //VERIFICAR QUE SEA UNA CARPETA
     if(linodo.i_type == '1'){
         std::cout << "ERROR: El destino debe de ser una carpeta." << std::endl;
@@ -698,7 +695,7 @@ void move(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
                         mover = parchivos(sesion, sblock, tempD.ruta, inodo_mover); 
                     }else{
                         mover = pcarpetas(sesion, sblock, tempD.ruta, inodo_mover);
-                        actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_padre);
+                        actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_destino);
                     }
 
                     if(!mover){
@@ -722,7 +719,7 @@ void move(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
                 mover = parchivos(sesion, sblock, tempD.ruta, inodo_mover); 
             }else{
                 mover = pcarpetas(sesion, sblock, tempD.ruta, inodo_mover);
-                actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_padre);
+                actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_destino);
             }
 
             if(!mover){
@@ -786,7 +783,7 @@ void move(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
                 mover = parchivos(sesion, sblock, tempD.ruta, inodo_mover); 
             }else{
                 mover = pcarpetas(sesion, sblock, tempD.ruta, inodo_mover);
-                actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_padre);
+                actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_destino);
             }
 
             if(!mover){
@@ -873,7 +870,7 @@ void move(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
                         mover = parchivos(sesion, sblock, tempD.ruta, inodo_mover); 
                     }else{
                         mover = pcarpetas(sesion, sblock, tempD.ruta, inodo_mover);
-                        actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_padre);
+                        actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_destino);
                     }
 
                     if(!mover){
@@ -933,7 +930,7 @@ void move(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
                                 mover = parchivos(sesion, sblock, tempD.ruta, inodo_mover); 
                             }else{
                                 mover = pcarpetas(sesion, sblock, tempD.ruta, inodo_mover);
-                                actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_padre);
+                                actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_destino);
                             }
 
                             if(!mover){
@@ -972,7 +969,7 @@ void move(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
                 mover = parchivos(sesion, sblock, tempD.ruta, inodo_mover); 
             }else{
                 mover = pcarpetas(sesion, sblock, tempD.ruta, inodo_mover);
-                actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_padre);
+                actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_destino);
             }
 
             if(!mover){
@@ -1086,7 +1083,7 @@ void move(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
                         mover = parchivos(sesion, sblock, tempD.ruta, inodo_mover); 
                     }else{
                         mover = pcarpetas(sesion, sblock, tempD.ruta, inodo_mover);
-                        actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_padre);
+                        actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_destino);
                     }
 
                     if(!mover){
@@ -1173,7 +1170,7 @@ void move(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
                                 mover = parchivos(sesion, sblock, tempD.ruta, inodo_mover); 
                             }else{
                                 mover = pcarpetas(sesion, sblock, tempD.ruta, inodo_mover);
-                                actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_padre);
+                                actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_destino);
                             }
 
                             if(!mover){
@@ -1233,7 +1230,7 @@ void move(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
                                         mover = parchivos(sesion, sblock, tempD.ruta, inodo_mover); 
                                     }else{
                                         mover = pcarpetas(sesion, sblock, tempD.ruta, inodo_mover);
-                                        actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_padre);
+                                        actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_destino);
                                     }
 
                                     if(!mover){
@@ -1275,7 +1272,7 @@ void move(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
                 mover = parchivos(sesion, sblock, tempD.ruta, inodo_mover); 
             }else{
                 mover = pcarpetas(sesion, sblock, tempD.ruta, inodo_mover);
-                actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_padre);
+                actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_destino);
             }
 
             if(!mover){
@@ -1414,7 +1411,7 @@ void move(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
                         mover = parchivos(sesion, sblock, tempD.ruta, inodo_mover); 
                     }else{
                         mover = pcarpetas(sesion, sblock, tempD.ruta, inodo_mover);
-                        actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_padre);
+                        actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_destino);
                     }
 
                     if(!mover){
@@ -1526,7 +1523,7 @@ void move(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
                                 mover = parchivos(sesion, sblock, tempD.ruta, inodo_mover); 
                             }else{
                                 mover = pcarpetas(sesion, sblock, tempD.ruta, inodo_mover);
-                                actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_padre);
+                                actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_destino);
                             }
 
                             if(!mover){
@@ -1612,7 +1609,7 @@ void move(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
                                         mover = parchivos(sesion, sblock, tempD.ruta, inodo_mover); 
                                     }else{
                                         mover = pcarpetas(sesion, sblock, tempD.ruta, inodo_mover);
-                                        actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_padre);
+                                        actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_destino);
                                     }
 
                                     if(!mover){
@@ -1671,7 +1668,7 @@ void move(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
                                                 mover = parchivos(sesion, sblock, tempD.ruta, inodo_mover); 
                                             }else{
                                                 mover = pcarpetas(sesion, sblock, tempD.ruta, inodo_mover);
-                                                actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_padre);
+                                                actualizar_padre(sesion, sblock, tempD.ruta, inodo_mover, inodo_destino);
                                             }
 
                                             if(!mover){

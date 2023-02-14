@@ -120,7 +120,7 @@ void exec(std::vector<std::string> &parametros, usuario &sesion, std::vector<dis
         }else if(tipo == "move"){
             move(parametros, discos, sesion);
         }else if(tipo == "find"){
-            //find();
+            find(parametros, discos, sesion);
         }else if(tipo == "chown"){
             chown(parametros, discos, sesion);
         }else if(tipo == "chgrp"){

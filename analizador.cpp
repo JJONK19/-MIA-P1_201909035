@@ -62,7 +62,7 @@ void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos){
     }else if(tipo == "move"){
         move(parametros, discos, sesion);
     }else if(tipo == "find"){
-        //find();
+        find(parametros, discos, sesion);
     }else if(tipo == "chown"){
         chown(parametros, discos, sesion);
     }else if(tipo == "chgrp"){

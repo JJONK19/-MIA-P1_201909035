@@ -31,6 +31,7 @@
 #include "remove.h"
 #include "copy.h"
 #include "move.h"
+#include "find.h"
 #include "rep.h"
 
 
