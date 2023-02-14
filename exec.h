@@ -32,6 +32,7 @@
 #include "copy.h"
 #include "move.h"
 #include "find.h"
+#include "rename.h"
 #include "rep.h"
 
 

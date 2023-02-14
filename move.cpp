@@ -1,6 +1,5 @@
 #include "move.h"
 
-
 void move(std::vector<std::string> &parametros, std::vector<disco> &discos, usuario &sesion){
     
     //VERIFICAR QUE EL USUARIO ESTÉ LOGUEADO
