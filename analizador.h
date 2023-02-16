@@ -36,7 +36,7 @@
 #include "find.h"
 #include "rename.h"
 #include "cat.h"
-
+#include "recovery.h"
 
 void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos);         
 

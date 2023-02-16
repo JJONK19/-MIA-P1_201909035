@@ -480,9 +480,20 @@ void chgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
         }
 
         if(posRegistro != -1){
-            std::string contenido = nombre;
-            contenido += ",";
-            contenido += grupo;
+            std::string contenido = sesion.id_user;
+            contenido.append(",");
+            contenido.append(sesion.user);
+            contenido.append(",");
+            contenido.append(sesion.id_grp);
+            contenido.append(",");
+            contenido.append(sesion.grupo);
+            contenido.append(",");
+            contenido.append(sesion.disco);
+            contenido.append(",");
+            contenido.append(nombre);
+            contenido.append(",");
+            contenido.append(grupo);
+            
             strcpy(creacion.comando ,"chgrp");
             strcpy(creacion.path ,"/");
             strcpy(creacion.nombre ,"");

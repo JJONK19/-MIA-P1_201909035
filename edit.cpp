@@ -1719,6 +1719,7 @@ void edit(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
     fwrite(&sblock, sizeof(sbloque), 1, archivo);
  
     //ESCRIBIR EN EL JOURNAL EL COMANDO
+    //En contenido: id_usr, usr, id_grp, grp, disco, -cont
     //En contenido: -cont
     if(sblock.s_filesystem_type == 3){
         registro creacion;
@@ -1739,13 +1740,22 @@ void edit(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
         }
 
         if(posRegistro != -1){
-            std::string cont = "";
-            cont.append(ruta_contenido);
+            std::string contenido = sesion.id_user;
+            contenido.append(",");
+            contenido.append(sesion.user);
+            contenido.append(",");
+            contenido.append(sesion.id_grp);
+            contenido.append(",");
+            contenido.append(sesion.grupo);
+            contenido.append(",");
+            contenido.append(sesion.disco);
+            contenido.append(",");
+            contenido.append(ruta_contenido);
 
             strcpy(creacion.comando ,"edit");
             strcpy(creacion.path ,ruta_copia.c_str());
             strcpy(creacion.nombre ,nombre_archivo.c_str());
-            strcpy(creacion.contenido, cont.c_str());
+            strcpy(creacion.contenido, contenido.c_str());
             creacion.fecha = time(NULL);
             fseek(archivo, posRegistro, SEEK_SET);
             fwrite(&creacion, sizeof(registro), 1, archivo);

@@ -863,7 +863,16 @@ void chown(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
         }
 
         if(posRegistro != -1){
-            std::string contenido = "";
+            std::string contenido = sesion.id_user;
+            contenido.append(",");
+            contenido.append(sesion.user);
+            contenido.append(",");
+            contenido.append(sesion.id_grp);
+            contenido.append(",");
+            contenido.append(sesion.grupo);
+            contenido.append(",");
+            contenido.append(sesion.disco);
+            contenido.append(",");
             if(recursivo){
                 contenido.append("T");
             }else{
@@ -871,6 +880,7 @@ void chown(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
             }
             contenido.append(",");
             contenido.append(usr);
+
             strcpy(creacion.comando ,"chown");
             strcpy(creacion.path ,ruta.c_str());
             strcpy(creacion.nombre ,"");

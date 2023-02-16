@@ -22,7 +22,7 @@
                 "${fileDirname}/edit.cpp", "${fileDirname}/remove.cpp",
                 "${fileDirname}/copy.cpp", "${fileDirname}/move.cpp",
                 "${fileDirname}/find.cpp", "${fileDirname}/rename.cpp",
-                "${fileDirname}/cat.cpp", 
+                "${fileDirname}/cat.cpp", "${fileDirname}/recovery.cpp",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],

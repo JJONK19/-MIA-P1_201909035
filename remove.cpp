@@ -629,6 +629,7 @@ void remove(std::vector<std::string> &parametros, std::vector<disco> &discos, us
     fwrite(&sblock, sizeof(sbloque), 1, archivo);
  
     //ESCRIBIR EN EL JOURNAL EL COMANDO
+    //En contenido: id_usr, usr, id_grp, grp, disco
     if(sblock.s_filesystem_type == 3){
         registro creacion;
         int posRegistro = -1;
@@ -648,10 +649,20 @@ void remove(std::vector<std::string> &parametros, std::vector<disco> &discos, us
         }
 
         if(posRegistro != -1){
+            std::string contenido = sesion.id_user;
+            contenido.append(",");
+            contenido.append(sesion.user);
+            contenido.append(",");
+            contenido.append(sesion.id_grp);
+            contenido.append(",");
+            contenido.append(sesion.grupo);
+            contenido.append(",");
+            contenido.append(sesion.disco);
+            
             strcpy(creacion.comando ,"remove");
             strcpy(creacion.path ,ruta.c_str());
-            strcpy(creacion.nombre ,nombre_archivo.c_str());
-            strcpy(creacion.contenido, "");
+            strcpy(creacion.nombre, nombre_archivo.c_str());
+            strcpy(creacion.contenido, contenido.c_str());
             creacion.fecha = time(NULL);
             fseek(archivo, posRegistro, SEEK_SET);
             fwrite(&creacion, sizeof(registro), 1, archivo);
@@ -1358,23 +1369,7 @@ void limpiar_carpeta(sbloque &sblock, std::string &ruta, std::vector<int> &borra
             fwrite(&lapuntador_triple, sizeof(bapuntadores), 1, archivo);
 
         }else if(i == 0){
-            posLectura = sblock.s_block_start + (sizeof(bcarpetas) * linodo.i_block[i]);
-            fseek(archivo, posLectura, SEEK_SET);
-            fread(&lcarpeta, sizeof(bcarpetas), 1, archivo);
-
-            //Revisar espacios
-            for(int j = 2; j < 4; j++){
-                std::string carpeta(lcarpeta.b_content[j].b_name);
-
-                if(carpeta == "-"){
-                    ccarpetas += 1;
-                }
-            }
-
-            if(ccarpetas == 2){
-                borrar_bloques.push_back(linodo.i_block[i]);
-                linodo.i_block[i] = -1;
-            }
+            
         }else{
             posLectura = sblock.s_block_start + (sizeof(bcarpetas) * linodo.i_block[i]);
             fseek(archivo, posLectura, SEEK_SET);

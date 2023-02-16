@@ -70,7 +70,7 @@ void ejecutar(std::string &cadena, usuario &sesion, std::vector<disco> &discos){
     }else if(tipo == "pause"){
         pause();
     }else if(tipo == "recovery"){
-        //recovery();
+        recovery(parametros, discos);
     }else if(tipo == "loss"){
         loss(parametros, discos);
     }else if(tipo == "rep"){

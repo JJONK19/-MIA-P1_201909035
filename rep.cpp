@@ -1358,7 +1358,51 @@ void journaling(std::vector<disco> &discos, int posDisco, int posParticion, std:
         codigo.append(lregistro.nombre);
         codigo.append("</TD>");
         codigo.append("<TD>");
-        codigo.append(lregistro.contenido);
+
+        //Separr el contenido por comando
+        std::string cont(lregistro.contenido);
+        std::regex coma(",");
+        std::vector<std::string> salida(std::sregex_token_iterator(cont.begin(), cont.end(), coma, -1),
+                    std::sregex_token_iterator());
+
+        if(lregistro.comando == "mkgrp"){
+            codigo.append(salida[5]);
+        }else if(lregistro.comando == "rmgrp"){
+            codigo.append(salida[5]);
+        }else if(lregistro.comando == "mkusr"){
+            codigo.append(salida[5]);
+            codigo.append(", ");
+            codigo.append(salida[6]);
+            codigo.append(", ");
+            codigo.append(salida[7]);
+        }else if(lregistro.comando == "rmusr"){
+            codigo.append(salida[5]);
+        }else if(lregistro.comando == "chmod"){
+            codigo.append(salida[6]);
+        }else if(lregistro.comando == "mkfile"){
+            codigo.append(salida[6]);
+            codigo.append(", ");
+            codigo.append(salida[7]);
+        }else if(lregistro.comando == "remove"){
+            codigo.append("");
+        }else if(lregistro.comando == "edit"){
+            codigo.append(salida[5]);
+        }else if(lregistro.comando == "rename"){
+            codigo.append(salida[5]);
+        }else if(lregistro.comando == "mkdir"){
+            codigo.append("");
+        }else if(lregistro.comando == "copy"){
+            codigo.append(salida[5]);
+        }else if(lregistro.comando == "move"){
+            codigo.append(salida[5]);
+        }else if(lregistro.comando == "chown"){
+            codigo.append(salida[6]);
+        }else if(lregistro.comando == "chgrp"){
+            codigo.append(salida[5]);
+            codigo.append(", ");
+            codigo.append(salida[6]);
+        }
+
         codigo.append("</TD>");
         codigo.append("<TD>");
         codigo.append(asctime(gmtime(&lregistro.fecha)));
@@ -1647,6 +1691,14 @@ void leer_inodo(std::string &ruta, int &posInodos, int &posBloques, int &no_inod
     posLectura = posInodos + (sizeof(inodo) * no_inodo);
     fseek(archivo, posLectura, SEEK_SET);
     fread(&linodo, sizeof(inodo), 1, archivo);
+
+    if(linodo.i_type != '0'){
+        if(linodo.i_type != '1'){
+            std::cout << "ERROR: No se encontró el inodo raiz." << std::endl;
+            fclose(archivo);
+            return;
+        }   
+    }
 
     std::string nombre = "INODO";
     nombre.append(std::to_string(no_inodo));
@@ -2035,6 +2087,14 @@ void file(std::vector<disco> &discos, int posDisco, int posParticion, std::strin
     inodo_leido = 0;
     fseek(archivo, posLectura, SEEK_SET);
     fread(&linodo, sizeof(inodo), 1, archivo);
+
+    if(linodo.i_type != '0'){
+        if(linodo.i_type != '1'){
+            std::cout << "ERROR: No se encontró el inodo raiz." << std::endl;
+            fclose(archivo);
+            return;
+        }   
+    }
 
     //SEPARAR LOS NOMBRES QUE VENGAN EN LA RUTA
     std::regex separador("/");
@@ -2443,6 +2503,15 @@ void ls(std::vector<disco> &discos, int posDisco, int posParticion, std::string 
     posLectura = sblock.s_inode_start;
     fseek(archivo, posLectura, SEEK_SET);
     fread(&linodo, sizeof(inodo), 1, archivo);
+
+    //VERIFICAR QUE NO HA SIDO ELIMINADO
+    if(linodo.i_type != '0'){
+        if(linodo.i_type != '1'){
+            std::cout << "ERROR: No se encontró el inodo raiz." << std::endl;
+            fclose(archivo);
+            return;
+        }   
+    }
 
     //BUSCAR EL ARCHIVO DE USUARIOS 
     for(int i = 0; i < 15; i++){

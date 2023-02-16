@@ -208,19 +208,19 @@ void mkfs(std::vector<std::string> &parametros, std::vector<disco> &discos){
 
     //LLENAR CON 0s EL BITMAP DE INODOS
     fseek(archivo, nuevo.s_bm_inode_start, SEEK_SET);
-    fwrite(&cero, sizeof(cero), nuevo.s_inodes_count, archivo);
+    fwrite(&cero, sizeof(char), nuevo.s_inodes_count, archivo);
 
     //ESCRIBIR CON 0s EL BITMAP DE BLOQUES
     fseek(archivo, nuevo.s_bm_block_start, SEEK_SET);
-    fwrite(&cero, sizeof(cero), nuevo.s_blocks_count, archivo);
+    fwrite(&cero, sizeof(char), nuevo.s_blocks_count, archivo);
 
     //LLENAR LOS BLOQUES CON ESPACIOS VACIOS
     fseek(archivo ,nuevo.s_block_start, SEEK_SET);
-    fwrite(&vacio , sizeof(vacio), nuevo.s_blocks_count * sizeof(barchivos) , archivo);
+    fwrite(&vacio , sizeof(char), nuevo.s_blocks_count * sizeof(barchivos) , archivo);
 
     //LLENAR LOS INODOS CON ESPACIOS VACIOS
     fseek(archivo ,nuevo.s_inode_start, SEEK_SET);
-    fwrite(&vacio , sizeof(vacio), nuevo.s_inodes_count * sizeof(inodo), archivo);
+    fwrite(&vacio , sizeof(char), nuevo.s_inodes_count * sizeof(inodo), archivo);
 
     //SOLO PARA EXT3 - Escribir en el journal el archivo de texto y la carpeta
     registro creacion;
@@ -245,12 +245,12 @@ void mkfs(std::vector<std::string> &parametros, std::vector<disco> &discos){
     //MARCAR EL PRIMER INODO
     cero = '1';
     fseek(archivo, nuevo.s_bm_inode_start, SEEK_SET);
-    fwrite(&cero, sizeof(cero), 1, archivo);
+    fwrite(&cero, sizeof(char), 1, archivo);
 
     //MARCAR EL PRIMER BLOQUE
     char c = 'c';
     fseek(archivo, nuevo.s_bm_block_start, SEEK_SET);
-    fwrite(&c, sizeof(c), 1, archivo);
+    fwrite(&c, sizeof(char), 1, archivo);
 
     //CREAR Y ESCRIBIR EL INODO
     ninodo.i_uid = 1;
@@ -290,13 +290,13 @@ void mkfs(std::vector<std::string> &parametros, std::vector<disco> &discos){
     //MARCAR UN NUEVO INODO PARA EL ARCHIVO 
     posLectura = nuevo.s_bm_inode_start + sizeof(cero);
     fseek(archivo, posLectura, SEEK_SET);
-    fwrite(&cero, sizeof(cero), 1, archivo);
+    fwrite(&cero, sizeof(char), 1, archivo);
 
     //MARCAR UN NUEVO BLOQUE PAERA EL ARCHIVO
     char a = 'a';
     posLectura = nuevo.s_bm_block_start + sizeof(a);
     fseek(archivo, posLectura, SEEK_SET);
-    fwrite(&a, sizeof(a), 1, archivo);
+    fwrite(&a, sizeof(char), 1, archivo);
 
     //LLENAR EL INODO DEL ARCHIVO
     std::string contenido = "1,G,root\n1,U,root,root,123\n";

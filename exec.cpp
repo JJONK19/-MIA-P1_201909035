@@ -128,7 +128,7 @@ void exec(std::vector<std::string> &parametros, usuario &sesion, std::vector<dis
         }else if(tipo == "pause"){
             pause();
         }else if(tipo == "recovery"){
-            //recovery();
+            recovery(parametros, discos);
         }else if(tipo == "loss"){
             loss(parametros, discos);
         }else if(tipo == "rep"){

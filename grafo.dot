@@ -21,10 +21,7 @@ BLOQUE3[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5' BGCOLOR='#8b8
 <TR><TD><b>Nombre</b></TD><TD><b>Inodo</b></TD></TR><TR><TD>.</TD><TD>2</TD></TR><TR><TD>..</TD><TD>0</TD></TR><TR><TD>user</TD><TD>3</TD></TR><TR><TD>usarios</TD><TD>6</TD></TR></TABLE>>];
 BLOQUE4[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5' BGCOLOR='#8b8c89'>
 <TR><TD colspan ='2' ><b>Bloque Carpetas 4</b></TD></TR>
-<TR><TD><b>Nombre</b></TD><TD><b>Inodo</b></TD></TR><TR><TD>.</TD><TD>3</TD></TR><TR><TD>..</TD><TD>2</TD></TR><TR><TD>a.txt</TD><TD>4</TD></TR><TR><TD>-</TD><TD>-1</TD></TR></TABLE>>];
-BLOQUE5[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5' BGCOLOR='#fb8b24'>
-<TR><TD><b>Bloque Archivos 5</b></TD></TR>
-<TR><TD>01234567890123456789</TD></TR></TABLE>>];
+<TR><TD><b>Nombre</b></TD><TD><b>Inodo</b></TD></TR><TR><TD>.</TD><TD>3</TD></TR><TR><TD>..</TD><TD>2</TD></TR><TR><TD>-</TD><TD>-1</TD></TR><TR><TD>-</TD><TD>-1</TD></TR></TABLE>>];
 BLOQUE6[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5' BGCOLOR='#8b8c89'>
 <TR><TD colspan ='2' ><b>Bloque Carpetas 6</b></TD></TR>
 <TR><TD><b>Nombre</b></TD><TD><b>Inodo</b></TD></TR><TR><TD>a.txt</TD><TD>5</TD></TR><TR><TD>-</TD><TD>-1</TD></TR><TR><TD>-</TD><TD>-1</TD></TR><TR><TD>-</TD><TD>-1</TD></TR></TABLE>>];
@@ -33,8 +30,8 @@ BLOQUE7[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5' BGCOLOR='#fb8
 <TR><TD>A ver si esto funciona xdPor favor :(</TD></TR></TABLE>>];
 BLOQUE8[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5' BGCOLOR='#8b8c89'>
 <TR><TD colspan ='2' ><b>Bloque Carpetas 8</b></TD></TR>
-<TR><TD><b>Nombre</b></TD><TD><b>Inodo</b></TD></TR><TR><TD>.</TD><TD>6</TD></TR><TR><TD>..</TD><TD>2</TD></TR><TR><TD>b1.txt</TD><TD>7</TD></TR><TR><TD>-</TD><TD>-1</TD></TR></TABLE>>];
+<TR><TD><b>Nombre</b></TD><TD><b>Inodo</b></TD></TR><TR><TD>.</TD><TD>6</TD></TR><TR><TD>..</TD><TD>2</TD></TR><TR><TD>b.txt</TD><TD>7</TD></TR><TR><TD>-</TD><TD>-1</TD></TR></TABLE>>];
 BLOQUE9[ label = <<TABLE BORDER='2' CELLBORDER='0' CELLSPACING='5' BGCOLOR='#fb8b24'>
 <TR><TD><b>Bloque Archivos 9</b></TD></TR>
 <TR><TD>01234567890123456789</TD></TR></TABLE>>];
-BLOQUE0->BLOQUE1->BLOQUE2->BLOQUE3->BLOQUE4->BLOQUE5->BLOQUE6->BLOQUE7->BLOQUE8->BLOQUE9}
+BLOQUE0->BLOQUE1->BLOQUE2->BLOQUE3->BLOQUE4->BLOQUE6->BLOQUE7->BLOQUE8->BLOQUE9}

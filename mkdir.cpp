@@ -31,6 +31,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
     int inodo_leido = -1;                      //Inodo actual con el que se este trabajando
     bool error_permisos = false;               //Bandera para indicar que no se pudo crear en una carpeta por su padre
     bool error_padre = false;                  //Indica que una carpeta no existe y no se pudo crear
+    int contador = 0;                          //Para saber si debe de crearse el reporte
 
     //COMPROBACIÓN DE PARAMETROS
     for(int i = 1; i < parametros.size(); i++){
@@ -432,6 +433,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
 
         //2. Crear la carpeta si no existe
         if(crear){
+            contador += 1;
             bool buscar = true;
             int bloque_usado = -1;
             int bloque_intermedio = -1;
@@ -1938,7 +1940,7 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
     }
     
     //ESCRIBIR EN EL JOURNAL EL COMANDO Nota: P = con atributo -p NP = sin atributo -p
-    if(sblock.s_filesystem_type == 3){
+    if(sblock.s_filesystem_type == 3 && contador != 0){
         registro creacion;
         int posRegistro = -1;
 
@@ -1957,12 +1959,22 @@ void mkdir(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
         }
 
         if(posRegistro != -1){
-            std::string contenido;
+            std::string contenido = sesion.id_user;
+            contenido.append(",");
+            contenido.append(sesion.user);
+            contenido.append(",");
+            contenido.append(sesion.id_grp);
+            contenido.append(",");
+            contenido.append(sesion.grupo);
+            contenido.append(",");
+            contenido.append(sesion.disco);
+            contenido.append(",");
             if(padre){
-                contenido = "P";
+                contenido.append("T");
             }else{
-                contenido = "NP";
+                contenido.append("F");
             }
+            
             strcpy(creacion.comando ,"mkdir");
             strcpy(creacion.path ,ruta.c_str());
             strcpy(creacion.nombre ,"");

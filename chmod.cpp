@@ -586,12 +586,12 @@ void chmod(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
     }
 
     //ESCRIBIR EN EL JOURNAL EL COMANDO
+    //En contenido: id_usr, usr, id_grp, grp, disco, -r(T o F), ugo
     if(sblock.s_filesystem_type == 3){
         registro creacion;
         int posRegistro = -1;
 
         //Buscar un Journal Vacio
-        //En contenido: -r(T o F), ugo
         posLectura = posInicio + sizeof(sbloque);
         for(int i = 0; i < sblock.s_inodes_count; i++){
             fseek(archivo, posLectura, SEEK_SET);
@@ -606,7 +606,16 @@ void chmod(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
         }
 
         if(posRegistro != -1){
-            std::string contenido = "";
+            std::string contenido = sesion.id_user;
+            contenido.append(",");
+            contenido.append(sesion.user);
+            contenido.append(",");
+            contenido.append(sesion.id_grp);
+            contenido.append(",");
+            contenido.append(sesion.grupo);
+            contenido.append(",");
+            contenido.append(sesion.disco);
+            contenido.append(",");
             if(recursivo){
                 contenido.append("T");
             }else{
@@ -614,6 +623,7 @@ void chmod(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
             }
             contenido.append(",");
             contenido.append(ugo);
+            
             strcpy(creacion.comando ,"chmod");
             strcpy(creacion.path ,ruta.c_str());
             strcpy(creacion.nombre ,"");

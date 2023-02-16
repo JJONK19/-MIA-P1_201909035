@@ -119,21 +119,35 @@ void loss(std::vector<std::string> &parametros, std::vector<disco> &discos){
     fread(&sblock, sizeof(sbloque), 1, archivo);
 
     //LLENAR CON 0s EL BITMAP DE INODOS
-    fseek(archivo, sblock.s_bm_inode_start, SEEK_SET);
-    fwrite(&c, sizeof(char), sblock.s_inodes_count , archivo);
+    for(int a = 0; a < sblock.s_inodes_count; a++){
+        posLectura = sblock.s_bm_inode_start + (sizeof(char) * a);
+        fseek(archivo, posLectura, SEEK_SET);
+        fwrite(&c ,sizeof(char), 1 ,archivo);
+    }
 
     //ESCRIBIR CON 0s EL BITMAP DE BLOQUES
-    fseek(archivo, sblock.s_bm_block_start, SEEK_SET);
-    fwrite(&c, sizeof(char), sblock.s_blocks_count, archivo);
+    for(int a = 0; a < sblock.s_blocks_count; a++){
+        posLectura = sblock.s_bm_block_start + (sizeof(char) * a);
+        fseek(archivo, posLectura, SEEK_SET);
+        fwrite(&c ,sizeof(char), 1 ,archivo);
+    }
 
     //LLENAR LOS BLOQUES CON ESPACIOS VACIOS
-    fseek(archivo ,sblock.s_block_start, SEEK_SET);
-    fwrite(&c , sizeof(char), sblock.s_blocks_count * 64 , archivo);
+    int numero = sblock.s_blocks_count * 64;
+    for(int a = 0; a < sblock.s_blocks_count; a++){
+        posLectura = sblock.s_block_start + (sizeof(char) * a);
+        fseek(archivo, posLectura, SEEK_SET);
+        fwrite(&c ,sizeof(char), 1 ,archivo);
+    }
 
     //LLENAR LOS INODOS CON ESPACIOS VACIOS
-    fseek(archivo ,sblock.s_inode_start, SEEK_SET);
-    fwrite(&c , sizeof(char), sblock.s_inodes_count * sizeof(inodo), archivo);
-
+    numero = sblock.s_inodes_count * sizeof(inodo);
+    for(int a = 0; a < sblock.s_blocks_count; a++){
+        posLectura = sblock.s_inode_start + (sizeof(char) * a);
+        fseek(archivo, posLectura, SEEK_SET);
+        fwrite(&c ,sizeof(char), 1 ,archivo);
+    }
+    
     std::cout << "MENSAJE: Sistema dañado correctamente." << std::endl;
     fclose(archivo);
 

@@ -741,6 +741,7 @@ void rename(std::vector<std::string> &parametros, std::vector<disco> &discos, us
     }
 
     //ESCRIBIR EN EL JOURNAL EL COMANDO
+
     if(sblock.s_filesystem_type == 3){
         registro creacion;
         int posRegistro = -1;
@@ -760,10 +761,22 @@ void rename(std::vector<std::string> &parametros, std::vector<disco> &discos, us
         }
 
         if(posRegistro != -1){
+            std::string contenido = sesion.id_user;
+            contenido.append(",");
+            contenido.append(sesion.user);
+            contenido.append(",");
+            contenido.append(sesion.id_grp);
+            contenido.append(",");
+            contenido.append(sesion.grupo);
+            contenido.append(",");
+            contenido.append(sesion.disco);
+            contenido.append(",");
+            contenido.append(nombre);
+
             strcpy(creacion.comando ,"rename");
             strcpy(creacion.path ,ruta.c_str());
             strcpy(creacion.nombre ,nombre_archivo.c_str());
-            strcpy(creacion.contenido, nombre.c_str());
+            strcpy(creacion.contenido, contenido.c_str());
             creacion.fecha = time(NULL);
             fseek(archivo, posRegistro, SEEK_SET);
             fwrite(&creacion, sizeof(registro), 1, archivo);

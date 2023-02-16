@@ -427,6 +427,7 @@ void rmgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
     }
     
     //ESCRIBIR EN EL JOURNAL EL COMANDO
+     //Contenido: id_usr, usr, id_grp, grp, disco, nombre  
     if(sblock.s_filesystem_type == 3){
         registro creacion;
         int posRegistro = -1;
@@ -446,10 +447,22 @@ void rmgrp(std::vector<std::string> &parametros, std::vector<disco> &discos, usu
         }
 
         if(posRegistro != -1){
+            std::string contenido = sesion.id_user;
+            contenido.append(",");
+            contenido.append(sesion.user);
+            contenido.append(",");
+            contenido.append(sesion.id_grp);
+            contenido.append(",");
+            contenido.append(sesion.grupo);
+            contenido.append(",");
+            contenido.append(sesion.disco);
+            contenido.append(",");
+            contenido.append(nombre);
+
             strcpy(creacion.comando ,"rmgrp");
             strcpy(creacion.path ,"/");
             strcpy(creacion.nombre ,"");
-            strcpy(creacion.contenido, nombre.c_str());
+            strcpy(creacion.contenido, contenido.c_str());
             creacion.fecha = time(NULL);
             fseek(archivo, posRegistro, SEEK_SET);
             fwrite(&creacion, sizeof(registro), 1, archivo);

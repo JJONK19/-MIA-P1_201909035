@@ -34,6 +34,7 @@
 #include "find.h"
 #include "rename.h"
 #include "cat.h"
+#include "recovery.h"
 #include "rep.h"
 
 

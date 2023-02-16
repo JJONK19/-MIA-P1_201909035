@@ -1953,10 +1953,22 @@ void move(std::vector<std::string> &parametros, std::vector<disco> &discos, usua
         }
 
         if(posRegistro != -1){
+            std::string contenido = sesion.id_user;
+            contenido.append(",");
+            contenido.append(sesion.user);
+            contenido.append(",");
+            contenido.append(sesion.id_grp);
+            contenido.append(",");
+            contenido.append(sesion.grupo);
+            contenido.append(",");
+            contenido.append(sesion.disco);
+            contenido.append(",");
+            contenido.append(destino);
+
             strcpy(creacion.comando ,"move");
             strcpy(creacion.path ,ruta.c_str());
             strcpy(creacion.nombre ,nombre_archivo.c_str());
-            strcpy(creacion.contenido, destino.c_str());
+            strcpy(creacion.contenido, contenido.c_str());
             creacion.fecha = time(NULL);
             fseek(archivo, posRegistro, SEEK_SET);
             fwrite(&creacion, sizeof(registro), 1, archivo);
